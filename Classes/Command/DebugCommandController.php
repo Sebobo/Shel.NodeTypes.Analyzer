@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Shel\ContentRepository\Debugger\Command;
 
 use Fhaculty\Graph\Graph;
+use Fhaculty\Graph\Vertex;
 use Graphp\GraphML\Exporter as GraphExporter;
 use Graphp\GraphViz\GraphViz;
 use Neos\Flow\Annotations as Flow;
@@ -59,6 +60,18 @@ class DebugCommandController extends CommandController
             if ($format === 'graphviz') {
                 $graphviz = new GraphViz();
                 $data = $graphviz->createScript($graph);
+
+                // Hack for replacing numerical group ids with their actual name as the library doesn't support those yet
+                $groupIds = array_reduce($graph->getVertices()->getMap(), function (array $carry, Vertex $vertex) {
+                    $carry[$vertex->getGroup()] = $vertex->getAttribute('Package');
+                    return $carry;
+                }, []);
+                foreach ($groupIds as $groupId => $groupName) {
+                    $data = str_replace($groupId, '"' . $groupName . '"', $data);
+                }
+
+                // Hack to set rankdir and splines attributes of graph
+                $data = str_replace('digraph G {', 'digraph G {' . PHP_EOL  . '  rankdir=LR;' . PHP_EOL  . '  splines=line;', $data);
                 file_put_contents('nodetype-hierarchy.graphviz', $data);
             } else {
                 $exporter = new GraphExporter();
@@ -96,8 +109,8 @@ class DebugCommandController extends CommandController
             $graphNode->setAttribute('Package', $nameParts[0]);
             $graphNode->setAttribute('Vendor', $packageParts[0]);
 
-            $hash = $nameParts[0];
-            $groupId = intval(base_convert($hash, 16, 10));
+            $hash = md5($nameParts[0]);
+            $groupId = crc32($hash);
             $graphNode->setGroup($groupId);
         }
 

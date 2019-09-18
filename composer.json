@@ -1,0 +1,37 @@
+{
+    "name": "shel/contentrepository-debugger",
+    "description": "Provides helper methods to debug the Neos CMS content repository",
+    "type": "neos-package",
+    "license": "GPL-3.0",
+    "keywords": [
+        "neos",
+        "neoscms",
+        "flow",
+        "graphml",
+        "graphviz",
+        "contentrepository"
+    ],
+    "authors": [
+        {
+            "name": "Sebastian Helzle",
+            "email": "sebastian@helzle.it",
+            "homepage": "https://www.helzle.it",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "neos/neos": "^4.3 || ^5.0",
+        "graphp/graphml": "^0.1.0",
+        "graphp/graphviz": "^0.2.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Shel\\ContentRepository\\Debugger\\": "Classes"
+        }
+    },
+    "extra": {
+        "neos": {
+            "package-key": "Shel.ContentRepository.Debugger"
+        }
+    }
+}

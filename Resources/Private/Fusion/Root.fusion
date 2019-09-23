@@ -1,0 +1,2 @@
+include: resource://Neos.Fusion/Private/Fusion/Root.fusion
+include: resource://Shel.ContentRepository.Debugger/Private/Fusion/**/*.fusion

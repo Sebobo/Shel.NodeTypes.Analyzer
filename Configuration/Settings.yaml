@@ -1,0 +1,11 @@
+Neos:
+  Neos:
+    modules:
+      administration:
+        submodules:
+          nodetypes:
+            label: 'Nodetypes Analyzer'
+            controller: 'Shel\ContentRepository\Debugger\Controller\NodeTypesController'
+            description: 'Shel.ContentRepository.Debugger:Main:module.description'
+            icon: icon-search
+            privilegeTarget: 'Shel.ContentRepository.Debugger:Backend.Module.Administration.NodeTypes'

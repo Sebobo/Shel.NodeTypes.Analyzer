@@ -1,0 +1,11 @@
+Shel.ContentRepository.Debugger.NodeTypesController {
+    index = Neos.Fusion:Component {
+        nodeTypeGraphImgSrc = ${nodeTypeGraphImgSrc}
+        renderer = afx`
+            <div>
+                <p>Your NodeTypes:</p>
+                <img src={props.nodeTypeGraphImgSrc} alt=""/>
+            </div>
+        `
+    }
+}

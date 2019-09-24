@@ -9,3 +9,8 @@ Neos:
             description: 'Shel.ContentRepository.Debugger:Main:module.description'
             icon: icon-search
             privilegeTarget: 'Shel.ContentRepository.Debugger:Backend.Module.Administration.NodeTypes'
+            additionalResources:
+              styleSheets:
+                - 'resource://Shel.ContentRepository.Debugger/Public/Styles/main.css'
+              javaScripts:
+                - 'resource://Shel.ContentRepository.Debugger/Public/JavaScript/main.bundle.js'

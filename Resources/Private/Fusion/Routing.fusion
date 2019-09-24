@@ -1,10 +1,51 @@
 Shel.ContentRepository.Debugger.NodeTypesController {
     index = Neos.Fusion:Component {
+        baseNodeType = ${baseNodeType}
+        layout = ${layout}
+        selectableNodeTypes = ${selectableNodeTypes}
+        selectableLayouts = ${selectableLayouts}
         nodeTypeGraphImgSrc = ${nodeTypeGraphImgSrc}
+        csrfToken = ${csrfToken}
+        nodeTypeGroups = ${nodeTypeGroups}
+
         renderer = afx`
-            <div>
-                <p>Your NodeTypes:</p>
-                <img src={props.nodeTypeGraphImgSrc} alt=""/>
+            <div class="nodetypes-graph" data-nodetype-groups={Json.stringify(props.nodeTypeGroups)}>
+                <form method="GET" action={props.formAction}>
+                    <Neos.Fusion:UriBuilder @path="attributes.action" action="index"/>
+                    <input type="hidden" name="__csrfToken" value={String.htmlSpecialChars(props.csrfToken)}/>
+                    <label>
+                        Select a base nodetype
+                        <select name="moduleArguments[baseNodeType]">
+                            <option value="">None</option>
+                            <Neos.Fusion:Loop items={props.selectableNodeTypes} itemName="nodeType">
+                                <option value={nodeType.name} selected="selected" selected.@if.selected={props.baseNodeType.name == nodeType.name}>{nodeType.name}</option>
+                            </Neos.Fusion:Loop>
+                        </select>
+                    </label>
+                    <label>
+                        Select a layout
+                        <select name="moduleArguments[layout]">
+                            <Neos.Fusion:Loop items={props.selectableLayouts} itemName="layoutName" itemKey="layout">
+                                <option value={layout} selected="selected" selected.@if.selected={props.layout == layout}>{layoutName}</option>
+                            </Neos.Fusion:Loop>
+                        </select>
+                    </label>
+                    <input type="submit" value="Show" class="neos-button neos-button-primary"/>
+                </form>
+
+                <br/>
+
+                <p @if.hasNoBaseNodeType={!props.baseNodeType}>Nodetypes inheritance of this website</p>
+                <p @if.hasBaseNodeType={props.baseNodeType}>
+                    Nodetypes inheritance of <strong>{props.baseNodeType}</strong>
+                    <a href="javascript:window.history.back();" class="neos-button neos-button">Back</a>
+                </p>
+
+                <br/>
+
+                <div class="nodetype-graph-wrapper">
+                    {props.nodeTypeGraphImgSrc}
+                </div>
             </div>
         `
     }

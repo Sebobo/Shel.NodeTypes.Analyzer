@@ -45,6 +45,7 @@ class NodeTypeGraphService
     public function buildGraph(?NodeType $baseNodeType = null): Graph
     {
         $graph = new Graph();
+        $this->nodeTypeGroups = [];
 
         if ($baseNodeType) {
             $this->addNodeToGraph($baseNodeType, $graph);
@@ -56,10 +57,6 @@ class NodeTypeGraphService
                 $this->addNodeToGraph($nodeType, $graph);
             }
         }
-
-        // Define graphviz styling
-        $graph->setAttribute('graphviz.graph.rankdir', 'LR');
-        $graph->setAttribute('graphviz.graph.splines', 'line');
 
         return $graph;
     }
@@ -103,8 +100,9 @@ class NodeTypeGraphService
 
             if ($nodeType->isAbstract()) {
                 $graphNode->setAttribute('graphviz.shape', 'hexagon');
+            } elseif ($nodeType->isFinal()) {
+                $graphNode->setAttribute('graphviz.shape', 'house');
             }
-            // TODO: set alternate shape for final nodetypes
         }
 
         /** @var NodeType $superType */
@@ -132,5 +130,13 @@ class NodeTypeGraphService
         }
 
         return $data;
+    }
+
+    /**
+     * @return array
+     */
+    public function getNodeTypeGroups(): array
+    {
+        return $this->nodeTypeGroups;
     }
 }

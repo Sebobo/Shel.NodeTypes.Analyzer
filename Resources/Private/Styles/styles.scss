@@ -1,0 +1,26 @@
+.nodetypes-graph {
+  object {
+    display: none;
+  }
+
+  svg {
+    max-width: 100%;
+    height: auto;
+
+    g {
+      &.node {
+        cursor: pointer;
+
+        &:hover {
+          polygon,
+          ellipse {
+            fill: #00b3ee;
+          }
+          text {
+            fill: #fff;
+          }
+        }
+      }
+    }
+  }
+}

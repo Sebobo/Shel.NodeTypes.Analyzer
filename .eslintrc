@@ -1,0 +1,28 @@
+{
+    "extends": [
+        "@neos-project/eslint-config-neos",
+        "plugin:@typescript-eslint/recommended"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "plugins": [
+        "@typescript-eslint"
+    ],
+    "globals": {
+        "expect": true,
+        "sinon": false
+    },
+    "env": {
+        "node": true,
+        "mocha": true
+    },
+    "rules": {
+        "@typescript-eslint/no-explicit-any": 0,
+        "@typescript-eslint/semi": ["error"],
+        "@typescript-eslint/explicit-function-return-type": 0,
+        "comma-dangle": 0,
+        "semi": 0,
+        "no-alert": 0,
+        "no-await-in-loop": 0,
+        "react/jsx-indent-props": [2, "first"]
+    }
+}

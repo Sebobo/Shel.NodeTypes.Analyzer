@@ -1,0 +1,16 @@
+.nodetypes-graph object {
+  display: none; }
+
+.nodetypes-graph svg {
+  max-width: 100%;
+  height: auto; }
+  .nodetypes-graph svg g.node {
+    cursor: pointer; }
+    .nodetypes-graph svg g.node:hover polygon,
+    .nodetypes-graph svg g.node:hover ellipse {
+      fill: #00b3ee; }
+    .nodetypes-graph svg g.node:hover text {
+      fill: #fff; }
+
+
+/*# sourceMappingURL=main.css.map*/

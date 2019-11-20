@@ -7,7 +7,7 @@ Neos:
             label: 'Nodetypes Analyzer'
             controller: 'Shel\ContentRepository\Debugger\Controller\NodeTypesController'
             description: 'Shel.ContentRepository.Debugger:Main:module.description'
-            icon: icon-search
+            icon: fas fa-sitemap
             privilegeTarget: 'Shel.ContentRepository.Debugger:Backend.Module.Administration.NodeTypes'
             additionalResources:
               styleSheets:

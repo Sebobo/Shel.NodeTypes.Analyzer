@@ -61,6 +61,8 @@ class NodeTypesController extends AbstractModuleController
         $selectableNodeTypes = $this->nodeTypeManager->getNodeTypes(true);
         $nodeTypeGraph = $this->nodeTypeGraphService->buildGraph($baseNodeType);
 
+        $baseNodeTypeProperties = $baseNodeType ? $baseNodeType->getProperties() : [];
+
         // Define graphviz styling
         $nodeTypeGraph->setAttribute('graphviz.graph.rankdir', 'LR');
         $nodeTypeGraph->setAttribute('graphviz.graph.pack', 'true');
@@ -94,6 +96,7 @@ class NodeTypesController extends AbstractModuleController
                 'fdp' => 'Force directed spring model',
             ],
             'baseNodeType' => $baseNodeType,
+            'baseNodeTypeProperties' => $baseNodeTypeProperties,
             'layout' => $layout,
             'nodeTypeGraphImgSrc' => $nodeTypeGraphImgSrc,
             'nodeTypeGroups' => $nodeTypeGroups,

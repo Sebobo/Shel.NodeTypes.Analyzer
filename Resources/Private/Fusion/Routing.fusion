@@ -1,6 +1,7 @@
 Shel.ContentRepository.Debugger.NodeTypesController {
     index = Neos.Fusion:Component {
         baseNodeType = ${baseNodeType}
+        baseNodeTypeProperties = ${baseNodeTypeProperties}
         layout = ${layout}
         selectableNodeTypes = ${selectableNodeTypes}
         selectableLayouts = ${selectableLayouts}
@@ -45,6 +46,17 @@ Shel.ContentRepository.Debugger.NodeTypesController {
 
                 <div class="nodetype-graph-wrapper">
                     {props.nodeTypeGraphImgSrc}
+                </div>
+
+                <br/>
+
+                <div class="basenodetype-details" @if.hasBaseNodeType={props.baseNodeType}>
+                    <h2>Properties of {props.baseNodeType}</h2>
+                    <ul>
+                        <Neos.Fusion:Loop items={props.baseNodeTypeProperties} itemName="property" itemKey="propertyName">
+                            <li>{propertyName} - {property.type}</li>
+                        </Neos.Fusion:Loop>
+                    </ul>
                 </div>
             </div>
         `

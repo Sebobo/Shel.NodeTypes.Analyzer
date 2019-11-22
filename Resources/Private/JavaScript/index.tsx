@@ -1,12 +1,14 @@
 
 import '../Styles/styles.scss';
 
+import svgPanZoom from 'svg-pan-zoom';
+
 interface NodeTypeGroup {
     name: string;
     color: string;
 }
 
-window.onload = function () {
+window.addEventListener('load', () => {
     const nodeTypesGraphContainer: HTMLElement = document.querySelector('.nodetypes-graph');
     const nodeTypesForm = nodeTypesGraphContainer.querySelector('form');
     const nodeTypesFormBaseNodeTypeField: HTMLSelectElement = nodeTypesForm.querySelector('select[name="moduleArguments[baseNodeType]"');
@@ -24,15 +26,19 @@ window.onload = function () {
     nodeTypesGraph.after(graphSvgWrapper);
     nodeTypesGraph.remove();
 
-    const clusters = graphSvgWrapper.querySelectorAll('g.cluster');
-    const nodes = graphSvgWrapper.querySelectorAll('g.node');
+    const graphSvg = graphSvgWrapper.querySelector('svg');
+    const clusters = graphSvg.querySelectorAll('g.cluster');
+    const nodes = graphSvg.querySelectorAll('g.node');
 
     nodes.forEach(node => {
         node.addEventListener('click', () => {
             const selectedNodeType = node.querySelector('title').textContent;
-            console.log('Clicked', selectedNodeType);
+            console.debug('Clicked', selectedNodeType);
             nodeTypesFormBaseNodeTypeField.value = selectedNodeType;
             nodeTypesForm.submit();
         });
     });
-};
+
+    // Init svg pan and zoom functionality
+    svgPanZoom(graphSvg, {});
+});

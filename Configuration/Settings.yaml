@@ -10,7 +10,30 @@ Neos:
             icon: fas fa-sitemap
             privilegeTarget: 'Shel.ContentRepository.Debugger:Backend.Module.Administration.NodeTypes'
             additionalResources:
-              styleSheets:
-                - 'resource://Shel.ContentRepository.Debugger/Public/Styles/main.css'
               javaScripts:
                 - 'resource://Shel.ContentRepository.Debugger/Public/JavaScript/main.bundle.js'
+
+Shel:
+  ContentRepository:
+    Debugger:
+      defaults:
+        graphviz:
+          graph:
+            rankdir: 'LR'
+            pack: 'true'
+            layout: 'neato'
+            model: 'subset'
+            splines: 'true'
+            overlap: 'false'
+            fontname: 'Noto Sans'
+
+          node:
+            width: '.25'
+            height: '.375'
+            fontsize: '11'
+            fontname: 'Noto Sans'
+            fillcolor: '#ffffff'
+            style: 'filled'
+
+          edge:
+            color: '#888888'

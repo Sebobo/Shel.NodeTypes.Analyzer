@@ -3,10 +3,11 @@ declare(strict_types=1);
 
 namespace Shel\ContentRepository\Debugger\Controller;
 
-use Graphp\GraphViz\GraphViz;
 use Neos\ContentRepository\Domain\Model\NodeType;
 use Neos\ContentRepository\Domain\Service\NodeTypeManager;
 use Neos\ContentRepository\Exception\NodeTypeNotFoundException;
+use Neos\Flow\Mvc\Exception\StopActionException;
+use Neos\Flow\Mvc\View\JsonView;
 use Neos\Flow\Security\Context as SecurityContext;
 use Neos\Fusion\View\FusionView;
 use Neos\Neos\Controller\Module\AbstractModuleController;
@@ -29,6 +30,19 @@ class NodeTypesController extends AbstractModuleController
     protected $defaultViewObjectName = FusionView::class;
 
     /**
+     * @var array
+     */
+    protected $supportedMediaTypes = ['application/json', 'text/html'];
+
+    /**
+     * @var array
+     */
+    protected $viewFormatToObjectNameMap = [
+        'html' => FusionView::class,
+        'json' => JsonView::class,
+    ];
+
+    /**
      * @Flow\Inject
      * @var NodeTypeGraphService
      */
@@ -47,60 +61,90 @@ class NodeTypesController extends AbstractModuleController
     protected $securityContext;
 
     /**
-     * @param string|null $baseNodeType
-     * @param string $layout
-     * @throws NodeTypeNotFoundException
+     * Renders the app to interact with the nodetype graph
      */
-    public function indexAction(?string $baseNodeType = null, string $layout = 'neato'): void
+    public function indexAction(): void
     {
-        if ($this->nodeTypeManager->hasNodeType($baseNodeType)) {
-            $baseNodeType = $this->nodeTypeManager->getNodeType($baseNodeType);
+        $this->view->assignMultiple([
+            'selectableLayouts' => [
+                NodeTypeGraphService::GRAPHVIZ_LAYOUT_NEATO => 'Spring model',
+                NodeTypeGraphService::GRAPHVIZ_LAYOUT_DOT => 'Hierarchy',
+                NodeTypeGraphService::GRAPHVIZ_LAYOUT_FDP => 'Force directed spring model',
+            ],
+            'csrfToken' => $this->securityContext->getCsrfProtectionToken(),
+        ]);
+    }
+
+    /**
+     * @return string|null
+     * @throws StopActionException
+     */
+    public function renderGraphSvgAction(): ?string
+    {
+        [
+            'baseNodeType' => $baseNodeType,
+            'layout' => $layout,
+        ] = $this->request->getArguments();
+
+        if (!$layout) {
+            $layout = NodeTypeGraphService::GRAPHVIZ_LAYOUT_NEATO;
+        }
+
+        if ($baseNodeType && $this->nodeTypeManager->hasNodeType($baseNodeType)) {
+            try {
+                $baseNodeType = $this->nodeTypeManager->getNodeType($baseNodeType);
+            } catch (NodeTypeNotFoundException $e) {
+                $baseNodeType = null;
+            }
         } else {
             $baseNodeType = null;
         }
-        $selectableNodeTypes = $this->nodeTypeManager->getNodeTypes(true);
-        $nodeTypeGraph = $this->nodeTypeGraphService->buildGraph($baseNodeType);
 
-        $baseNodeTypeProperties = $baseNodeType ? $baseNodeType->getProperties() : [];
+        [$graph, $nodeTypeGroups] = $this->nodeTypeGraphService->buildGraph($baseNodeType);
 
-        // Define graphviz styling
-        $nodeTypeGraph->setAttribute('graphviz.graph.rankdir', 'LR');
-        $nodeTypeGraph->setAttribute('graphviz.graph.pack', 'true');
-        $nodeTypeGraph->setAttribute('graphviz.graph.layout', $layout);
-        $nodeTypeGraph->setAttribute('graphviz.graph.model', 'subset');
-        $nodeTypeGraph->setAttribute('graphviz.graph.splines', 'true');
-        $nodeTypeGraph->setAttribute('graphviz.graph.overlap', 'false');
-        $nodeTypeGraph->setAttribute('graphviz.graph.fontname', 'Noto Sans');
-//        $nodeTypeGraph->setAttribute('graphviz.graph.bgcolor', '#222222');
-
-        $nodeTypeGraph->setAttribute('graphviz.node.width', '.25');
-        $nodeTypeGraph->setAttribute('graphviz.node.height', '.375');
-        $nodeTypeGraph->setAttribute('graphviz.node.fontsize', '11');
-        $nodeTypeGraph->setAttribute('graphviz.node.fontname', 'Noto Sans');
-        $nodeTypeGraph->setAttribute('graphviz.node.fillcolor', '#ffffff');
-        $nodeTypeGraph->setAttribute('graphviz.node.style', 'filled');
-
-        $nodeTypeGraph->setAttribute('graphviz.edge.color', '#888888');
-
-        $nodeTypeGroups = $this->nodeTypeGraphService->getNodeTypeGroups();
-
-        $graphViz = new GraphViz();
-        $graphViz->setFormat('svg');
-        $nodeTypeGraphImgSrc = $graphViz->createImageHtml($nodeTypeGraph);
-
-        $this->view->assignMultiple([
-            'selectableNodeTypes' => $selectableNodeTypes,
-            'selectableLayouts' => [
-                'neato' => 'Spring model',
-                'dot' => 'Hierarchy',
-                'fdp' => 'Force directed spring model',
-            ],
-            'baseNodeType' => $baseNodeType,
-            'baseNodeTypeProperties' => $baseNodeTypeProperties,
-            'layout' => $layout,
-            'nodeTypeGraphImgSrc' => $nodeTypeGraphImgSrc,
-            'nodeTypeGroups' => $nodeTypeGroups,
-            'csrfToken' => $this->securityContext->getCsrfProtectionToken(),
+        $svgData = $this->nodeTypeGraphService->getGraphVizSvg($graph, [
+            'graph' => [
+                'layout' => $layout
+            ]
         ]);
+
+        foreach ($nodeTypeGroups as $groupId => $groupProperties) {
+            $svgData = str_replace($groupId, $groupProperties['name'], $svgData);
+        }
+
+        if ($this->request->getFormat() === 'json') {
+            return json_encode([
+                'success' => true,
+                'svgData' => $svgData,
+                'nodeTypeGroups' => $nodeTypeGroups,
+            ]);
+        } else {
+            $this->redirect('index');
+        }
+    }
+
+    /**
+     * Returns all nodetype definitions
+     *
+     * @return string|null
+     * @throws StopActionException
+     */
+    public function getNodeTypeDefinitionsAction(): ?string
+    {
+        $nodeTypes = $this->nodeTypeManager->getNodeTypes();
+
+        $nodeTypes = array_reduce($nodeTypes, function (array $carry, NodeType $nodeType) {
+            $carry[$nodeType->getName()] = $nodeType->getFullConfiguration();
+            return $carry;
+        }, []);
+
+        if ($this->request->getFormat() === 'json') {
+            return json_encode([
+                'success' => true,
+                'nodeTypes' => $nodeTypes,
+            ]);
+        } else {
+            $this->redirect('index');
+        }
     }
 }

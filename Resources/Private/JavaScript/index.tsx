@@ -1,44 +1,51 @@
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
+import GraphApp from './components/GraphApp';
+import { GraphProvider } from './providers/GraphProvider';
+import NeosNotification from './interfaces/NeosNotification';
+import NeosI18n from './interfaces/NeosI18n';
 
-import '../Styles/styles.scss';
-
-import svgPanZoom from 'svg-pan-zoom';
-
-interface NodeTypeGroup {
-    name: string;
-    color: string;
+declare global {
+    interface Window {
+        Typo3Neos: {
+            I18n: NeosI18n;
+            Notification: NeosNotification;
+        };
+    }
 }
 
-window.addEventListener('load', () => {
-    const nodeTypesGraphContainer: HTMLElement = document.querySelector('.nodetypes-graph');
-    const nodeTypesForm = nodeTypesGraphContainer.querySelector('form');
-    const nodeTypesFormBaseNodeTypeField: HTMLSelectElement = nodeTypesForm.querySelector('select[name="moduleArguments[baseNodeType]"');
-    const nodeTypesGraph = nodeTypesGraphContainer.querySelector('object');
-    const nodeTypeGroups: { [index: number]: NodeTypeGroup } = JSON.parse(nodeTypesGraphContainer.dataset.nodetypeGroups);
+const loadPlugin = async (): Promise<void> => {
+    while (!window.Typo3Neos || !window.Typo3Neos.I18n.initialized) {
+        await new Promise(resolve => setTimeout(resolve, 50));
+    }
+    const graphAppContainer: HTMLElement = document.getElementById('graphAppContainer');
+    const graphSvgWrapper: HTMLElement = document.getElementById('graphSvgWrapper');
 
-    let graphSvgSource = window.atob(document.querySelector('object').getAttribute('data').replace(/^.*;base64,/, ''));
-    const graphSvgWrapper = document.createElement('div');
+    if (!graphAppContainer) {
+        return;
+    }
 
-    Object.keys(nodeTypeGroups).forEach(nodeTypeGroup => {
-        graphSvgSource = graphSvgSource.replace(nodeTypeGroup, nodeTypeGroups[nodeTypeGroup as unknown as number].name);
-    });
-    graphSvgWrapper.innerHTML = graphSvgSource.trim();
+    const { csrfToken, actions, selectableLayouts } = JSON.parse(graphAppContainer.dataset.app);
+    const { I18n, Notification } = window.Typo3Neos;
 
-    nodeTypesGraph.after(graphSvgWrapper);
-    nodeTypesGraph.remove();
+    const translate = (id: string, label: string = '', args: any[] = []): string => {
+        return I18n.translate(id, label, 'ONEANDONE.RedirectWorkspaceReferences', 'Modules', args);
+    };
 
-    const graphSvg = graphSvgWrapper.querySelector('svg');
-    const clusters = graphSvg.querySelectorAll('g.cluster');
-    const nodes = graphSvg.querySelectorAll('g.node');
-
-    nodes.forEach(node => {
-        node.addEventListener('click', () => {
-            const selectedNodeType = node.querySelector('title').textContent;
-            console.debug('Clicked', selectedNodeType);
-            nodeTypesFormBaseNodeTypeField.value = selectedNodeType;
-            nodeTypesForm.submit();
-        });
-    });
-
-    // Init svg pan and zoom functionality
-    svgPanZoom(graphSvg, {});
-});
+    ReactDOM.render(
+        <GraphProvider
+            graphContext={{
+                csrfToken,
+                translate,
+                selectableLayouts,
+                notificationHelper: Notification,
+                graphSvgWrapper,
+                actions,
+            }}
+        >
+            <GraphApp />
+        </GraphProvider>,
+        graphAppContainer,
+    );
+};
+window.addEventListener('load', loadPlugin, false);

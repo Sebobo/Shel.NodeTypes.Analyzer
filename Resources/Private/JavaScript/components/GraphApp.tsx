@@ -55,6 +55,7 @@ const useStyles = createUseStyles({
             '& g': {
                 '&.node': {
                     cursor: 'pointer',
+                    transition: 'opacity .1s ease-in',
                     '&:hover': {
                         '& polygon, & ellipse': {
                             fill: '#00b3ee',
@@ -62,6 +63,9 @@ const useStyles = createUseStyles({
                         '& text': {
                             fill: '#fff',
                         },
+                    },
+                    '& polygon, & ellipse': {
+                        transition: 'strokeWidth .1s ease-in',
                     },
                 },
             },
@@ -162,6 +166,7 @@ export default function GraphApp() {
                       if (superTypeFilter && dotProp.get(nodeType, `superTypes.${escapedSuperTypeFilter}`) !== true)
                           return false;
                       return (
+                          !configurationPathFilter ||
                           dotProp.has(nodeType, configurationPathFilter) ||
                           searchForKeys(nodeType, configurationPathFilter).filter((key: any) => key !== undefined)
                               .length > 0
@@ -265,9 +270,11 @@ export default function GraphApp() {
                         onChange={e => setSuperTypeFilter(e.target.value)}
                     >
                         <option value="">Select a parent nodetype</option>
-                        {Object.keys(nodeTypes).map(nodeTypeName => (
-                            <option key={nodeTypeName}>{nodeTypeName}</option>
-                        ))}
+                        {Object.keys(nodeTypes)
+                            .sort((a, b) => (a < b ? -1 : 1))
+                            .map(nodeTypeName => (
+                                <option key={nodeTypeName}>{nodeTypeName}</option>
+                            ))}
                     </select>
                 </div>
                 <div className="neos-control-group">

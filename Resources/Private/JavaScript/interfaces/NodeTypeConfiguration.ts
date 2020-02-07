@@ -10,5 +10,13 @@ export default interface NodeTypeConfiguration {
     ui: {};
     superTypes: {};
     constraints: {};
-    childNodes: {};
+    childNodes: {
+        [index: string]: {
+            [key: string]: any;
+            type: string;
+            constraints: {};
+            allowedChildNodeTypes: string[];
+        };
+    };
+    allowedChildNodeTypes: string[];
 }

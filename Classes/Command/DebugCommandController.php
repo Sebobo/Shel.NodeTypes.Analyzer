@@ -61,6 +61,59 @@ class DebugCommandController extends CommandController
         }
     }
 
+    public function nodeTypeConstraintsCommand(?string $baseNodeType = null, string $filename = 'nodetype-constraints'): void
+    {
+        if ($baseNodeType !== null) {
+            try {
+                $baseNodeType = $this->nodeTypeManager->getNodeType($baseNodeType);
+            } catch (NodeTypeNotFoundException $e) {
+                $this->outputLine('<error>Node type "%s" does not exist</error>', [$baseNodeType]);
+                $this->quit(1);
+                return;
+            }
+        }
+
+        $graph = $this->nodeTypeGraphService->buildConstraintGraph($baseNodeType, [], false);
+
+        $data = $this->writeDataToMarkdown($baseNodeType->getName(), $graph);
+
+        file_put_contents($filename . '.md', $data);
+    }
+
+    protected function writeDataToMarkdown(string $groupName, array $data, int $level = 0): string
+    {
+        $md = $this->getMarkdownLevelPrefix($level) . $groupName . PHP_EOL;
+
+        foreach ($data as $key => $value) {
+            if (is_array($value)) {
+                if (!empty($value)) {
+                    $md .= $this->writeDataToMarkdown($key, $value, $level + 1);
+                }
+            } else {
+                $md .= $this->getMarkdownLevelPrefix($level + 1) . $value . PHP_EOL;
+            }
+        }
+
+        return $md;
+    }
+
+    protected function getMarkdownLevelPrefix(int $level): string
+    {
+        switch ($level) {
+            case 0:
+                return '# ';
+                break;
+            case 1:
+                return '## ';
+                break;
+            case 2:
+                return '### ';
+                break;
+            default:
+                return str_repeat('  ', $level - 3) . '- ';
+        }
+    }
+
     /**
      * Writes the graph structure to the stdout
      *

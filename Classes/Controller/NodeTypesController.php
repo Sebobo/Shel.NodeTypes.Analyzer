@@ -123,6 +123,28 @@ class NodeTypesController extends AbstractModuleController
         }
     }
 
+    public function renderConstraintsSvgAction(): ?string
+    {
+        [
+            'baseNodeType' => $baseNodeType,
+            'layout' => $layout,
+        ] = $this->request->getArguments();
+
+        if (!$layout) {
+            $layout = NodeTypeGraphService::GRAPHVIZ_LAYOUT_NEATO;
+        }
+
+        if ($this->request->getFormat() === 'json') {
+            return json_encode([
+                'success' => true,
+                'svgData' => $svgData,
+                'nodeTypeGroups' => $nodeTypeGroups,
+            ]);
+        } else {
+            $this->redirect('index');
+        }
+    }
+
     /**
      * Returns all nodetype definitions
      *
@@ -133,8 +155,23 @@ class NodeTypesController extends AbstractModuleController
     {
         $nodeTypes = $this->nodeTypeManager->getNodeTypes();
 
-        $nodeTypes = array_reduce($nodeTypes, function (array $carry, NodeType $nodeType) {
-            $carry[$nodeType->getName()] = $nodeType->getFullConfiguration();
+        $nodeTypes = array_reduce($nodeTypes, function (array $carry, NodeType $nodeType) use ($nodeTypes) {
+            $nodeTypeName = $nodeType->getName();
+            $carry[$nodeTypeName] = $nodeType->getFullConfiguration();
+
+            $instantiableNodeTypes = array_filter($nodeTypes, function (NodeType $nodeType) {
+                return !$nodeType->isAbstract();
+            });
+            $carry[$nodeTypeName]['allowedChildNodeTypes'] = $this->nodeTypeGraphService->generateAllowedChildNodeTypes($nodeType,
+                $instantiableNodeTypes);
+
+            if (array_key_exists('childNodes', $carry[$nodeTypeName])) {
+                foreach (array_keys($carry[$nodeTypeName]['childNodes']) as $childNodeName) {
+                    $carry[$nodeTypeName]['childNodes'][$childNodeName]['allowedChildNodeTypes'] = $this->nodeTypeGraphService->generateAllowedGrandChildNodeTypes($childNodeName,
+                        $nodeType, $instantiableNodeTypes);
+                }
+            }
+
             return $carry;
         }, []);
 

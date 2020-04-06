@@ -52,7 +52,7 @@ export default function NodeTypeProfile({
     nodeTypeConfiguration: NodeTypeConfiguration;
 }) {
     const classes = useStyles({});
-    const { properties, superTypes, allowedChildNodeTypes, childNodes } = nodeTypeConfiguration;
+    const { properties, superTypes, allowedChildNodeTypes, childNodes, usageCount } = nodeTypeConfiguration;
 
     const [showProperties, setShowProperties] = useState(true);
     const [showSupertypes, setShowSupertypes] = useState(false);
@@ -64,6 +64,12 @@ export default function NodeTypeProfile({
             <h3 className={classes.profileHeader}>
                 Selected: <em>{nodeTypeName}</em>
             </h3>
+            <section className={classes.nodeTypeConfigurationCard}>
+                <header className={classes.header} onClick={() => setShowProperties(!showProperties)}>
+                    Usage count
+                </header>
+                <p>{usageCount}</p>
+            </section>
             <section className={classes.nodeTypeConfigurationCard}>
                 <header className={classes.header} onClick={() => setShowProperties(!showProperties)}>
                     Properties

@@ -3,9 +3,12 @@ declare(strict_types=1);
 
 namespace Shel\ContentRepository\Debugger\Service;
 
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Query as OrmQuery;
 use Fhaculty\Graph\Graph;
 use Fhaculty\Graph\Vertex;
 use Graphp\GraphViz\GraphViz;
+use Neos\ContentRepository\Domain\Model\NodeData;
 use Neos\ContentRepository\Domain\Model\NodeType;
 use Neos\ContentRepository\Domain\Service\NodeTypeManager;
 use Neos\ContentRepository\Exception\NodeTypeNotFoundException;
@@ -44,6 +47,12 @@ class NodeTypeGraphService
      * @var array
      */
     protected $defaults;
+
+    /**
+     * @Flow\Inject
+     * @var EntityManagerInterface
+     */
+    protected $entityManager;
 
     /**
      * Create a graph structure from the nodetype inheritance starting from `baseNodeType`
@@ -265,5 +274,26 @@ class NodeTypeGraphService
             }
             return $carry;
         }, []);
+    }
+
+    /**
+     * Return the usage count of each nodetype in the content repository
+     *
+     * @return array
+     */
+    public function getNodeTypeUsageQuery(): array
+    {
+        $qb = $this->entityManager->createQueryBuilder();
+        $nodeTypeUsage = $qb->select('n.nodeType, COUNT(n.identifier) as count')
+            ->from(NodeData::class, 'n')
+            ->groupBy('n.nodeType')
+            ->andWhere('n.removed = false')
+            ->getQuery()
+            ->getScalarResult();
+
+        $nodeTypes = array_column($nodeTypeUsage, 'nodeType');
+        $usageCount = array_column($nodeTypeUsage, 'count');
+
+        return array_combine($nodeTypes, $usageCount);
     }
 }

@@ -19,4 +19,5 @@ export default interface NodeTypeConfiguration {
         };
     };
     allowedChildNodeTypes: string[];
+    usageCount: number;
 }

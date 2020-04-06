@@ -6,7 +6,6 @@ namespace Shel\ContentRepository\Debugger\Controller;
 use Neos\ContentRepository\Domain\Model\NodeType;
 use Neos\ContentRepository\Domain\Service\NodeTypeManager;
 use Neos\ContentRepository\Exception\NodeTypeNotFoundException;
-use Neos\Flow\Mvc\Exception\StopActionException;
 use Neos\Flow\Mvc\View\JsonView;
 use Neos\Flow\Security\Context as SecurityContext;
 use Neos\Fusion\View\FusionView;
@@ -19,10 +18,6 @@ use Shel\ContentRepository\Debugger\Service\NodeTypeGraphService;
  */
 class NodeTypesController extends AbstractModuleController
 {
-    /**
-     * @var FusionView
-     */
-    protected $view;
 
     /**
      * @var string
@@ -76,10 +71,8 @@ class NodeTypesController extends AbstractModuleController
     }
 
     /**
-     * @return string|null
-     * @throws StopActionException
      */
-    public function renderGraphSvgAction(): ?string
+    public function renderGraphSvgAction(): void
     {
         [
             'baseNodeType' => $baseNodeType,
@@ -111,19 +104,16 @@ class NodeTypesController extends AbstractModuleController
         foreach ($nodeTypeGroups as $groupId => $groupProperties) {
             $svgData = str_replace($groupId, $groupProperties['name'], $svgData);
         }
-
-        if ($this->request->getFormat() === 'json') {
-            return json_encode([
-                'success' => true,
-                'svgData' => $svgData,
-                'nodeTypeGroups' => $nodeTypeGroups,
-            ]);
-        } else {
-            $this->redirect('index');
-        }
+        $this->view->assign('value', [
+            'success' => true,
+            'svgData' => $svgData,
+            'nodeTypeGroups' => $nodeTypeGroups,
+        ]);
     }
 
-    public function renderConstraintsSvgAction(): ?string
+    /**
+     */
+    public function renderConstraintsSvgAction(): void
     {
         [
             'baseNodeType' => $baseNodeType,
@@ -134,24 +124,17 @@ class NodeTypesController extends AbstractModuleController
             $layout = NodeTypeGraphService::GRAPHVIZ_LAYOUT_NEATO;
         }
 
-        if ($this->request->getFormat() === 'json') {
-            return json_encode([
-                'success' => true,
-                'svgData' => $svgData,
-                'nodeTypeGroups' => $nodeTypeGroups,
-            ]);
-        } else {
-            $this->redirect('index');
-        }
+        $this->view->assign('value', [
+            'success' => true,
+//                'svgData' => $svgData,
+//                'nodeTypeGroups' => $nodeTypeGroups,
+        ]);
     }
 
     /**
      * Returns all nodetype definitions
-     *
-     * @return string|null
-     * @throws StopActionException
      */
-    public function getNodeTypeDefinitionsAction(): ?string
+    public function getNodeTypeDefinitionsAction(): void
     {
         $nodeTypes = $this->nodeTypeManager->getNodeTypes();
 
@@ -175,13 +158,9 @@ class NodeTypesController extends AbstractModuleController
             return $carry;
         }, []);
 
-        if ($this->request->getFormat() === 'json') {
-            return json_encode([
-                'success' => true,
-                'nodeTypes' => $nodeTypes,
-            ]);
-        } else {
-            $this->redirect('index');
-        }
+        $this->view->assign('value', [
+            'success' => true,
+            'nodeTypes' => $nodeTypes,
+        ]);
     }
 }

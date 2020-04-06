@@ -11,7 +11,9 @@ Neos:
             privilegeTarget: 'Shel.ContentRepository.Debugger:Backend.Module.Administration.NodeTypes'
             additionalResources:
               javaScripts:
-                - 'resource://Shel.ContentRepository.Debugger/Public/JavaScript/main.bundle.js'
+                - 'resource://Shel.ContentRepository.Debugger/Public/Assets/main.bundle.js'
+              styleSheets:
+                - 'resource://Shel.ContentRepository.Debugger/Public/Assets/main.bundle.css'
 
 Shel:
   ContentRepository:

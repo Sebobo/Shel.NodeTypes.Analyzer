@@ -1,55 +1,60 @@
 {
-    "name": "shel-contentrepositorydebugger",
-    "version": "1.0.0",
-    "main": "Resources/Public/JavaScript/index.tsx",
-    "repository": "git@github.com:Sebobo/Shel.ContentRepository.Debugger.git",
-    "bugs": {
-        "url": "https://github.com/Sebobo/Shel.ContentRepository.Debugger/issues"
-    },
-    "scripts": {
-        "watch": "webpack --watch --progress -d",
-        "build": "webpack -p",
-        "lint": "eslint Resources/Private/JavaScript/**/*"
-    },
-    "author": "Sebastian Helzle <sebastian@helzle.it>",
-    "license": "GNU GPLv3",
-    "private": true,
-    "devDependencies": {
-        "@neos-project/eslint-config-neos": "^2.2.0",
-        "@types/react": "^16.9.1",
-        "@types/react-datepicker": "^2.8.1",
-        "@types/react-dom": "^16.8.5",
-        "@typescript-eslint/eslint-plugin": "^2.0.0",
-        "@typescript-eslint/parser": "^2.0.0",
-        "css-loader": "^3.2.0",
-        "dot-prop": "^5.2.0",
-        "eslint": "^6.2.0",
-        "eslint-config-prettier": "^6.7.0",
-        "eslint-plugin-prettier": "^3.1.1",
-        "jss": "^10.0.0",
-        "jss-preset-default": "^10.0.0",
-        "mini-css-extract-plugin": "^0.8.0",
-        "node-sass": "^4.12.0",
-        "optimize-css-assets-webpack-plugin": "^5.0.3",
-        "prettier": "^1.19.1",
-        "react": "^16.12.0",
-        "react-dom": "^16.12.0",
-        "react-jss": "^10.0.0",
-        "sass-loader": "8.0.0",
-        "source-map-loader": "^0.2.4",
-        "stylelint": "^12.0.0",
-        "stylelint-config-recommended-scss": "^4.1.0",
-        "stylelint-prettier": "^1.1.1",
-        "stylelint-scss": "^3.13.0",
-        "svg-pan-zoom": "^3.6.1",
-        "terser": "^4.2.0",
-        "terser-webpack-plugin": "^2.2.1",
-        "ts-loader": "^6.0.4",
-        "typescript": "^3.5.3",
-        "webpack": "^4.39.2",
-        "webpack-cli": "^3.3.6"
-    },
-    "dependencies": {
-        "keys-in-object": "^1.1.1"
-    }
+  "name": "shel-contentrepositorydebugger",
+  "version": "1.0.0",
+  "main": "Resources/Public/JavaScript/index.tsx",
+  "repository": "git@github.com:Sebobo/Shel.ContentRepository.Debugger.git",
+  "bugs": {
+    "url": "https://github.com/Sebobo/Shel.ContentRepository.Debugger/issues"
+  },
+  "scripts": {
+    "lint": "tsc --noEmit && eslint 'Resources/Private/JavaScript/**/*.{js,jsx,ts,tsx}'",
+    "test": "exit 0",
+    "watch:parcel": "parcel watch Resources/Private/JavaScript/src/index.tsx --out-dir Resources/Public/Assets -o main.bundle.js",
+    "watch:neos-wrap": "node-sass extra-neos-wrapper.scss -o Resources/Public/Assets/ && node-sass -w extra-neos-wrapper.scss -o Resources/Public/Assets/",
+    "watch": "concurrently -k npm:watch:parcel npm:watch:neos-wrap",
+    "build": "parcel build Resources/Private/JavaScript/src/index.tsx --out-dir Resources/Public/Assets -o main.bundle.js && node-sass extra-neos-wrapper.scss -o Resources/Public/Assets/"
+  },
+  "author": "Sebastian Helzle <sebastian@helzle.it>",
+  "license": "GNU GPLv3",
+  "private": true,
+  "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.27",
+    "@fortawesome/free-brands-svg-icons": "^5.12.1",
+    "@fortawesome/free-regular-svg-icons": "^5.12.1",
+    "@fortawesome/free-solid-svg-icons": "^5.12.1",
+    "@fortawesome/react-fontawesome": "^0.1.9",
+    "@neos-project/neos-ui-extensibility": "^5.1.4",
+    "@neos-project/react-ui-components": "^5.1.4",
+    "@friendsofreactjs/react-css-themr": "^3.3.2",
+    "classnames": "^2.2.6",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
+    "react-jss": "^10.0.4",
+    "svg-pan-zoom": "^3.6.1",
+    "keys-in-object": "^1.1.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.8.4",
+    "@types/react": "^16.9.21",
+    "@types/react-dom": "^16.9.5",
+    "@typescript-eslint/eslint-plugin": "^2.20.0",
+    "@typescript-eslint/parser": "^2.20.0",
+    "concurrently": "^5.1.0",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.10.0",
+    "eslint-plugin-prettier": "^3.1.2",
+    "eslint-plugin-react": "^7.18.3",
+    "express": "^4.17.1",
+    "node-sass": "^4.13.1",
+    "parcel-bundler": "^1.12.4",
+    "postcss-custom-properties": "^9.1.1",
+    "postcss-modules": "^1.5.0",
+    "prettier": "^1.19.1",
+    "typescript": "^3.8.2",
+    "webpack": "^4.38.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "Last 2 versions"
+  ]
 }

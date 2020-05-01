@@ -13,6 +13,7 @@ Neos:
               javaScripts:
                 - 'resource://Shel.ContentRepository.Debugger/Public/Assets/main.bundle.js'
               styleSheets:
+                - 'resource://Shel.ContentRepository.Debugger/Public/Assets/extra-neos-wrapper.css'
                 - 'resource://Shel.ContentRepository.Debugger/Public/Assets/main.bundle.css'
 
 Shel:

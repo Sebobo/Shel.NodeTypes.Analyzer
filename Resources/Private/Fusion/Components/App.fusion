@@ -1,7 +1,5 @@
 prototype(Shel.ContentRepository.Debugger:Component.App) < prototype(Neos.Fusion:Component) {
     appData = Neos.Fusion:DataStructure {
-        csrfToken = ${csrfToken}
-        selectableLayouts = ${selectableLayouts}
         actions = Neos.Fusion:DataStructure {
             renderGraphSvg = Neos.Fusion:UriBuilder {
                 action = 'renderGraphSvg'
@@ -15,9 +13,6 @@ prototype(Shel.ContentRepository.Debugger:Component.App) < prototype(Neos.Fusion
     }
 
     renderer = afx`
-        <div style="display: flex; flex-direction: column">
-            <div id="graphAppContainer" data-app={Json.stringify(props.appData)}></div>
-            <div id="graphSvgWrapper">Loading ...</div>
-        </div>
+        <div id="graphAppContainer" data-app={Json.stringify(props.appData)}></div>
     `
 }

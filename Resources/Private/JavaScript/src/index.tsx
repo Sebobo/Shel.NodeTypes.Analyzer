@@ -1,9 +1,14 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+import { DragDropContext } from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend';
+import memoize from 'lodash.memoize';
 
-import GraphApp from './components/GraphApp';
-import { GraphProvider, IntlProvider } from './core';
-import { NotifyProvider } from './core';
+import { GraphApp } from './components';
+import { GraphProvider, IntlProvider, AppThemeProvider, NotifyProvider } from './core';
+
+const withDragDropContext = DragDropContext(HTML5Backend);
+const GraphAppWithDnd = withDragDropContext(GraphApp);
 
 const loadPlugin = async (): Promise<void> => {
     const NeosApi = window.Typo3Neos;
@@ -12,36 +17,28 @@ const loadPlugin = async (): Promise<void> => {
         await new Promise(resolve => setTimeout(resolve, 50));
     }
     const graphAppContainer: HTMLElement = document.getElementById('graphAppContainer');
-    const graphSvgWrapper: HTMLElement = document.getElementById('graphSvgWrapper');
 
     if (!graphAppContainer) {
         return;
     }
 
-    const { csrfToken, actions, selectableLayouts } = JSON.parse(graphAppContainer.dataset.app);
+    const { actions } = JSON.parse(graphAppContainer.dataset.app);
     const { I18n, Notification } = NeosApi;
 
-    const translate = (
-        id,
-        value = null,
-        args = [],
-        packageKey = 'Shel.ContentRepository.Debugger',
-        source = 'Main'
-    ) => {
+    let translate = (id, value = null, args = [], packageKey = 'Shel.ContentRepository.Debugger', source = 'Main') => {
         return I18n.translate(id, value, packageKey, source, args);
     };
+
+    translate = memoize(translate);
 
     ReactDOM.render(
         <IntlProvider translate={translate}>
             <NotifyProvider {...Notification}>
-                <GraphProvider
-                    csrfToken={csrfToken}
-                    selectableLayouts={selectableLayouts}
-                    graphSvgWrapper={graphSvgWrapper}
-                    actions={actions}
-                >
-                    <GraphApp />
-                </GraphProvider>
+                <AppThemeProvider>
+                    <GraphProvider actions={actions}>
+                        <GraphAppWithDnd />
+                    </GraphProvider>
+                </AppThemeProvider>
             </NotifyProvider>
         </IntlProvider>,
         graphAppContainer

@@ -7,8 +7,6 @@
         "neos",
         "neoscms",
         "flow",
-        "graphml",
-        "graphviz",
         "contentrepository"
     ],
     "authors": [
@@ -20,9 +18,7 @@
         }
     ],
     "require": {
-        "neos/neos": "^4.3 || ^5.0",
-        "graphp/graphml": "^0.1.0",
-        "graphp/graphviz": "^0.2.1"
+        "neos/neos": "^4.3 || ^5.0"
     },
     "autoload": {
         "psr-4": {

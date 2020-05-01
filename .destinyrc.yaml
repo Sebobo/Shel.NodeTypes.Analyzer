@@ -1,0 +1,3 @@
+include:
+  - Resources/Private/JavaScript/src/**/*.{ts,tsx}
+avoidSingleFile: false

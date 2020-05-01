@@ -1,25 +1,19 @@
 import * as React from 'react';
 import { useEffect, useContext, createContext, useState } from 'react';
+import { $set } from 'plow-js';
 
-import { Actions, NodeTypeGroup, NodeTypeConfiguration } from '../interfaces';
+import { Actions, NodeTypeGroup, NodeTypeConfiguration, DataSegment } from '../interfaces';
 import fetchData from '../helpers/fetchData';
 import { useNotify } from './Notify';
 
 export interface GraphProviderProps {
     children: React.ReactElement;
-    csrfToken: string;
     actions: Actions;
-    graphSvgWrapper: HTMLElement;
-    selectableLayouts: { [index: string]: string };
 }
 
 interface GraphProviderValues {
-    csrfToken: string;
     actions: Actions;
-    graphSvgWrapper: HTMLElement;
-    selectableLayouts: { [index: string]: string };
-    isSendingData: boolean;
-    setIsSendingData: (isSendingData: boolean) => void;
+    isLoading: boolean;
     selectedNodeTypeName: string;
     setSelectedNodeTypeName: (selectedNodeTypeName: string) => void;
     selectedLayout: string;
@@ -28,14 +22,12 @@ interface GraphProviderValues {
     setNodeTypeGroups: (nodeTypeGroups: NodeTypeGroup[]) => void;
     nodeTypes: NodeTypeConfigurations;
     setNodeTypes: (nodeTypes: NodeTypeConfigurations) => void;
-    configurationPathFilter: string;
-    setConfigurationPathFilter: (filter: string) => void;
     superTypeFilter: string;
     setSuperTypeFilter: (filter: string) => void;
-    graphSvgData: string;
-    setGraphSvgData: (graphSvgData: string) => void;
-    graphVersion: number;
-    setGraphVersion: (version: number) => void;
+    selectedPath: string;
+    setSelectedPath: (path: string) => void;
+    graphData: DataSegment;
+    treeData: object;
 }
 
 interface NodeTypeConfigurations {
@@ -45,24 +37,42 @@ interface NodeTypeConfigurations {
 export const GraphContext = createContext({} as GraphProviderValues);
 export const useGraph = () => useContext(GraphContext);
 
-export default function GraphProvider({
-    children,
-    csrfToken,
-    actions,
-    graphSvgWrapper,
-    selectableLayouts
-}: GraphProviderProps) {
+export default function GraphProvider({ children, actions }: GraphProviderProps) {
     const Notify = useNotify();
 
-    const [isSendingData, setIsSendingData] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [nodeTypeGroups, setNodeTypeGroups] = useState<NodeTypeGroup[]>([]);
-    const [selectedLayout, setSelectedLayout] = useState<string>(Object.keys(selectableLayouts)[0]);
+    const [selectedLayout, setSelectedLayout] = useState<string>('sunburst');
     const [selectedNodeTypeName, setSelectedNodeTypeName] = useState('');
     const [nodeTypes, setNodeTypes] = useState<NodeTypeConfigurations>({});
-    const [configurationPathFilter, setConfigurationPathFilter] = useState('');
     const [superTypeFilter, setSuperTypeFilter] = useState('');
-    const [graphSvgData, setGraphSvgData] = useState('');
-    const [graphVersion, setGraphVersion] = useState(0);
+    const [selectedPath, setSelectedPath] = useState('');
+
+    // Data structure for rendering the nodetype tree
+    const [treeData, setTreeData] = useState({});
+    // Data structure for rendering graphical charts
+    // TODO: Use same structure for tree and charts
+    const [graphData, setGraphData] = useState({} as DataSegment);
+
+    /**
+     * Recursive function to convert tree data to chart data
+     *
+     * @param data
+     * @param path
+     */
+    const processTreeData = (data, path = '') => {
+        return Object.keys(data).map(name => {
+            const segmentPath = path ? path + '.' + name : name;
+            const node: DataSegment = { name, path: segmentPath };
+            if (data[name].name) {
+                node['value'] = 1;
+                node['data'] = data[name];
+            } else {
+                node['children'] = processTreeData(data[name], segmentPath);
+            }
+            return node;
+        });
+    };
 
     /**
      * Runs initial request to fetch all nodetype definitions
@@ -72,19 +82,38 @@ export default function GraphProvider({
             .then((data: any) => {
                 const { nodeTypes } = data;
                 setNodeTypes(nodeTypes);
+                setIsLoading(false);
             })
             .catch(Notify.error);
     }, []);
 
+    /**
+     * Converts flat nodetypes structure into tree
+     */
+    useEffect(() => {
+        if (Object.keys(nodeTypes).length === 0) return;
+
+        const treeData = Object.values(nodeTypes).reduce((carry: object, nodeType) => {
+            const segments = nodeType.name.split(':');
+            return $set(segments.join('.'), nodeType, carry);
+        }, {});
+
+        setTreeData(treeData);
+    }, [nodeTypes]);
+
+    /**
+     * Converts tree based nodetypes structure into a form that can be used for graphical charts
+     */
+    useEffect(() => {
+        if (Object.keys(treeData).length === 0) return;
+        setGraphData({ name: 'nodetypes', path: '', children: processTreeData(treeData) });
+    }, [treeData]);
+
     return (
         <GraphContext.Provider
             value={{
-                csrfToken,
                 actions,
-                graphSvgWrapper,
-                selectableLayouts,
-                isSendingData,
-                setIsSendingData,
+                isLoading,
                 selectedNodeTypeName,
                 setSelectedNodeTypeName,
                 nodeTypeGroups,
@@ -93,14 +122,12 @@ export default function GraphProvider({
                 setSelectedLayout,
                 nodeTypes,
                 setNodeTypes,
-                configurationPathFilter,
-                setConfigurationPathFilter,
                 superTypeFilter,
                 setSuperTypeFilter,
-                graphSvgData,
-                setGraphSvgData,
-                graphVersion,
-                setGraphVersion
+                selectedPath,
+                setSelectedPath,
+                graphData,
+                treeData
             }}
         >
             {children}

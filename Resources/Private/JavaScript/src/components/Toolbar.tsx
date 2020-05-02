@@ -43,14 +43,22 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
 export default function Toolbar() {
     const classes = useStyles();
     const { translate } = useIntl();
-    const { selectedLayout, setSelectedLayout, selectedPath, setSelectedPath } = useGraph();
+    const { selectedLayout, setSelectedLayout, selectedPath, setSelectedPath, setSelectedNodeTypeName } = useGraph();
 
-    const selectableLayouts = [{ label: 'Sunburst', value: 'sunburst' }];
+    const selectableLayouts = [
+        { label: 'Sunburst', value: 'sunburst' },
+        { label: 'Dependencies', value: 'dependencies' }
+    ];
 
     const handleSelectLayout = (layout: string) => {
         // TODO: Implement layout selection
         console.log(layout, 'select layout');
         setSelectedLayout(layout);
+    };
+
+    const handleHomeClick = () => {
+        setSelectedPath('');
+        setSelectedNodeTypeName('');
     };
 
     return (
@@ -63,7 +71,7 @@ export default function Toolbar() {
                             size="small"
                             style="transparent"
                             hoverStyle="brand"
-                            onClick={() => setSelectedPath('')}
+                            onClick={() => handleHomeClick()}
                         />
                     </li>
                     {selectedPath

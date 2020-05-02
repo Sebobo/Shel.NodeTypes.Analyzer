@@ -74,6 +74,9 @@ class NodeTypesController extends AbstractModuleController
             $carry[$nodeTypeName] = [
                 'name' => $nodeTypeName,
                 'configuration' => $nodeType->getFullConfiguration(),
+                'declaredSuperTypes' => array_map(static function (NodeType $superType) {
+                    return $superType->getName();
+                }, $nodeType->getDeclaredSuperTypes()),
                 'usageCount' => array_key_exists($nodeTypeName, $nodeTypeUsage) ? $nodeTypeUsage[$nodeTypeName] : 0,
             ];
 

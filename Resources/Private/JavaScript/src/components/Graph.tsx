@@ -7,8 +7,10 @@ import { $get } from 'plow-js';
 import svgPanZoom from 'svg-pan-zoom';
 
 import { AppTheme, createUseAppStyles, useGraph } from '../core';
-import { renderSunburstChart } from '../helpers/sunburst';
+import renderSunburstChart from '../helpers/sunburstChart';
+import renderDependencyGraph from '../helpers/dependencyGraph';
 import { DataSegment } from '../interfaces';
+import { LinkType } from '../interfaces/Dependencies';
 
 const useStyles = createUseAppStyles((theme: AppTheme) => ({
     nodeTypesGraph: {
@@ -20,9 +22,12 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
             width: '100%',
             maxWidth: '100%',
             height: 'auto',
+            minHeight: '600px',
             '& g': {
                 '& text.node': {
-                    cursor: 'pointer'
+                    cursor: 'pointer',
+                    stroke: 'black',
+                    strokeWidth: '0.2px'
                 }
             }
         }
@@ -32,7 +37,15 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
 export default function Graph() {
     const classes = useStyles();
     const graphSvgWrapper = useRef();
-    const { setSelectedNodeTypeName, graphData, treeData, selectedPath, setSelectedPath } = useGraph();
+    const {
+        setSelectedNodeTypeName,
+        graphData,
+        treeData,
+        selectedPath,
+        setSelectedPath,
+        selectedLayout,
+        dependencyData
+    } = useGraph();
 
     const selectNodeTypeInGraph = (e: MouseEvent): void => {
         const graphNode = e.target as HTMLElement;
@@ -48,16 +61,26 @@ export default function Graph() {
     useEffect(() => {
         if (Object.keys(graphData).length === 0) return;
 
-        let chartData = graphData;
-        if (selectedPath) {
-            chartData = selectedPath.split('.').reduce<DataSegment>((data, segment) => {
-                return data.children.find(child => child.name === segment);
-            }, graphData);
+        let chart = null;
+        let data = null;
+        switch (selectedLayout) {
+            case 'sunburst':
+                if (selectedPath) {
+                    data = selectedPath.split('.').reduce<DataSegment>((data, segment) => {
+                        return data.children.find(child => child.name === segment);
+                    }, graphData);
+                } else {
+                    data = graphData;
+                }
+                chart = renderSunburstChart({ data });
+                break;
+            case 'dependencies':
+                chart = renderDependencyGraph({
+                    data: dependencyData,
+                    types: [LinkType.INHERITS]
+                });
+                break;
         }
-
-        const chart = renderSunburstChart({
-            data: chartData
-        });
 
         const wrapper = graphSvgWrapper.current as HTMLElement;
 
@@ -76,7 +99,7 @@ export default function Graph() {
             nodes.forEach(node => node.removeEventListener('click', selectNodeTypeInGraph));
             panZoom.destroy();
         };
-    }, [graphData, selectedPath]);
+    }, [graphData, selectedPath, dependencyData, selectedLayout]);
 
     return <div ref={graphSvgWrapper} />;
 }

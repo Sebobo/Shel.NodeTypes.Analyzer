@@ -106,16 +106,18 @@ export default function NodeTypeProfile() {
                             {superTypes ? (
                                 showSupertypes && (
                                     <PropertyList>
-                                        {Object.keys(superTypes).map(superTypeName => (
-                                            <PropertyListItem
-                                                key={superTypeName}
-                                                label={superTypeName}
-                                                value={translate(
-                                                    nodeTypes[superTypeName].configuration.ui?.label,
-                                                    superTypeName
-                                                )}
-                                            />
-                                        ))}
+                                        {Object.keys(superTypes)
+                                            .filter(superTypeName => superTypes[superTypeName])
+                                            .map(superTypeName => (
+                                                <PropertyListItem
+                                                    key={superTypeName}
+                                                    label={superTypeName}
+                                                    value={translate(
+                                                        nodeTypes[superTypeName].configuration.ui?.label,
+                                                        superTypeName
+                                                    )}
+                                                />
+                                            ))}
                                     </PropertyList>
                                 )
                             ) : (

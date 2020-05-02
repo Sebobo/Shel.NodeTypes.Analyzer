@@ -5,7 +5,9 @@ import { NodeTypeTreeNode, VendorSegmentTreeNode } from './index';
 import { createUseAppStyles, useGraph } from '../core';
 
 const useStyles = createUseAppStyles({
-    tree: {}
+    tree: {
+        overflow: 'hidden'
+    }
 });
 
 export default function NodeTypeTree() {

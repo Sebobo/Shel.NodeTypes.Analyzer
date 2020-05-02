@@ -2,9 +2,10 @@ import * as React from 'react';
 import { useEffect, useContext, createContext, useState } from 'react';
 import { $set } from 'plow-js';
 
-import { Actions, NodeTypeGroup, NodeTypeConfiguration, DataSegment } from '../interfaces';
+import { Actions, NodeTypeGroup, NodeTypeConfiguration, DataSegment, Dependencies } from '../interfaces';
 import fetchData from '../helpers/fetchData';
 import { useNotify } from './Notify';
+import { LinkType } from '../interfaces/Dependencies';
 
 export interface GraphProviderProps {
     children: React.ReactElement;
@@ -27,6 +28,7 @@ interface GraphProviderValues {
     selectedPath: string;
     setSelectedPath: (path: string) => void;
     graphData: DataSegment;
+    dependencyData: Dependencies;
     treeData: object;
 }
 
@@ -53,6 +55,7 @@ export default function GraphProvider({ children, actions }: GraphProviderProps)
     // Data structure for rendering graphical charts
     // TODO: Use same structure for tree and charts
     const [graphData, setGraphData] = useState({} as DataSegment);
+    const [dependencyData, setDependencyData] = useState({ nodes: [], links: [] } as Dependencies);
 
     /**
      * Recursive function to convert tree data to chart data
@@ -102,6 +105,71 @@ export default function GraphProvider({ children, actions }: GraphProviderProps)
     }, [nodeTypes]);
 
     /**
+     * Converts nodetypes list into a structure for dependency graphs
+     */
+    useEffect(() => {
+        if (Object.keys(nodeTypes).length === 0) return;
+
+        let types = {};
+
+        if (selectedNodeTypeName) {
+            const selectedNodeType = nodeTypes[selectedNodeTypeName];
+            const typesToAdd = [selectedNodeTypeName];
+
+            while (typesToAdd.length > 0) {
+                const typeToAdd = nodeTypes[typesToAdd.pop()];
+                const superTypes = typeToAdd.declaredSuperTypes;
+                if (superTypes) {
+                    Object.keys(superTypes).forEach(superType => {
+                        if (superTypes[superType] && Object.keys(types).indexOf(superType) === -1) {
+                            typesToAdd.push(superType);
+                        }
+                    });
+                }
+                types[typeToAdd.name] = typeToAdd;
+            }
+
+            if (selectedNodeType.configuration.superTypes) {
+                Object.keys(selectedNodeType.configuration.superTypes).forEach(superType => {
+                    if (selectedNodeType.configuration.superTypes[superType]) {
+                        types[superType] = nodeTypes[superType];
+                    }
+                });
+            }
+        } else {
+            types = nodeTypes;
+        }
+
+        const data = Object.values(types).reduce<Dependencies>(
+            (carry, nodeType: NodeTypeConfiguration) => {
+                carry.nodes.push({
+                    name: nodeType.name,
+                    group: nodeType.name.split(':')[0],
+                    path: nodeType.name.replace(':', '.'),
+                    value: selectedNodeTypeName === nodeType.name ? 2 : 1
+                });
+
+                if (nodeType.declaredSuperTypes) {
+                    Object.keys(nodeType.declaredSuperTypes).forEach(superType => {
+                        carry.links.push({
+                            source: nodeType.name,
+                            target: superType,
+                            type: LinkType.INHERITS
+                        });
+                    });
+                }
+                return carry;
+            },
+            {
+                nodes: [],
+                links: []
+            } as Dependencies
+        );
+
+        setDependencyData(data);
+    }, [nodeTypes, selectedNodeTypeName]);
+
+    /**
      * Converts tree based nodetypes structure into a form that can be used for graphical charts
      */
     useEffect(() => {
@@ -127,6 +195,7 @@ export default function GraphProvider({ children, actions }: GraphProviderProps)
                 selectedPath,
                 setSelectedPath,
                 graphData,
+                dependencyData,
                 treeData
             }}
         >

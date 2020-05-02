@@ -2,6 +2,9 @@ export default interface NodeTypeConfiguration {
     name: string;
     allowedChildNodeTypes: string[];
     usageCount: number;
+    declaredSuperTypes: {
+        [index: string]: boolean;
+    }[];
     configuration: {
         label: string;
         properties: {
@@ -15,7 +18,9 @@ export default interface NodeTypeConfiguration {
             label?: string;
             icon?: string;
         };
-        superTypes: {};
+        superTypes: {
+            [index: string]: boolean;
+        }[];
         constraints: {};
         childNodes: {
             [index: string]: {

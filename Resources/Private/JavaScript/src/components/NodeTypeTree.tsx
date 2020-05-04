@@ -6,7 +6,8 @@ import { createUseAppStyles, useGraph } from '../core';
 
 const useStyles = createUseAppStyles({
     tree: {
-        overflow: 'hidden'
+        overflow: 'auto',
+        maxHeight: '50vh'
     }
 });
 

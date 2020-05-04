@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { Toolbar, NodeTypeTree, Inspector, Graph } from './index';
+import { Toolbar, NodeTypeTree, Inspector, Graph, TreeFilter } from './index';
 import { AppTheme, createUseAppStyles } from '../core';
 
 const useStyles = createUseAppStyles((theme: AppTheme) => ({
@@ -27,6 +27,7 @@ export default function GraphApp() {
     return (
         <div className={classes.app}>
             <div className={classes.left}>
+                <TreeFilter />
                 <NodeTypeTree />
             </div>
             <div className={classes.main}>

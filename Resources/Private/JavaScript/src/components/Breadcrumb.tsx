@@ -89,7 +89,10 @@ export default function Breadcrumb() {
                         <Icon icon="chevron-right" />
                     </li>
                     <li className={classes.text}>
-                        <Icon icon={selectedNodeType.configuration.ui.icon} /> {selectedNodeTypeLastSegment}
+                        {selectedNodeType.configuration.ui?.icon && (
+                            <Icon icon={selectedNodeType.configuration.ui.icon} />
+                        )}
+                        {selectedNodeTypeLastSegment}
                     </li>
                 </React.Fragment>
             )}

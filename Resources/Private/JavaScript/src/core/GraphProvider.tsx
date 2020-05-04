@@ -6,7 +6,7 @@ import { Actions, DataSegment, Dependencies, NodeTypeConfiguration, NodeTypeGrou
 import fetchData from '../helpers/fetchData';
 import { useNotify } from './Notify';
 import { LinkType } from '../interfaces/Dependencies';
-import { chartType } from '../constants';
+import { chartType, FilterType } from '../constants';
 
 export interface GraphProviderProps {
     children: React.ReactElement;
@@ -31,6 +31,8 @@ interface GraphProviderValues {
     graphData: DataSegment;
     dependencyData: Dependencies;
     treeData: object;
+    selectedFilter: string;
+    setSelectedFilter: (filter: FilterType) => void;
 }
 
 interface NodeTypeConfigurations {
@@ -50,6 +52,7 @@ export default function GraphProvider({ children, actions }: GraphProviderProps)
     const [nodeTypes, setNodeTypes] = useState<NodeTypeConfigurations>({});
     const [superTypeFilter, setSuperTypeFilter] = useState('');
     const [selectedPath, setSelectedPath] = useState('');
+    const [selectedFilter, setSelectedFilter] = useState(FilterType.NONE);
 
     // Data structure for rendering the nodetype tree
     const [treeData, setTreeData] = useState({});
@@ -98,12 +101,25 @@ export default function GraphProvider({ children, actions }: GraphProviderProps)
         if (Object.keys(nodeTypes).length === 0) return;
 
         const treeData = Object.values(nodeTypes).reduce((carry: object, nodeType) => {
+            // TODO: Extract filter methods
+            if (selectedFilter === FilterType.UNUSED_CONTENT || selectedFilter === FilterType.UNUSED_DOCUMENTS) {
+                if (
+                    nodeType.usageCount > 0 ||
+                    nodeType.abstract ||
+                    (nodeType.configuration.superTypes &&
+                        Object.keys(nodeType.configuration.superTypes).indexOf(
+                            `Neos.Neos:${selectedFilter === FilterType.UNUSED_CONTENT ? 'Content' : 'Document'}`
+                        ) == -1)
+                ) {
+                    return carry;
+                }
+            }
             const segments = nodeType.name.split(':');
             return $set(segments.join('.'), nodeType, carry);
         }, {});
 
         setTreeData(treeData);
-    }, [nodeTypes]);
+    }, [nodeTypes, selectedFilter]);
 
     /**
      * Converts nodetypes list into a structure for dependency graphs
@@ -199,7 +215,9 @@ export default function GraphProvider({ children, actions }: GraphProviderProps)
                 setSelectedPath,
                 graphData,
                 dependencyData,
-                treeData
+                treeData,
+                selectedFilter,
+                setSelectedFilter
             }}
         >
             {children}

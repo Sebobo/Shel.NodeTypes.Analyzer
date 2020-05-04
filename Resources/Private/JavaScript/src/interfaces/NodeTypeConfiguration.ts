@@ -1,5 +1,7 @@
 export default interface NodeTypeConfiguration {
     name: string;
+    abstract: boolean;
+    final: boolean;
     allowedChildNodeTypes: string[];
     usageCount: number;
     declaredSuperTypes: {

@@ -39,10 +39,6 @@ export default function Toolbar() {
         { label: 'Dependencies', value: chartType.DEPENDENCIES }
     ];
 
-    const handleSelectLayout = (layout: chartType) => {
-        setSelectedLayout(layout);
-    };
-
     return (
         <div className={classes.toolbar}>
             <div className={classes.group}>
@@ -55,7 +51,7 @@ export default function Toolbar() {
                 </Headline>
                 <SelectBox
                     options={selectableLayouts}
-                    onValueChange={layout => handleSelectLayout(layout)}
+                    onValueChange={layout => setSelectedLayout(layout)}
                     value={selectedLayout}
                 />
             </div>

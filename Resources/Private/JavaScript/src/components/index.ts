@@ -9,8 +9,10 @@ import GraphApp from './GraphApp';
 import Graph from './Graph';
 import { PropertyList, PropertyListItem } from './PropertyList';
 import Breadcrumb from './Breadcrumb';
+import TreeFilter from './TreeFilter';
 
 export {
+    TreeFilter,
     Breadcrumb,
     Toolbar,
     NodeTypeProfile,

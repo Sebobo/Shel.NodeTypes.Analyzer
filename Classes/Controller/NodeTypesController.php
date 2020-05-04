@@ -69,15 +69,19 @@ class NodeTypesController extends AbstractModuleController
         $nodeTypes = $this->nodeTypeManager->getNodeTypes();
         $nodeTypeUsage = $this->nodeTypeGraphService->getNodeTypeUsageQuery();
 
-        $nodeTypes = array_reduce($nodeTypes, function (array $carry, NodeType $nodeType) use ($nodeTypes, $nodeTypeUsage) {
+        $defaultConfiguration = ['superTypes' => []];
+
+        $nodeTypes = array_reduce($nodeTypes, function (array $carry, NodeType $nodeType) use ($defaultConfiguration, $nodeTypes, $nodeTypeUsage) {
             $nodeTypeName = $nodeType->getName();
             $carry[$nodeTypeName] = [
                 'name' => $nodeTypeName,
-                'configuration' => $nodeType->getFullConfiguration(),
+                'abstact' => $nodeType->isAbstract(),
+                'final' => $nodeType->isFinal(),
+                'configuration' => array_merge($defaultConfiguration, $nodeType->getFullConfiguration()),
                 'declaredSuperTypes' => array_map(static function (NodeType $superType) {
                     return $superType->getName();
                 }, $nodeType->getDeclaredSuperTypes()),
-                'usageCount' => array_key_exists($nodeTypeName, $nodeTypeUsage) ? $nodeTypeUsage[$nodeTypeName] : 0,
+                'usageCount' => array_key_exists($nodeTypeName, $nodeTypeUsage) ? (int)$nodeTypeUsage[$nodeTypeName] : 0,
             ];
 
             $instantiableNodeTypes = array_filter($nodeTypes, static function (NodeType $nodeType) {

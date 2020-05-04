@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Shel\ContentRepository\Debugger\Controller;
 
-use Neos\ContentRepository\Domain\Model\NodeType;
 use Neos\ContentRepository\Domain\Service\NodeTypeManager;
 use Neos\Flow\Mvc\View\JsonView;
 use Neos\Flow\Security\Context as SecurityContext;
@@ -43,18 +42,6 @@ class NodeTypesController extends AbstractModuleController
     protected $nodeTypeGraphService;
 
     /**
-     * @Flow\Inject
-     * @var NodeTypeManager
-     */
-    protected $nodeTypeManager;
-
-    /**
-     * @Flow\Inject
-     * @var SecurityContext
-     */
-    protected $securityContext;
-
-    /**
      * Renders the app to interact with the nodetype graph
      */
     public function indexAction(): void
@@ -66,39 +53,7 @@ class NodeTypesController extends AbstractModuleController
      */
     public function getNodeTypeDefinitionsAction(): void
     {
-        $nodeTypes = $this->nodeTypeManager->getNodeTypes();
-        $nodeTypeUsage = $this->nodeTypeGraphService->getNodeTypeUsageQuery();
-
-        $defaultConfiguration = ['superTypes' => []];
-
-        $nodeTypes = array_reduce($nodeTypes, function (array $carry, NodeType $nodeType) use ($defaultConfiguration, $nodeTypes, $nodeTypeUsage) {
-            $nodeTypeName = $nodeType->getName();
-            $carry[$nodeTypeName] = [
-                'name' => $nodeTypeName,
-                'abstact' => $nodeType->isAbstract(),
-                'final' => $nodeType->isFinal(),
-                'configuration' => array_merge($defaultConfiguration, $nodeType->getFullConfiguration()),
-                'declaredSuperTypes' => array_map(static function (NodeType $superType) {
-                    return $superType->getName();
-                }, $nodeType->getDeclaredSuperTypes()),
-                'usageCount' => array_key_exists($nodeTypeName, $nodeTypeUsage) ? (int)$nodeTypeUsage[$nodeTypeName] : 0,
-            ];
-
-            $instantiableNodeTypes = array_filter($nodeTypes, static function (NodeType $nodeType) {
-                return !$nodeType->isAbstract();
-            });
-            $carry[$nodeTypeName]['allowedChildNodeTypes'] = $this->nodeTypeGraphService->generateAllowedChildNodeTypes($nodeType,
-                $instantiableNodeTypes);
-
-            if (array_key_exists('childNodes', $carry[$nodeTypeName]['configuration'])) {
-                foreach (array_keys($carry[$nodeTypeName]['configuration']['childNodes']) as $childNodeName) {
-                    $carry[$nodeTypeName]['configuration']['childNodes'][$childNodeName]['allowedChildNodeTypes'] = $this->nodeTypeGraphService->generateAllowedGrandChildNodeTypes($childNodeName,
-                        $nodeType, $instantiableNodeTypes);
-                }
-            }
-
-            return $carry;
-        }, []);
+        $nodeTypes = $this->nodeTypeGraphService->generateNodeTypesData();
 
         $this->view->assign('value', [
             'success' => true,

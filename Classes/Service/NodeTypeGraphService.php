@@ -4,10 +4,12 @@ declare(strict_types=1);
 namespace Shel\ContentRepository\Debugger\Service;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Neos\Cache\Exception;
+use Neos\Cache\Frontend\StringFrontend;
+use Neos\Cache\Frontend\VariableFrontend;
 use Neos\ContentRepository\Domain\Model\NodeData;
 use Neos\ContentRepository\Domain\Model\NodeType;
 use Neos\ContentRepository\Domain\Service\NodeTypeManager;
-use Neos\ContentRepository\Exception\NodeTypeNotFoundException;
 use Neos\Flow\Annotations as Flow;
 
 /**
@@ -30,9 +32,77 @@ class NodeTypeGraphService
 
     /**
      * @Flow\Inject
+     * @var VariableFrontend
+     */
+    protected $nodeTypesCache;
+
+    /**
+     * @Flow\Inject
      * @var EntityManagerInterface
      */
     protected $entityManager;
+
+    /**
+     * @var StringFrontend
+     */
+    protected $configurationCache;
+
+    /**
+     * @return array
+     */
+    public function generateNodeTypesData(): array
+    {
+        $nodeTypesCacheKey = 'NodeTypes_' . $this->configurationCache->get('ConfigurationVersion');
+
+        $nodeTypes = $this->nodeTypesCache->get($nodeTypesCacheKey);
+
+        if ($nodeTypes) {
+            return $nodeTypes;
+        }
+
+        $nodeTypes = $this->nodeTypeManager->getNodeTypes();
+        $nodeTypeUsage = $this->getNodeTypeUsageQuery();
+
+        $defaultConfiguration = ['superTypes' => []];
+
+        $nodeTypes = array_reduce($nodeTypes, function (array $carry, NodeType $nodeType) use ($defaultConfiguration, $nodeTypes, $nodeTypeUsage) {
+            $nodeTypeName = $nodeType->getName();
+            $carry[$nodeTypeName] = [
+                'name' => $nodeTypeName,
+                'abstact' => $nodeType->isAbstract(),
+                'final' => $nodeType->isFinal(),
+                'configuration' => array_merge($defaultConfiguration, $nodeType->getFullConfiguration()),
+                'declaredSuperTypes' => array_map(static function (NodeType $superType) {
+                    return $superType->getName();
+                }, $nodeType->getDeclaredSuperTypes()),
+                'usageCount' => array_key_exists($nodeTypeName, $nodeTypeUsage) ? (int)$nodeTypeUsage[$nodeTypeName] : 0,
+            ];
+
+            $instantiableNodeTypes = array_filter($nodeTypes, static function (NodeType $nodeType) {
+                return !$nodeType->isAbstract();
+            });
+            $carry[$nodeTypeName]['allowedChildNodeTypes'] = $this->generateAllowedChildNodeTypes($nodeType,
+                $instantiableNodeTypes);
+
+            if (array_key_exists('childNodes', $carry[$nodeTypeName]['configuration'])) {
+                foreach (array_keys($carry[$nodeTypeName]['configuration']['childNodes']) as $childNodeName) {
+                    $carry[$nodeTypeName]['configuration']['childNodes'][$childNodeName]['allowedChildNodeTypes'] = $this->generateAllowedGrandChildNodeTypes($childNodeName,
+                        $nodeType, $instantiableNodeTypes);
+                }
+            }
+
+            return $carry;
+        }, []);
+
+        $this->nodeTypesCache->flush();
+        try {
+            $this->nodeTypesCache->set($nodeTypesCacheKey, $nodeTypes);
+        } catch (Exception $e) {
+            // TODO: Log cache issue
+        }
+
+        return $nodeTypes;
+    }
 
     /**
      * Returns the list of all allowed subnodetypes of the given node

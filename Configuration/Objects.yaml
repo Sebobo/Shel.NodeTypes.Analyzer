@@ -1,0 +1,17 @@
+Shel\ContentRepository\Debugger\Service\NodeTypeGraphService:
+  properties:
+    nodeTypesCache:
+      object:
+        factoryObjectName: Neos\Flow\Cache\CacheManager
+        factoryMethodName: getCache
+        arguments:
+          1:
+            value: ShelContentRepositoryDebugger_NodeTypesCache
+
+    configurationCache:
+      object:
+        factoryObjectName: Neos\Flow\Cache\CacheManager
+        factoryMethodName: getCache
+        arguments:
+          1:
+            value: Neos_Neos_Configuration_Version

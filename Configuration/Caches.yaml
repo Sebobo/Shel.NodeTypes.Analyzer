@@ -1,0 +1,4 @@
+ShelContentRepositoryDebugger_NodeTypesCache:
+  backend: Neos\Cache\Backend\FileBackend
+  backendOptions:
+    defaultLifetime: 300 # Flush entries after 5 minutes as usage counts have to be updated

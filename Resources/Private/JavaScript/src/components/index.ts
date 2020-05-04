@@ -8,8 +8,10 @@ import Inspector from './Inspector';
 import GraphApp from './GraphApp';
 import Graph from './Graph';
 import { PropertyList, PropertyListItem } from './PropertyList';
+import Breadcrumb from './Breadcrumb';
 
 export {
+    Breadcrumb,
     Toolbar,
     NodeTypeProfile,
     Graph,

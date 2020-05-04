@@ -1,3 +1,4 @@
 import dndTypes from './dndTypes';
+import { chartType } from './chartType';
 
-export { dndTypes };
+export { dndTypes, chartType };

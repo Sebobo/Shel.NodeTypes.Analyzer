@@ -21,14 +21,21 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
         '& svg': {
             width: '100%',
             maxWidth: '100%',
-            height: 'auto',
-            minHeight: '600px',
+            height: '100%',
+            minHeight: '800px',
             '& g': {
                 '& text.node': {
                     cursor: 'pointer',
                     stroke: 'black',
                     strokeWidth: '0.2px'
                 }
+                // '& path.segment': {
+                //     cursor: 'pointer',
+                //     '&:hover': {
+                //         fill: theme.colors.primaryBlue,
+                //         color: 'white'
+                //     }
+                // }
             }
         }
     }
@@ -55,6 +62,7 @@ export default function Graph() {
             setSelectedNodeTypeName(selection.name);
         } else {
             setSelectedPath(path);
+            setSelectedNodeTypeName('');
         }
     };
 

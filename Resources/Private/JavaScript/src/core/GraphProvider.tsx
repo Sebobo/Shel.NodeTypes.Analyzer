@@ -1,11 +1,12 @@
 import * as React from 'react';
-import { useEffect, useContext, createContext, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import { $set } from 'plow-js';
 
-import { Actions, NodeTypeGroup, NodeTypeConfiguration, DataSegment, Dependencies } from '../interfaces';
+import { Actions, DataSegment, Dependencies, NodeTypeConfiguration, NodeTypeGroup } from '../interfaces';
 import fetchData from '../helpers/fetchData';
 import { useNotify } from './Notify';
 import { LinkType } from '../interfaces/Dependencies';
+import { chartType } from '../constants';
 
 export interface GraphProviderProps {
     children: React.ReactElement;
@@ -17,8 +18,8 @@ interface GraphProviderValues {
     isLoading: boolean;
     selectedNodeTypeName: string;
     setSelectedNodeTypeName: (selectedNodeTypeName: string) => void;
-    selectedLayout: string;
-    setSelectedLayout: (layout: string) => void;
+    selectedLayout: chartType;
+    setSelectedLayout: (layout: chartType) => void;
     nodeTypeGroups: NodeTypeGroup[];
     setNodeTypeGroups: (nodeTypeGroups: NodeTypeGroup[]) => void;
     nodeTypes: NodeTypeConfigurations;
@@ -44,7 +45,7 @@ export default function GraphProvider({ children, actions }: GraphProviderProps)
 
     const [isLoading, setIsLoading] = useState(true);
     const [nodeTypeGroups, setNodeTypeGroups] = useState<NodeTypeGroup[]>([]);
-    const [selectedLayout, setSelectedLayout] = useState<string>('sunburst');
+    const [selectedLayout, setSelectedLayout] = useState<chartType>(chartType.SUNBURST);
     const [selectedNodeTypeName, setSelectedNodeTypeName] = useState('');
     const [nodeTypes, setNodeTypes] = useState<NodeTypeConfigurations>({});
     const [superTypeFilter, setSuperTypeFilter] = useState('');
@@ -55,7 +56,7 @@ export default function GraphProvider({ children, actions }: GraphProviderProps)
     // Data structure for rendering graphical charts
     // TODO: Use same structure for tree and charts
     const [graphData, setGraphData] = useState({} as DataSegment);
-    const [dependencyData, setDependencyData] = useState({ nodes: [], links: [] } as Dependencies);
+    const [dependencyData, setDependencyData] = useState({ nodes: { children: [] }, links: [] } as Dependencies);
 
     /**
      * Recursive function to convert tree data to chart data
@@ -142,7 +143,7 @@ export default function GraphProvider({ children, actions }: GraphProviderProps)
 
         const data = Object.values(types).reduce<Dependencies>(
             (carry, nodeType: NodeTypeConfiguration) => {
-                carry.nodes.push({
+                carry.nodes.children.push({
                     name: nodeType.name,
                     group: nodeType.name.split(':')[0],
                     path: nodeType.name.replace(':', '.'),
@@ -161,7 +162,9 @@ export default function GraphProvider({ children, actions }: GraphProviderProps)
                 return carry;
             },
             {
-                nodes: [],
+                nodes: {
+                    children: []
+                },
                 links: []
             } as Dependencies
         );

@@ -5,7 +5,9 @@ export enum LinkType {
 }
 
 export default interface Dependencies {
-    nodes: DataSegment[];
+    nodes: {
+        children: DataSegment[];
+    };
     links: {
         source: string;
         target: string;

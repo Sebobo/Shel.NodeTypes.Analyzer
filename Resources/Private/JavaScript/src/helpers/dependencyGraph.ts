@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import { SimulationNodeDatum } from 'd3';
+import { rollup, group } from 'd3-array';
 
 import { DataSegment, Dependencies } from '../interfaces';
 
@@ -43,30 +43,132 @@ const drag = simulation => {
         .on('end', dragended);
 };
 
-export interface ExtendedNodeDatum extends SimulationNodeDatum, DataSegment {}
+function centroid(nodes) {
+    let x = 0;
+    let y = 0;
+    let z = 0;
+    for (const d of nodes) {
+        const k = d.r ** 2;
+        x += d.x * k;
+        y += d.y * k;
+        z += k;
+    }
+    return { x: x / z, y: y / z };
+}
+
+const forceCluster = () => {
+    const strength = 0.2;
+    let nodes;
+
+    function force(alpha) {
+        const centroids = rollup(nodes, centroid, (d: { data: DataSegment }) => d.data.group);
+        const l = alpha * strength;
+        for (const d of nodes) {
+            const { x: cx, y: cy } = centroids.get(d.data.group);
+            d.vx -= (d.x - cx) * l;
+            d.vy -= (d.y - cy) * l;
+        }
+    }
+
+    force.initialize = _ => (nodes = _);
+
+    return force;
+};
+
+interface QuadTreeNode {
+    data: { data: DataSegment; r: number; x: number; y: number };
+    length: number;
+    next: QuadTreeNode;
+    x: number;
+    y: number;
+}
+
+const forceCollide = () => {
+    const alpha = 0.4; // fixed for greater rigidity!
+    const padding1 = 2; // separation between same-color nodes
+    const padding2 = 6; // separation between different-color nodes
+    let nodes;
+    let maxRadius;
+
+    function force() {
+        const quadtree = d3.quadtree<QuadTreeNode>(
+            nodes,
+            d => d.x,
+            d => d.y
+        );
+        for (const d of nodes) {
+            const r = d.r + maxRadius;
+            const nx1 = d.x - r,
+                ny1 = d.y - r;
+            const nx2 = d.x + r,
+                ny2 = d.y + r;
+
+            // @ts-ignore
+            quadtree.visit((q: QuadTreeNode, x1, y1, x2, y2) => {
+                if (!q.length) {
+                    do {
+                        if (q.data !== d) {
+                            const r = d.r + q.data.r + (d.data.group === q.data.data.group ? padding1 : padding2);
+                            let x = d.x - q.data.x,
+                                y = d.y - q.data.y,
+                                l = Math.hypot(x, y);
+                            if (l < r) {
+                                l = ((l - r) / l) * alpha;
+                                (d.x -= x *= l), (d.y -= y *= l);
+                                (q.data.x += x), (q.data.y += y);
+                            }
+                        }
+                    } while ((q = q.next));
+                }
+                return x1 > nx2 || x2 < nx1 || y1 > ny2 || y2 < ny1;
+            });
+        }
+    }
+
+    force.initialize = _ =>
+        (maxRadius =
+            d3.max((nodes = _), (d: d3.HierarchyCircularNode<DataSegment>) => d.r) + Math.max(padding1, padding2));
+
+    return force;
+};
+
+const pack = (width, height, data) =>
+    d3
+        .pack()
+        .size([width, height])
+        .padding(1)(d3.hierarchy<DataSegment>(data).sum(d => d.value));
 
 export default function renderDependencyGraph({ data, types, width = 975, height = 800 }: DependencyChartProps) {
     const links = data.links.map(d => Object.create(d));
-    const nodes = data.nodes.map(d => Object.create(d));
     const linkColor = d3.scaleOrdinal(d3.schemeCategory10);
     const nodeColor = d3.scaleOrdinal(d3.schemeCategory10);
+
+    const treeData = {
+        children: Array.from(
+            group(data.nodes.children, d => d.group),
+            ([, children]) => ({ children })
+        )
+    };
+
+    const nodes = pack(width, height, treeData).leaves();
 
     const simulation = d3
         .forceSimulation(nodes)
         .force(
             'link',
-            d3.forceLink(links).id((d: ExtendedNodeDatum) => d.name)
+            d3.forceLink(links).id((d: d3.HierarchyCircularNode<DataSegment>) => d.data.name)
         )
         .force('charge', d3.forceManyBody().strength(-1000))
         .force('x', d3.forceX())
-        .force('y', d3.forceY());
+        .force('y', d3.forceY())
+        .force('cluster', forceCluster())
+        .force('collide', forceCollide());
 
     const svg = d3
         .create('svg')
         .attr('viewBox', [-width / 2, -height / 2, width, height].join(' '))
-        .style('font', '12px sans-serif');
+        .style('font', '14px "Noto Sans"');
 
-    // Per-type markers, as they don't inherit styles.
     svg.append('defs')
         .selectAll('marker')
         .data(types)
@@ -99,21 +201,22 @@ export default function renderDependencyGraph({ data, types, width = 975, height
         .attr('stroke-linejoin', 'round')
         .selectAll('g')
         .data(nodes)
-        .join('g')
-        .call(drag(simulation));
+        .join('g');
+    // @ts-ignore
+    node.call(drag(simulation));
 
     node.append('circle')
-        .attr('stroke', d => nodeColor(d.group))
+        .attr('stroke', (d: d3.HierarchyCircularNode<DataSegment>) => nodeColor(d.data.group))
         .attr('stroke-width', 1.5)
-        .attr('r', d => 4 * d.value);
+        .attr('r', (d: d3.HierarchyCircularNode<DataSegment>) => 4 * d.data.value);
 
     node.append('text')
-        .attr('x', d => 4 + 4 * d.value)
+        .attr('x', (d: d3.HierarchyCircularNode<DataSegment>) => 4 + 4 * d.data.value)
         .attr('y', '0.31em')
         .attr('fill', 'white')
         .attr('class', 'node')
-        .attr('path', d => d.path)
-        .text(d => d.name);
+        .attr('path', (d: d3.HierarchyCircularNode<DataSegment>) => d.data.path)
+        .text((d: d3.HierarchyCircularNode<DataSegment>) => d.data.name);
 
     simulation.on('tick', () => {
         link.attr('d', linkArc);

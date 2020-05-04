@@ -35,6 +35,7 @@
     "@neos-project/react-ui-components": "^5.1.4",
     "classnames": "^2.2.6",
     "d3": "^5.16.0",
+    "d3-array": "2",
     "keys-in-object": "^1.1.1",
     "lodash.isequal": "^4.5.0",
     "lodash.memoize": "^4.1.2",

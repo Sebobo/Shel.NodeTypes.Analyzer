@@ -1,17 +1,17 @@
 import * as React from 'react';
 
-import Icon from '@neos-project/react-ui-components/lib-esm/Icon';
-import IconButton from '@neos-project/react-ui-components/lib-esm/IconButton';
-import Button from '@neos-project/react-ui-components/lib-esm/Button';
 import Headline from '@neos-project/react-ui-components/lib-esm/Headline';
 import SelectBox from '@neos-project/react-ui-components/lib-esm/SelectBox';
 
 import { AppTheme, createUseAppStyles, useGraph, useIntl } from '../core';
+import { chartType } from '../constants';
+import { Breadcrumb } from './index';
 
 const useStyles = createUseAppStyles((theme: AppTheme) => ({
     toolbar: {
         width: '100%',
         display: 'flex',
+        justifyContent: 'space-between',
         '.neos &': {
             marginBottom: theme.spacing.half
         }
@@ -26,82 +26,27 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
         '.neos &': {
             padding: `0 ${theme.spacing.half}`
         }
-    },
-    breadcrumb: {
-        listStyleType: 'none',
-        display: 'inline-flex',
-        alignItems: 'center',
-        flexDirection: 'row',
-        '& li': {
-            '& button': {
-                lineHeight: 1
-            }
-        }
     }
 }));
 
 export default function Toolbar() {
     const classes = useStyles();
     const { translate } = useIntl();
-    const { selectedLayout, setSelectedLayout, selectedPath, setSelectedPath, setSelectedNodeTypeName } = useGraph();
+    const { selectedLayout, setSelectedLayout } = useGraph();
 
     const selectableLayouts = [
-        { label: 'Sunburst', value: 'sunburst' },
-        { label: 'Dependencies', value: 'dependencies' }
+        { label: 'Sunburst', value: chartType.SUNBURST },
+        { label: 'Dependencies', value: chartType.DEPENDENCIES }
     ];
 
-    const handleSelectLayout = (layout: string) => {
-        // TODO: Implement layout selection
-        console.log(layout, 'select layout');
+    const handleSelectLayout = (layout: chartType) => {
         setSelectedLayout(layout);
-    };
-
-    const handleHomeClick = () => {
-        setSelectedPath('');
-        setSelectedNodeTypeName('');
     };
 
     return (
         <div className={classes.toolbar}>
             <div className={classes.group}>
-                <ul className={classes.breadcrumb}>
-                    <li>
-                        <IconButton
-                            icon="home"
-                            size="small"
-                            style="transparent"
-                            hoverStyle="brand"
-                            onClick={() => handleHomeClick()}
-                        />
-                    </li>
-                    {selectedPath
-                        .split('.')
-                        .filter(segment => segment)
-                        .map((segment, index) => (
-                            <React.Fragment key={index}>
-                                <li>
-                                    <Icon icon="chevron-right" />
-                                </li>
-                                <li>
-                                    <Button
-                                        size="small"
-                                        style="transparent"
-                                        hoverStyle="brand"
-                                        onClick={() =>
-                                            setSelectedPath(
-                                                selectedPath
-                                                    .split('.')
-                                                    .slice(0, index + 1)
-                                                    .join('.')
-                                            )
-                                        }
-                                    >
-                                        {segment}
-                                    </Button>
-                                </li>
-                            </React.Fragment>
-                        ))}
-                </ul>
+                <Breadcrumb />
             </div>
 
             <div className={classes.group}>

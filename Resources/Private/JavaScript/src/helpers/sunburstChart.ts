@@ -61,6 +61,7 @@ export default function renderSunburstChart({ data, width = 975, height = 800 }:
             return color(d.data.name);
         })
         .attr('d', (arc as unknown) as string)
+        .attr('class', 'segment')
         .append('title')
         .text(
             d =>
@@ -76,8 +77,8 @@ export default function renderSunburstChart({ data, width = 975, height = 800 }:
 
     svg.append('g')
         .attr('text-anchor', 'middle')
-        .attr('font-size', 10)
-        .attr('font-family', 'sans-serif')
+        .attr('font-size', 11)
+        .attr('font-family', 'Noto Sans')
         .selectAll('text')
         .data(root.descendants().filter(d => d.depth && ((d.y0 + d.y1) / 2) * (d.x1 - d.x0) > 10))
         .join('text')

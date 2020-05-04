@@ -10,6 +10,7 @@ import Graph from './Graph';
 import { PropertyList, PropertyListItem } from './PropertyList';
 import Breadcrumb from './Breadcrumb';
 import TreeFilter from './TreeFilter';
+import InvalidNodeTypes from './InvalidNodeTypes';
 
 export {
     TreeFilter,
@@ -24,5 +25,6 @@ export {
     VendorSegmentTreeNode,
     Inspector,
     PropertyList,
-    PropertyListItem
+    PropertyListItem,
+    InvalidNodeTypes
 };

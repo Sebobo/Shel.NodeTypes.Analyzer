@@ -33,6 +33,8 @@ interface GraphProviderValues {
     treeData: object;
     selectedFilter: string;
     setSelectedFilter: (filter: FilterType) => void;
+    invalidNodeTypes: NodeTypeConfigurations;
+    setInvalidNodeTypes: (nodeTypes: NodeTypeConfigurations) => void;
 }
 
 interface NodeTypeConfigurations {
@@ -237,7 +239,9 @@ export default function GraphProvider({ children, actions }: GraphProviderProps)
                 dependencyData,
                 treeData,
                 selectedFilter,
-                setSelectedFilter
+                setSelectedFilter,
+                invalidNodeTypes,
+                setInvalidNodeTypes
             }}
         >
             {children}

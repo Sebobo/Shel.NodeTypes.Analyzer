@@ -50,6 +50,7 @@ export default function GraphProvider({ children, actions }: GraphProviderProps)
     const [selectedLayout, setSelectedLayout] = useState<chartType>(chartType.SUNBURST);
     const [selectedNodeTypeName, setSelectedNodeTypeName] = useState('');
     const [nodeTypes, setNodeTypes] = useState<NodeTypeConfigurations>({});
+    const [invalidNodeTypes, setInvalidNodeTypes] = useState<NodeTypeConfigurations>({});
     const [superTypeFilter, setSuperTypeFilter] = useState('');
     const [selectedPath, setSelectedPath] = useState('');
     const [selectedFilter, setSelectedFilter] = useState(FilterType.NONE);
@@ -88,7 +89,26 @@ export default function GraphProvider({ children, actions }: GraphProviderProps)
         fetchData(actions.getNodeTypeDefinitions, null, 'GET')
             .then((data: any) => {
                 const { nodeTypes } = data;
-                setNodeTypes(nodeTypes);
+
+                // Separate nodetypes that have invalid names and cannot be rendered properly
+                const { validNodeTypes, invalidNodeTypes } = Object.keys(nodeTypes).reduce(
+                    (carry, nodeTypeName) => {
+                        if (nodeTypeName.match(/^[\w]+([.:](?!\.).+)*$/gimu)) {
+                            carry['validNodeTypes'][nodeTypeName] = nodeTypes[nodeTypeName];
+                        } else {
+                            carry['invalidNodeTypes'][nodeTypeName] = nodeTypes[nodeTypeName];
+                        }
+                        return carry;
+                    },
+                    {
+                        validNodeTypes: {},
+                        invalidNodeTypes: {}
+                    }
+                );
+
+                setNodeTypes(validNodeTypes);
+                setInvalidNodeTypes(invalidNodeTypes);
+
                 setIsLoading(false);
             })
             .catch(Notify.error);

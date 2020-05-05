@@ -4,7 +4,7 @@ Neos:
       administration:
         submodules:
           nodetypes:
-            label: 'Nodetypes Analyzer'
+            label: 'Shel.ContentRepository.Debugger:Main:module.label'
             controller: 'Shel\ContentRepository\Debugger\Controller\NodeTypesController'
             description: 'Shel.ContentRepository.Debugger:Main:module.description'
             icon: fas fa-sitemap

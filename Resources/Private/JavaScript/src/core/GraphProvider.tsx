@@ -193,7 +193,8 @@ export default function GraphProvider({ children, actions }: GraphProviderProps)
                         carry.links.push({
                             source: nodeType.name,
                             target: superType,
-                            type: LinkType.INHERITS
+                            type: LinkType.INHERITS,
+                            group: superType.split(':')[0]
                         });
                     });
                 }

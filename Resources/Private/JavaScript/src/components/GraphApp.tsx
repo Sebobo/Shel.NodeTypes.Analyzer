@@ -1,7 +1,8 @@
 import * as React from 'react';
 
-import { Toolbar, NodeTypeTree, Inspector, Graph, TreeFilter, InvalidNodeTypes } from './index';
+import { Toolbar, Inspector, Graph, TreeFilter, InvalidNodeTypes } from './index';
 import { AppTheme, createUseAppStyles } from '../core';
+import { NodeTypeTree } from './NodeTypeTree';
 
 const useStyles = createUseAppStyles((theme: AppTheme) => ({
     app: {

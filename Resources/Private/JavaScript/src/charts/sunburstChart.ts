@@ -2,21 +2,7 @@ import * as d3 from 'd3';
 import { DefaultArcObject } from 'd3';
 
 import { DataSegment } from '../interfaces';
-
-function autoBox() {
-    document.body.appendChild(this);
-    const { x, y, width, height } = this.getBBox();
-    document.body.removeChild(this);
-    return [x, y, width, height];
-}
-
-const partition = (data, radius) =>
-    d3.partition().size([2 * Math.PI, radius])(
-        d3
-            .hierarchy(data)
-            .sum(d => d.value)
-            .sort((a, b) => b.value - a.value)
-    );
+import { partition, autoBox } from './helpers';
 
 interface SunburstProps {
     data: DataSegment;

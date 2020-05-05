@@ -2,58 +2,22 @@ import * as d3 from 'd3';
 import { rollup, group } from 'd3-array';
 
 import { DataSegment, Dependencies } from '../interfaces';
+import { centroid, linkArc, drag } from './helpers';
 
 interface DependencyChartProps {
     data: Dependencies;
     types: string[];
     width?: number;
     height?: number;
+    markerSize?: number;
 }
 
-function linkArc(d) {
-    const r = Math.hypot(d.target.x - d.source.x, d.target.y - d.source.y);
-    return `
-    M${d.source.x},${d.source.y}
-    A${r},${r} 0 0,1 ${d.target.x},${d.target.y}
-  `;
-}
-
-const drag = simulation => {
-    function dragstarted(d) {
-        if (!d3.event.active) simulation.alphaTarget(0.3).restart();
-        d.fx = d.x;
-        d.fy = d.y;
-    }
-
-    function dragged(d) {
-        d.fx = d3.event.x;
-        d.fy = d3.event.y;
-    }
-
-    function dragended(d) {
-        if (!d3.event.active) simulation.alphaTarget(0);
-        d.fx = null;
-        d.fy = null;
-    }
-
-    return d3
-        .drag()
-        .on('start', dragstarted)
-        .on('drag', dragged)
-        .on('end', dragended);
-};
-
-function centroid(nodes) {
-    let x = 0;
-    let y = 0;
-    let z = 0;
-    for (const d of nodes) {
-        const k = d.r ** 2;
-        x += d.x * k;
-        y += d.y * k;
-        z += k;
-    }
-    return { x: x / z, y: y / z };
+interface QuadTreeNode {
+    data: { data: DataSegment; r: number; x: number; y: number };
+    length: number;
+    next: QuadTreeNode;
+    x: number;
+    y: number;
 }
 
 const forceCluster = () => {
@@ -74,14 +38,6 @@ const forceCluster = () => {
 
     return force;
 };
-
-interface QuadTreeNode {
-    data: { data: DataSegment; r: number; x: number; y: number };
-    length: number;
-    next: QuadTreeNode;
-    x: number;
-    y: number;
-}
 
 const forceCollide = () => {
     const alpha = 0.4; // fixed for greater rigidity!
@@ -138,10 +94,22 @@ const pack = (width, height, data) =>
         .size([width, height])
         .padding(1)(d3.hierarchy<DataSegment>(data).sum(d => d.value));
 
-export default function renderDependencyGraph({ data, types, width = 975, height = 800 }: DependencyChartProps) {
+export default function renderDependencyGraph({
+    data,
+    types,
+    width = 975,
+    height = 800,
+    markerSize = 10
+}: DependencyChartProps) {
     const links = data.links.map(d => Object.create(d));
     const linkColor = d3.scaleOrdinal(d3.schemeCategory10);
     const nodeColor = d3.scaleOrdinal(d3.schemeCategory10);
+    const groups = Object.keys(
+        data.nodes.children.reduce((carry, node) => {
+            carry[node.group] = true;
+            return carry;
+        }, {})
+    );
 
     const treeData = {
         children: Array.from(
@@ -161,6 +129,7 @@ export default function renderDependencyGraph({ data, types, width = 975, height
         .force('charge', d3.forceManyBody().strength(-1000))
         .force('x', d3.forceX())
         .force('y', d3.forceY())
+        .force('center', d3.forceCenter(width / 2, height / 2))
         .force('cluster', forceCluster())
         .force('collide', forceCollide());
 
@@ -177,12 +146,22 @@ export default function renderDependencyGraph({ data, types, width = 975, height
         .attr('viewBox', '0 -5 10 10')
         .attr('refX', 15)
         .attr('refY', -0.5)
-        .attr('markerWidth', 6)
-        .attr('markerHeight', 6)
+        .attr('markerWidth', markerSize)
+        .attr('markerHeight', markerSize)
         .attr('orient', 'auto')
         .append('path')
         .attr('fill', linkColor)
         .attr('d', 'M0,-5L10,0L0,5');
+
+    const hull = svg
+        .append('g')
+        .selectAll('path')
+        .data(groups)
+        .join('path')
+        .attr('fill', d => nodeColor(d))
+        .attr('stroke', d => nodeColor(d))
+        .attr('class', 'hull')
+        .attr('id', d => `hull-${d}`);
 
     const link = svg
         .append('g')
@@ -191,7 +170,7 @@ export default function renderDependencyGraph({ data, types, width = 975, height
         .selectAll('path')
         .data(links)
         .join('path')
-        .attr('stroke', d => linkColor(d.type))
+        .attr('stroke', d => nodeColor(d.group))
         .attr('marker-end', d => `url(${new URL(`#arrow-${d.type}`, location.toString())})`);
 
     const node = svg
@@ -221,6 +200,14 @@ export default function renderDependencyGraph({ data, types, width = 975, height
     simulation.on('tick', () => {
         link.attr('d', linkArc);
         node.attr('transform', d => `translate(${d.x},${d.y})`);
+        hull.datum((d, i, g) => {
+            const groupName = g[i]['id'].replace('hull-', '');
+            const points: [number, number][] = simulation
+                .nodes()
+                .filter(({ data }) => data['group'] === groupName)
+                .map(({ x, y }) => [x, y]);
+            return d3.polygonHull(points);
+        }).attr('d', d => (d ? 'M' + d.join('L') + 'Z' : ''));
     });
 
     // invalidation.then(() => simulation.stop());

@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { useState } from 'react';
+
 import Tree from '@neos-project/react-ui-components/lib-esm/Tree';
 
-import { dndTypes } from '../constants';
+import { dndTypes } from '../../constants';
 import { NodeTypeTreeNode } from './index';
 
 interface VendorSegmentTreeNodeProps {

@@ -7,8 +7,7 @@ import { $get } from 'plow-js';
 import svgPanZoom from 'svg-pan-zoom';
 
 import { AppTheme, createUseAppStyles, useGraph } from '../core';
-import renderSunburstChart from '../helpers/sunburstChart';
-import renderDependencyGraph from '../helpers/dependencyGraph';
+import { renderSunburstChart, renderDependencyGraph } from '../charts';
 import { DataSegment } from '../interfaces';
 import { LinkType } from '../interfaces/Dependencies';
 
@@ -28,6 +27,11 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
                     cursor: 'pointer',
                     stroke: 'black',
                     strokeWidth: '0.2px'
+                },
+                '& .hull': {
+                    strokeWidth: '32px',
+                    strokeLinejoin: 'round',
+                    opacity: 0.2
                 }
                 // '& path.segment': {
                 //     cursor: 'pointer',

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Tree from '@neos-project/react-ui-components/lib-esm/Tree';
 
-import { dndTypes } from '../constants';
+import { dndTypes } from '../../constants';
 
 interface NodeTypeTreeNodeProps {
     isActive?: boolean;

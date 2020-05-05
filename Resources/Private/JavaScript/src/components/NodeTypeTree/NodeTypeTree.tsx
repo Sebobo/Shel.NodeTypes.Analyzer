@@ -2,7 +2,7 @@ import * as React from 'react';
 import Tree from '@neos-project/react-ui-components/lib-esm/Tree';
 
 import { NodeTypeTreeNode, VendorSegmentTreeNode } from './index';
-import { createUseAppStyles, useGraph } from '../core';
+import { createUseAppStyles, useGraph } from '../../core';
 
 const useStyles = createUseAppStyles({
     tree: {

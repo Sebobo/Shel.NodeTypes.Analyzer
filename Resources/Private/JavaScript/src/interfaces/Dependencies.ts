@@ -11,6 +11,7 @@ export default interface Dependencies {
     links: {
         source: string;
         target: string;
+        group: string;
         type: LinkType;
     }[];
 }

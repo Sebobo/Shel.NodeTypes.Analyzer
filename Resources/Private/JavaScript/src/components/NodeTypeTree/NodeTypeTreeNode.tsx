@@ -1,11 +1,12 @@
 import * as React from 'react';
+import { useState } from 'react';
+
 import Tree from '@neos-project/react-ui-components/lib-esm/Tree';
 
-import { dndTypes } from '../constants';
-import { NodeTypeConfiguration } from '../interfaces';
+import { dndTypes } from '../../constants';
+import { NodeTypeConfiguration } from '../../interfaces';
 import { NodeTypeChildTreeNode } from './index';
-import { useState } from 'react';
-import { useGraph } from '../core';
+import { useGraph } from '../../core';
 
 interface NodeTypeTreeNodeProps {
     nodeType: NodeTypeConfiguration;

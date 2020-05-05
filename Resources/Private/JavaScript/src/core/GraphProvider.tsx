@@ -7,6 +7,7 @@ import fetchData from '../helpers/fetchData';
 import { useNotify } from './Notify';
 import { LinkType } from '../interfaces/Dependencies';
 import { chartType, FilterType } from '../constants';
+import useAppState, { Action } from './AppState';
 
 export interface GraphProviderProps {
     children: React.ReactElement;
@@ -46,16 +47,19 @@ export const useGraph = () => useContext(GraphContext);
 
 export default function GraphProvider({ children, actions }: GraphProviderProps) {
     const Notify = useNotify();
+    const [appState, dispatch] = useAppState();
 
     const [isLoading, setIsLoading] = useState(true);
     const [nodeTypeGroups, setNodeTypeGroups] = useState<NodeTypeGroup[]>([]);
-    const [selectedLayout, setSelectedLayout] = useState<chartType>(chartType.SUNBURST);
-    const [selectedNodeTypeName, setSelectedNodeTypeName] = useState('');
     const [nodeTypes, setNodeTypes] = useState<NodeTypeConfigurations>({});
     const [invalidNodeTypes, setInvalidNodeTypes] = useState<NodeTypeConfigurations>({});
     const [superTypeFilter, setSuperTypeFilter] = useState('');
-    const [selectedPath, setSelectedPath] = useState('');
     const [selectedFilter, setSelectedFilter] = useState(FilterType.NONE);
+
+    const setSelectedPath = (path: string) => dispatch({ type: Action.SelectPath, payload: path });
+    const setSelectedNodeTypeName = (nodeType: string) => dispatch({ type: Action.SelectNodeType, payload: nodeType });
+    const setSelectedLayout = (layout: chartType) => dispatch({ type: Action.SelectLayout, payload: layout });
+    const { selectedNodeTypeName, selectedPath, selectedLayout } = appState;
 
     // Data structure for rendering the nodetype tree
     const [treeData, setTreeData] = useState({});

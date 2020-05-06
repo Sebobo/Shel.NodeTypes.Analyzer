@@ -26,7 +26,8 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
                 '& text.node': {
                     cursor: 'pointer',
                     stroke: 'black',
-                    strokeWidth: '0.2px'
+                    strokeWidth: '0.2px',
+                    textShadow: '0 2pt 1pt rgba(255, 255, 255, .2)'
                 },
                 '& .hull': {
                     strokeWidth: '32px',

@@ -27,7 +27,7 @@ export default function InvalidNodeTypes() {
     const classes = useStyles();
     const { invalidNodeTypes } = useGraph();
 
-    return (
+    return Object.keys(invalidNodeTypes).length > 0 ? (
         <div className={classes.invalidNodeTypesList}>
             <Headline type="h2" className={classes.headline}>
                 Invalid nodetypes
@@ -38,5 +38,7 @@ export default function InvalidNodeTypes() {
                 ))}
             </ul>
         </div>
+    ) : (
+        <></>
     );
 }

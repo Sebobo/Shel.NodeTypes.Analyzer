@@ -1,7 +1,7 @@
 import { useReducer } from 'react';
 import { chartType } from '../constants';
 
-interface AppState {
+export interface AppState {
     selectedNodeTypeName: string;
     selectedPath: string;
     selectedLayout: chartType;
@@ -16,7 +16,8 @@ const initialState: AppState = {
 export enum Action {
     SelectNodeType,
     SelectPath,
-    SelectLayout
+    SelectLayout,
+    Reset
 }
 
 type SelectNodeTypeAction = {
@@ -34,16 +35,26 @@ type SelectLayoutAction = {
     payload: chartType;
 };
 
-type AppAction = SelectNodeTypeAction | SelectPathAction | SelectLayoutAction;
+type ResetAction = {
+    type: Action.Reset;
+};
+
+export type AppAction = SelectNodeTypeAction | SelectPathAction | SelectLayoutAction | ResetAction;
 
 function reducer(state: AppState, action: AppAction) {
     switch (action.type) {
         case Action.SelectNodeType:
-            return { ...state, selectedNodeTypeName: action.payload, selectedLayout: chartType.DEPENDENCIES };
+            return {
+                ...state,
+                selectedNodeTypeName: action.payload,
+                selectedLayout: action.payload ? chartType.DEPENDENCIES : state.selectedLayout
+            };
         case Action.SelectPath:
             return { ...state, selectedNodeTypeName: '', selectedPath: action.payload };
         case Action.SelectLayout:
             return { ...state, selectedLayout: action.payload };
+        case Action.Reset:
+            return { ...state, selectedNodeTypeName: '', selectedPath: '' };
         default:
             return state;
     }

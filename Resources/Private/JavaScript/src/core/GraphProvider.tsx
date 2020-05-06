@@ -2,12 +2,12 @@ import * as React from 'react';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { $set } from 'plow-js';
 
-import { Actions, DataSegment, Dependencies, NodeTypeConfiguration, NodeTypeGroup } from '../interfaces';
+import { Actions, DataSegment, Dependencies, NodeTypeConfiguration, NodeTypeGroup, LinkType } from '../interfaces';
 import fetchData from '../helpers/fetchData';
+import nodePathHelper from '../helpers/nodePathHelper';
 import { useNotify } from './Notify';
-import { LinkType } from '../interfaces/Dependencies';
 import { chartType, FilterType } from '../constants';
-import useAppState, { Action } from './AppState';
+import { useAppState, Action, AppAction, AppState } from './index';
 
 export interface GraphProviderProps {
     children: React.ReactElement;
@@ -36,6 +36,8 @@ interface GraphProviderValues {
     setSelectedFilter: (filter: FilterType) => void;
     invalidNodeTypes: NodeTypeConfigurations;
     setInvalidNodeTypes: (nodeTypes: NodeTypeConfigurations) => void;
+    appState: AppState;
+    dispatch: React.Dispatch<AppAction>;
 }
 
 interface NodeTypeConfigurations {
@@ -188,7 +190,7 @@ export default function GraphProvider({ children, actions }: GraphProviderProps)
                 carry.nodes.children.push({
                     name: nodeType.name,
                     group: nodeType.name.split(':')[0],
-                    path: nodeType.name.replace(':', '.'),
+                    path: nodePathHelper.resolveFromType(nodeType),
                     value: selectedNodeTypeName === nodeType.name ? 2 : 1
                 });
 
@@ -213,7 +215,7 @@ export default function GraphProvider({ children, actions }: GraphProviderProps)
         );
 
         setDependencyData(data);
-    }, [nodeTypes, selectedNodeTypeName]);
+    }, [nodeTypes, selectedPath, selectedNodeTypeName]);
 
     /**
      * Converts tree based nodetypes structure into a form that can be used for graphical charts
@@ -246,7 +248,9 @@ export default function GraphProvider({ children, actions }: GraphProviderProps)
                 selectedFilter,
                 setSelectedFilter,
                 invalidNodeTypes,
-                setInvalidNodeTypes
+                setInvalidNodeTypes,
+                appState,
+                dispatch
             }}
         >
             {children}

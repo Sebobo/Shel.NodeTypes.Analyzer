@@ -4,7 +4,9 @@ import IconButton from '@neos-project/react-ui-components/lib-esm/IconButton';
 import Icon from '@neos-project/react-ui-components/lib-esm/Icon';
 import Button from '@neos-project/react-ui-components/lib-esm/Button';
 
-import { AppTheme, createUseAppStyles, useGraph } from '../core';
+import { Action, AppTheme, createUseAppStyles, useGraph } from '../core';
+import nodePathHelper from '../helpers/nodePathHelper';
+import { NodeTypeConfiguration } from '../interfaces';
 
 const useStyles = createUseAppStyles((theme: AppTheme) => ({
     breadcrumb: {
@@ -31,25 +33,23 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
 
 export default function Breadcrumb() {
     const classes = useStyles();
-    const { nodeTypes, selectedNodeTypeName, selectedPath, setSelectedPath, setSelectedNodeTypeName } = useGraph();
+    const { nodeTypes, appState, dispatch } = useGraph();
+    const { selectedNodeTypeName, selectedPath } = appState;
 
-    const selectedNodeType = selectedNodeTypeName ? nodeTypes[selectedNodeTypeName] : null;
-    const selectedNodePath = selectedNodeTypeName.replace(':', '.').split('.');
-    const selectedNodeTypeLastSegment = selectedNodePath?.pop() || '';
+    const selectedNodeType: NodeTypeConfiguration = selectedNodeTypeName ? nodeTypes[selectedNodeTypeName] : null;
+    const selectedNodePath: string[] = nodePathHelper.resolveFromNameAsArray(selectedNodeTypeName);
+    const selectedNodeTypeLastSegment: string = selectedNodePath?.pop() || '';
 
-    const currentPath = selectedPath || selectedNodePath.join('.') || '';
+    const currentPath: string = selectedPath || selectedNodePath.join('.') || '';
 
-    const handleHomeClick = () => {
-        setSelectedPath('');
-        setSelectedNodeTypeName('');
-    };
+    const handleHomeClick = () => dispatch({ type: Action.Reset });
 
     const handleSegmentClick = (index: number) => {
         const newPath = currentPath
             .split('.')
             .slice(0, index + 1)
             .join('.');
-        setSelectedPath(newPath);
+        dispatch({ type: Action.SelectPath, payload: newPath });
     };
 
     return (

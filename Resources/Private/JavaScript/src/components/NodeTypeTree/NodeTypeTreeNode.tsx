@@ -6,7 +6,7 @@ import Tree from '@neos-project/react-ui-components/lib-esm/Tree';
 import { dndTypes } from '../../constants';
 import { NodeTypeConfiguration } from '../../interfaces';
 import { NodeTypeChildTreeNode } from './index';
-import { useGraph } from '../../core';
+import { Action, useGraph } from '../../core';
 
 interface NodeTypeTreeNodeProps {
     nodeType: NodeTypeConfiguration;
@@ -17,15 +17,17 @@ interface NodeTypeTreeNodeProps {
 export default function NodeTypeTreeNode({ nodeType, level = 1 }: NodeTypeTreeNodeProps) {
     const { name, configuration, usageCount } = nodeType;
     const [collapsed, setCollapsed] = useState(true);
-    const { selectedNodeTypeName, setSelectedNodeTypeName } = useGraph();
+    const {
+        appState: { selectedNodeTypeName },
+        dispatch
+    } = useGraph();
 
     const hasChildren = configuration.childNodes != null;
 
     const handleSelectNode = () => {
-        setCollapsed(!collapsed);
-        setSelectedNodeTypeName(name);
+        setCollapsed(false);
+        dispatch({ type: Action.SelectNodeType, payload: name });
     };
-    const handleSelectChildNode = () => setSelectedNodeTypeName(name);
 
     return (
         <Tree.Node>
@@ -40,6 +42,7 @@ export default function NodeTypeTreeNode({ nodeType, level = 1 }: NodeTypeTreeNo
                 icon={configuration.ui?.icon || 'question'}
                 nodeDndType={dndTypes.NODE_TYPE}
                 level={level}
+                onToggle={() => setCollapsed(!collapsed)}
                 onClick={() => handleSelectNode()}
                 hasChildren={!!configuration.childNodes}
             />
@@ -51,7 +54,7 @@ export default function NodeTypeTreeNode({ nodeType, level = 1 }: NodeTypeTreeNo
                         name={childNodeName}
                         level={level + 1}
                         type={configuration.childNodes[childNodeName].type}
-                        onClick={() => handleSelectChildNode()}
+                        onClick={() => handleSelectNode()}
                     />
                 ))}
         </Tree.Node>

@@ -17,11 +17,11 @@ export default function NodeTypeTree() {
 
     return (
         <Tree className={classes.tree}>
-            {Object.keys(treeData).map((key, index) =>
-                treeData[key].name ? (
-                    <NodeTypeTreeNode key={index} nodeType={treeData[key]} />
+            {Object.keys(treeData).map((segment, index) =>
+                treeData[segment].name ? (
+                    <NodeTypeTreeNode key={index} nodeType={treeData[segment]} />
                 ) : (
-                    <VendorSegmentTreeNode key={index} segment={key} subNodes={treeData[key]} />
+                    <VendorSegmentTreeNode key={index} path={segment} segment={segment} subNodes={treeData[segment]} />
                 )
             )}
         </Tree>

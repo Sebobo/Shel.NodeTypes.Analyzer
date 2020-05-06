@@ -111,11 +111,8 @@ export default function NodeTypeProfile() {
                                             .map(superTypeName => (
                                                 <PropertyListItem
                                                     key={superTypeName}
-                                                    label={superTypeName}
-                                                    value={translate(
-                                                        nodeTypes[superTypeName].configuration.ui?.label,
-                                                        superTypeName
-                                                    )}
+                                                    label={superTypeName.split(':').pop()}
+                                                    value={superTypeName}
                                                 />
                                             ))}
                                     </PropertyList>

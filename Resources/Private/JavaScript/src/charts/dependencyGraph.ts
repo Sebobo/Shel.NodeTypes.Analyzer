@@ -135,7 +135,7 @@ export default function renderDependencyGraph({
 
     const svg = d3
         .create('svg')
-        .attr('viewBox', [-width / 2, -height / 2, width, height].join(' '))
+        .attr('viewBox', [0, 0, width, height].join(' '))
         .style('font', '14px "Noto Sans"');
 
     svg.append('defs')

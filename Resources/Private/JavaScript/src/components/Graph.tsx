@@ -8,20 +8,21 @@ import svgPanZoom from 'svg-pan-zoom';
 
 import { AppTheme, createUseAppStyles, useGraph } from '../core';
 import { renderSunburstChart, renderDependencyGraph } from '../charts';
-import { DataSegment } from '../interfaces';
-import { LinkType } from '../interfaces/Dependencies';
+import { LinkType, DataSegment } from '../interfaces';
 
 const useStyles = createUseAppStyles((theme: AppTheme) => ({
     nodeTypesGraph: {
         '.neos &': {
             backgroundColor: theme.colors.contrastDark,
-            border: `1px solid ${theme.colors.contrastBright}`
+            border: `1px solid ${theme.colors.contrastBright}`,
+            minHeight: '800px',
+            height: '100%',
+            position: 'relative'
         },
         '& svg': {
             width: '100%',
-            maxWidth: '100%',
             height: '100%',
-            minHeight: '800px',
+            position: 'absolute',
             '& g': {
                 '& text.node': {
                     cursor: 'pointer',
@@ -74,6 +75,11 @@ export default function Graph() {
     useEffect(() => {
         if (Object.keys(graphData).length === 0) return;
 
+        const wrapper = graphSvgWrapper.current as HTMLElement;
+        wrapper.className = classes.nodeTypesGraph;
+        wrapper.innerHTML = '';
+        const { offsetWidth: width, offsetHeight: height } = wrapper;
+
         let chart = null;
         let data = null;
         switch (selectedLayout) {
@@ -85,20 +91,17 @@ export default function Graph() {
                 } else {
                     data = graphData;
                 }
-                chart = renderSunburstChart({ data });
+                chart = renderSunburstChart({ data, width, height });
                 break;
             case 'dependencies':
                 chart = renderDependencyGraph({
                     data: dependencyData,
-                    types: [LinkType.INHERITS]
+                    types: [LinkType.INHERITS],
+                    width,
+                    height
                 });
                 break;
         }
-
-        const wrapper = graphSvgWrapper.current as HTMLElement;
-
-        wrapper.className = classes.nodeTypesGraph;
-        wrapper.innerHTML = '';
         wrapper.appendChild(chart);
 
         const graphSvg = wrapper.querySelector('svg');

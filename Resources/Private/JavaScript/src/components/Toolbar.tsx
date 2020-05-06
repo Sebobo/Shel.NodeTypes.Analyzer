@@ -35,7 +35,7 @@ export default function Toolbar() {
     const { selectedLayout, setSelectedLayout } = useGraph();
 
     const selectableLayouts = [
-        { label: 'Sunburst', value: chartType.SUNBURST },
+        { label: 'Hierarchy', value: chartType.SUNBURST },
         { label: 'Dependencies', value: chartType.DEPENDENCIES }
     ];
 

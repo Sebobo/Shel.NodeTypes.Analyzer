@@ -7,6 +7,7 @@ import { dndTypes } from '../../constants';
 import { NodeTypeConfiguration } from '../../interfaces';
 import { NodeTypeChildTreeNode } from './index';
 import { Action, useGraph } from '../../core';
+import nodePathHelper from '../../helpers/nodePathHelper';
 
 interface NodeTypeTreeNodeProps {
     nodeType: NodeTypeConfiguration;
@@ -23,6 +24,7 @@ export default function NodeTypeTreeNode({ nodeType, level = 1 }: NodeTypeTreeNo
     } = useGraph();
 
     const hasChildren = configuration.childNodes != null;
+    const nodePath = nodePathHelper.resolveFromType(nodeType);
 
     const handleSelectNode = () => {
         setCollapsed(false);
@@ -37,7 +39,7 @@ export default function NodeTypeTreeNode({ nodeType, level = 1 }: NodeTypeTreeNo
                 isFocused={selectedNodeTypeName === name}
                 isLoading={false}
                 hasError={false}
-                label={`${name} (${usageCount})`}
+                label={`${nodePath.split('.').pop()} (${usageCount})`}
                 title={configuration.ui?.label || name}
                 icon={configuration.ui?.icon || 'question'}
                 nodeDndType={dndTypes.NODE_TYPE}

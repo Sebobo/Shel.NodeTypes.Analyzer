@@ -18,10 +18,7 @@ interface NodeTypeTreeNodeProps {
 export default function NodeTypeTreeNode({ nodeType, level = 1 }: NodeTypeTreeNodeProps) {
     const { name, configuration, usageCount } = nodeType;
     const [collapsed, setCollapsed] = useState(true);
-    const {
-        appState: { selectedNodeTypeName },
-        dispatch
-    } = useGraph();
+    const { selectedNodeTypeName, dispatch } = useGraph();
 
     const hasChildren = configuration.childNodes != null;
     const nodePath = nodePathHelper.resolveFromType(nodeType);

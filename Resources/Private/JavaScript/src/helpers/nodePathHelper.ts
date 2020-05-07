@@ -12,4 +12,8 @@ function resolveFromType(nodeTypeConfiguration: NodeTypeConfiguration): string {
     return resolveFromName(nodeTypeConfiguration.name);
 }
 
-export default { resolveFromName, resolveFromNameAsArray, resolveFromType };
+function resolveNameWithoutVendor(nodeTypeName: string): string {
+    return nodeTypeName.split(':').pop();
+}
+
+export default { resolveFromName, resolveFromNameAsArray, resolveFromType, resolveNameWithoutVendor };

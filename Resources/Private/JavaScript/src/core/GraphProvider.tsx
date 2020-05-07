@@ -6,29 +6,23 @@ import { Actions, DataSegment, Dependencies, NodeTypeConfiguration, NodeTypeGrou
 import fetchData from '../helpers/fetchData';
 import nodePathHelper from '../helpers/nodePathHelper';
 import { useNotify } from './Notify';
-import { chartType, FilterType } from '../constants';
-import { useAppState, Action, AppAction, AppState } from './index';
+import { FilterType } from '../constants';
+import { useAppState, AppAction, AppState } from './index';
 
 export interface GraphProviderProps {
     children: React.ReactElement;
     actions: Actions;
 }
 
-interface GraphProviderValues {
+interface GraphProviderValues extends AppState {
     actions: Actions;
     isLoading: boolean;
-    selectedNodeTypeName: string;
-    setSelectedNodeTypeName: (selectedNodeTypeName: string) => void;
-    selectedLayout: chartType;
-    setSelectedLayout: (layout: chartType) => void;
     nodeTypeGroups: NodeTypeGroup[];
     setNodeTypeGroups: (nodeTypeGroups: NodeTypeGroup[]) => void;
     nodeTypes: NodeTypeConfigurations;
     setNodeTypes: (nodeTypes: NodeTypeConfigurations) => void;
     superTypeFilter: string;
     setSuperTypeFilter: (filter: string) => void;
-    selectedPath: string;
-    setSelectedPath: (path: string) => void;
     graphData: DataSegment;
     dependencyData: Dependencies;
     treeData: object;
@@ -36,7 +30,6 @@ interface GraphProviderValues {
     setSelectedFilter: (filter: FilterType) => void;
     invalidNodeTypes: NodeTypeConfigurations;
     setInvalidNodeTypes: (nodeTypes: NodeTypeConfigurations) => void;
-    appState: AppState;
     dispatch: React.Dispatch<AppAction>;
 }
 
@@ -58,10 +51,7 @@ export default function GraphProvider({ children, actions }: GraphProviderProps)
     const [superTypeFilter, setSuperTypeFilter] = useState('');
     const [selectedFilter, setSelectedFilter] = useState(FilterType.NONE);
 
-    const setSelectedPath = (path: string) => dispatch({ type: Action.SelectPath, payload: path });
-    const setSelectedNodeTypeName = (nodeType: string) => dispatch({ type: Action.SelectNodeType, payload: nodeType });
-    const setSelectedLayout = (layout: chartType) => dispatch({ type: Action.SelectLayout, payload: layout });
-    const { selectedNodeTypeName, selectedPath, selectedLayout } = appState;
+    const { selectedNodeTypeName, selectedPath } = appState;
 
     // Data structure for rendering the nodetype tree
     const [treeData, setTreeData] = useState({});
@@ -230,18 +220,12 @@ export default function GraphProvider({ children, actions }: GraphProviderProps)
             value={{
                 actions,
                 isLoading,
-                selectedNodeTypeName,
-                setSelectedNodeTypeName,
                 nodeTypeGroups,
                 setNodeTypeGroups,
-                selectedLayout,
-                setSelectedLayout,
                 nodeTypes,
                 setNodeTypes,
                 superTypeFilter,
                 setSuperTypeFilter,
-                selectedPath,
-                setSelectedPath,
                 graphData,
                 dependencyData,
                 treeData,
@@ -249,7 +233,7 @@ export default function GraphProvider({ children, actions }: GraphProviderProps)
                 setSelectedFilter,
                 invalidNodeTypes,
                 setInvalidNodeTypes,
-                appState,
+                ...appState,
                 dispatch
             }}
         >

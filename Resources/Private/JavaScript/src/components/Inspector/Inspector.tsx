@@ -1,6 +1,7 @@
-import { NodeTypeProfile } from './index';
 import * as React from 'react';
-import { AppTheme, createUseAppStyles, useGraph } from '../core';
+
+import { AppTheme, createUseAppStyles, useGraph } from '../../core';
+import { NodeTypeProfile } from './index';
 
 const useStyles = createUseAppStyles((theme: AppTheme) => ({
     inspector: {

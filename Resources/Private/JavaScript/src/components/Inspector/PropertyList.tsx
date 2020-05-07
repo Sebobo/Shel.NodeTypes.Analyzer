@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { AppTheme, createUseAppStyles } from '../core';
+import { AppTheme, createUseAppStyles } from '../../core';
 
 const useStyles = createUseAppStyles((theme: AppTheme) => ({
     propertyList: {

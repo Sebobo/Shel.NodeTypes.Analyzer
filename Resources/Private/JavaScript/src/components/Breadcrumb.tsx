@@ -33,8 +33,7 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
 
 export default function Breadcrumb() {
     const classes = useStyles();
-    const { nodeTypes, appState, dispatch } = useGraph();
-    const { selectedNodeTypeName, selectedPath } = appState;
+    const { nodeTypes, selectedNodeTypeName, selectedPath, dispatch } = useGraph();
 
     const selectedNodeType: NodeTypeConfiguration = selectedNodeTypeName ? nodeTypes[selectedNodeTypeName] : null;
     const selectedNodePath: string[] = nodePathHelper.resolveFromNameAsArray(selectedNodeTypeName);

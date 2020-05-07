@@ -6,7 +6,7 @@ import { $get } from 'plow-js';
 // @ts-ignore
 import svgPanZoom from 'svg-pan-zoom';
 
-import { AppTheme, createUseAppStyles, useGraph } from '../core';
+import { Action, AppTheme, createUseAppStyles, useGraph } from '../core';
 import { renderSunburstChart, renderDependencyGraph } from '../charts';
 import { LinkType, DataSegment } from '../interfaces';
 
@@ -35,13 +35,6 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
                     strokeLinejoin: 'round',
                     opacity: 0.2
                 }
-                // '& path.segment': {
-                //     cursor: 'pointer',
-                //     '&:hover': {
-                //         fill: theme.colors.primaryBlue,
-                //         color: 'white'
-                //     }
-                // }
             }
         }
     }
@@ -50,25 +43,17 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
 export default function Graph() {
     const classes = useStyles();
     const graphSvgWrapper = useRef();
-    const {
-        setSelectedNodeTypeName,
-        graphData,
-        treeData,
-        selectedPath,
-        setSelectedPath,
-        selectedLayout,
-        dependencyData
-    } = useGraph();
+    const { graphData, treeData, selectedPath, selectedLayout, dependencyData, dispatch } = useGraph();
 
     const selectNodeTypeInGraph = (e: MouseEvent): void => {
         const graphNode = e.target as HTMLElement;
         const path = graphNode.getAttribute('path');
         const selection = $get(path, treeData);
         if (selection?.name) {
-            setSelectedNodeTypeName(selection.name);
+            dispatch({ type: Action.SelectNodeType, payload: selection.name });
         } else {
-            setSelectedPath(path);
-            setSelectedNodeTypeName('');
+            dispatch({ type: Action.SelectPath, payload: path });
+            dispatch({ type: Action.SelectNodeType, payload: '' });
         }
     };
 

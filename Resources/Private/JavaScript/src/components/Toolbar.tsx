@@ -3,7 +3,7 @@ import * as React from 'react';
 import Headline from '@neos-project/react-ui-components/lib-esm/Headline';
 import SelectBox from '@neos-project/react-ui-components/lib-esm/SelectBox';
 
-import { AppTheme, createUseAppStyles, useGraph, useIntl } from '../core';
+import { Action, AppTheme, createUseAppStyles, useGraph, useIntl } from '../core';
 import { chartType } from '../constants';
 import { Breadcrumb } from './index';
 
@@ -32,7 +32,7 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
 export default function Toolbar() {
     const classes = useStyles();
     const { translate } = useIntl();
-    const { selectedLayout, setSelectedLayout } = useGraph();
+    const { selectedLayout, dispatch } = useGraph();
 
     const selectableLayouts = [
         { label: 'Hierarchy', value: chartType.SUNBURST },
@@ -51,7 +51,7 @@ export default function Toolbar() {
                 </Headline>
                 <SelectBox
                     options={selectableLayouts}
-                    onValueChange={layout => setSelectedLayout(layout)}
+                    onValueChange={layout => dispatch({ type: Action.SelectLayout, payload: layout })}
                     value={selectedLayout}
                 />
             </div>

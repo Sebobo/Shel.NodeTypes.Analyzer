@@ -12,7 +12,10 @@ prototype(Shel.ContentRepository.Debugger:Component.App) < prototype(Neos.Fusion
         }
     }
 
-    renderer = afx`
-        <div id="graphAppContainer" data-app={Json.stringify(props.appData)}></div>
-    `
+    renderer = Neos.Fusion:Tag {
+        attributes {
+            id = "graphAppContainer"
+            data-app = ${Json.stringify(props.appData)}
+        }
+    }
 }

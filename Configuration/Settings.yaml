@@ -7,7 +7,7 @@ Neos:
             label: 'Shel.ContentRepository.Debugger:Main:module.label'
             controller: 'Shel\ContentRepository\Debugger\Controller\NodeTypesController'
             description: 'Shel.ContentRepository.Debugger:Main:module.description'
-            icon: fas fa-sitemap
+            icon: 'fas fa-sitemap'
             privilegeTarget: 'Shel.ContentRepository.Debugger:Backend.Module.Administration.NodeTypes'
             additionalResources:
               javaScripts:
@@ -15,6 +15,11 @@ Neos:
               styleSheets:
                 - 'resource://Shel.ContentRepository.Debugger/Public/Assets/extra-neos-wrapper.css'
 
+    userInterface:
+      translation:
+        autoInclude:
+          Shel.ContentRepository.Debugger:
+            - 'Main'
 Shel:
   ContentRepository:
     Debugger:

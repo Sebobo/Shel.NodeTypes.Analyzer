@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file original="" product-name="Shel.ContentRepository.Debugger" source-language="en" target-language="de" datatype="plaintext">
+        <body>
+            <trans-unit id="module.label" xml:space="preserve">
+                <source>NodeTypes analyzer</source>
+                <target>NodeTypes Analyse</target>
+            </trans-unit>
+            <trans-unit id="module.description" xml:space="preserve">
+                <source>Analyze your nodetype structure</source>
+                <target>Analyse für NodeType Strukturen</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

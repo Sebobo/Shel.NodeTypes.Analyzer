@@ -20,27 +20,3 @@ Neos:
         autoInclude:
           Shel.ContentRepository.Debugger:
             - 'Main'
-Shel:
-  ContentRepository:
-    Debugger:
-      defaults:
-        graphviz:
-          graph:
-            rankdir: 'LR'
-            pack: 'true'
-            layout: 'neato'
-            model: 'subset'
-            splines: 'true'
-            overlap: 'false'
-            fontname: 'Noto Sans'
-
-          node:
-            width: '.25'
-            height: '.375'
-            fontsize: '11'
-            fontname: 'Noto Sans'
-            fillcolor: '#ffffff'
-            style: 'filled'
-
-          edge:
-            color: '#888888'

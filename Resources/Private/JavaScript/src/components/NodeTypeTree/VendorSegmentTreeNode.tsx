@@ -6,6 +6,7 @@ import Tree from '@neos-project/react-ui-components/lib-esm/Tree';
 import { dndTypes } from '../../constants';
 import { NodeTypeTreeNode } from './index';
 import { Action, useGraph } from '../../core';
+import nodePathHelper from '../../helpers/nodePathHelper';
 
 interface VendorSegmentTreeNodeProps {
     isActive?: boolean;
@@ -24,16 +25,18 @@ export default function VendorSegmentTreeNode({
     icon = 'folder'
 }: VendorSegmentTreeNodeProps) {
     const [collapsed, setCollapsed] = useState(true);
-    const { dispatch } = useGraph();
+    const { selectedPath, selectedNodeTypeName, dispatch } = useGraph();
 
     const hasChildren = subNodes && Object.keys(subNodes).length > 0;
+    const isInActivePath =
+        selectedPath.indexOf(path) === 0 || nodePathHelper.resolveFromName(selectedNodeTypeName).indexOf(path) === 0;
 
     return (
         <Tree.Node>
             <Tree.Node.Header
-                isActive={false}
-                isCollapsed={collapsed}
-                isFocused={false}
+                isActive={isInActivePath}
+                isCollapsed={collapsed && !isInActivePath}
+                isFocused={selectedPath === path}
                 isLoading={false}
                 hasError={false}
                 label={segment}
@@ -45,7 +48,7 @@ export default function VendorSegmentTreeNode({
                 onClick={() => dispatch({ type: Action.SelectPath, payload: path })}
                 hasChildren={hasChildren}
             />
-            {!collapsed &&
+            {(isInActivePath || !collapsed) &&
                 hasChildren &&
                 Object.keys(subNodes).map((segment, index) =>
                     subNodes[segment].name ? (

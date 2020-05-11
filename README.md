@@ -1,8 +1,11 @@
-# Neos CMS Content Repository visualizer / debugger
+# Neos CMS Content Repository analysis & visualizer
 
 This package allows to output the nodetypes of your Neos CMS project
-as various types of graphs. You can get a visual graph in the backend 
-of Neos.
+as various types of graphs via a backend module.
+
+It helps understanding dependencies between packages and nodetypes.
+Also it shows which nodetypes are actually being used and can make your
+refactoring our code structuring efforts easier.
 
 ## Installation
 

@@ -1,13 +1,16 @@
 {
     "name": "shel/contentrepository-debugger",
-    "description": "Provides helper methods to debug the Neos CMS content repository",
+    "description": "Graphical analysis & visualizer for the Neos CMS Content Repository as backend module",
     "type": "neos-package",
     "license": "GPL-3.0",
     "keywords": [
         "neos",
         "neoscms",
         "flow",
-        "contentrepository"
+        "contentrepository",
+        "analysis",
+        "visualizer",
+        "charts"
     ],
     "authors": [
         {

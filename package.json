@@ -12,7 +12,7 @@
   "scripts": {
     "lint": "tsc --noEmit && eslint 'Resources/Private/JavaScript/**/*.{js,jsx,ts,tsx}'",
     "test": "exit 0",
-    "watch:parcel": "parcel watch Resources/Private/JavaScript/src/index.tsx --public-url . --out-dir Resources/Public/Assets -o main.bundle.js",
+    "watch:parcel": "parcel watch Resources/Private/JavaScript/src/index.tsx --no-autoinstall --public-url . --out-dir Resources/Public/Assets -o main.bundle.js",
     "watch:neos-wrap": "node-sass extra-neos-wrapper.scss -o Resources/Public/Assets/ && node-sass -w extra-neos-wrapper.scss -o Resources/Public/Assets/",
     "watch": "concurrently -k npm:watch:parcel npm:watch:neos-wrap",
     "build": "parcel build Resources/Private/JavaScript/src/index.tsx --public-url . --out-dir Resources/Public/Assets -o main.bundle.js && node-sass extra-neos-wrapper.scss -o Resources/Public/Assets/",

@@ -6,7 +6,7 @@ import { Actions, DataSegment, Dependencies, NodeTypeConfiguration, NodeTypeGrou
 import fetchData from '../helpers/fetchData';
 import nodePathHelper from '../helpers/nodePathHelper';
 import { useNotify } from './Notify';
-import { FilterType } from '../constants';
+import { chartType, FilterType } from '../constants';
 import { useAppState, AppAction, AppState } from './index';
 
 export interface GraphProviderProps {
@@ -51,7 +51,7 @@ export default function GraphProvider({ children, actions }: GraphProviderProps)
     const [superTypeFilter, setSuperTypeFilter] = useState('');
     const [selectedFilter, setSelectedFilter] = useState(FilterType.NONE);
 
-    const { selectedNodeTypeName, selectedPath } = appState;
+    const { selectedNodeTypeName, selectedPath, selectedLayout } = appState;
 
     // Data structure for rendering the nodetype tree
     const [treeData, setTreeData] = useState({});
@@ -143,7 +143,7 @@ export default function GraphProvider({ children, actions }: GraphProviderProps)
      * Converts nodetypes list into a structure for dependency graphs
      */
     useEffect(() => {
-        if (Object.keys(nodeTypes).length === 0) return;
+        if (Object.keys(nodeTypes).length === 0 || selectedLayout !== chartType.DEPENDENCIES) return;
 
         let types = {};
 

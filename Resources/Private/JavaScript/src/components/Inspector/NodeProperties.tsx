@@ -25,9 +25,15 @@ export default function NodeProperties() {
                 {properties ? (
                     showProperties && (
                         <PropertyList>
-                            {Object.keys(properties).map(propName => (
-                                <PropertyListItem key={propName} label={propName} value={properties[propName].type} />
-                            ))}
+                            {Object.keys(properties)
+                                .sort()
+                                .map(propName => (
+                                    <PropertyListItem
+                                        key={propName}
+                                        label={propName}
+                                        value={properties[propName].type}
+                                    />
+                                ))}
                         </PropertyList>
                     )
                 ) : (

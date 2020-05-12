@@ -20,16 +20,18 @@ export default function ChildNodeTree() {
 
     return (
         <Tree className={classes.tree}>
-            {Object.keys(currentNodeType.configuration.childNodes).map(childNodeName => (
-                <NodeTypeChildTreeNode
-                    key={childNodeName}
-                    nodeTypeName={selectedNodeTypeName}
-                    name={childNodeName}
-                    type={currentNodeType.configuration.childNodes[childNodeName].type}
-                    showConstraints={true}
-                    onClick={null}
-                />
-            ))}
+            {Object.keys(currentNodeType.configuration.childNodes)
+                .sort()
+                .map(childNodeName => (
+                    <NodeTypeChildTreeNode
+                        key={childNodeName}
+                        nodeTypeName={selectedNodeTypeName}
+                        name={childNodeName}
+                        type={currentNodeType.configuration.childNodes[childNodeName].type}
+                        showConstraints={true}
+                        onClick={null}
+                    />
+                ))}
         </Tree>
     );
 }

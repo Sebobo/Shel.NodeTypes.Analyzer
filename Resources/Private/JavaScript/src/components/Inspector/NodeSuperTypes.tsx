@@ -31,6 +31,7 @@ export default function NodeSuperTypes() {
                         <PropertyList>
                             {Object.keys(superTypes)
                                 .filter(superTypeName => superTypes[superTypeName])
+                                .sort()
                                 .map(superTypeName => (
                                     <PropertyListItem
                                         key={superTypeName}

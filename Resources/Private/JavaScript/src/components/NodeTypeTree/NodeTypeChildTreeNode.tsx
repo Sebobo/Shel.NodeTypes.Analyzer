@@ -45,9 +45,9 @@ export default function NodeTypeChildTreeNode({
                 hasChildren={showConstraints && constraints.length > 0}
             />
             {showConstraints &&
-                constraints.map((constraint, index) => (
-                    <ConstraintTreeNode key={index} name={constraint} level={level + 1} />
-                ))}
+                constraints
+                    .sort()
+                    .map((constraint, index) => <ConstraintTreeNode key={index} name={constraint} level={level + 1} />)}
         </Tree.Node>
     );
 }

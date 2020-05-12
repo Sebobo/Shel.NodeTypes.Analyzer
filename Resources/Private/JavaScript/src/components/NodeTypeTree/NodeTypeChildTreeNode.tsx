@@ -2,24 +2,32 @@ import * as React from 'react';
 import Tree from '@neos-project/react-ui-components/lib-esm/Tree';
 
 import { dndTypes } from '../../constants';
+import { ConstraintTreeNode } from './index';
+import { useGraph } from '../../core';
 
-interface NodeTypeTreeNodeProps {
+interface NodeTypeChildTreeNodeProps {
     isActive?: boolean;
+    nodeTypeName: NodeTypeName;
     name: string;
     type: string;
     level?: number;
     icon?: string;
     onClick: () => void;
+    showConstraints?: boolean;
 }
 
 export default function NodeTypeChildTreeNode({
     isActive = false,
+    nodeTypeName,
     name,
     type,
     level = 1,
-    onClick
-}: NodeTypeTreeNodeProps) {
-    // TODO: Render constraints
+    onClick,
+    showConstraints = false
+}: NodeTypeChildTreeNodeProps) {
+    const { nodeTypes } = useGraph();
+    const constraints = nodeTypes[nodeTypeName].configuration.childNodes[name].allowedChildNodeTypes;
+
     return (
         <Tree.Node>
             <Tree.Node.Header
@@ -34,8 +42,12 @@ export default function NodeTypeChildTreeNode({
                 nodeDndType={dndTypes.NODE_TYPE}
                 level={level}
                 onClick={onClick}
-                hasChildren={false}
+                hasChildren={showConstraints && constraints.length > 0}
             />
+            {showConstraints &&
+                constraints.map((constraint, index) => (
+                    <ConstraintTreeNode key={index} name={constraint} level={level + 1} />
+                ))}
         </Tree.Node>
     );
 }

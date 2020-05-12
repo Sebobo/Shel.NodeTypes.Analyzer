@@ -113,12 +113,14 @@ class NodeTypeGraphService
      */
     public function generateAllowedChildNodeTypes(NodeType $baseNodeType, array $nodeTypes): array
     {
-        return array_reduce($nodeTypes, function (array $carry, NodeType $nodeType) use ($baseNodeType) {
+        $childNodeTypes = array_reduce($nodeTypes, function (array $carry, NodeType $nodeType) use ($baseNodeType) {
             if ($baseNodeType->allowsChildNodeType($nodeType)) {
                 $carry[] = $nodeType->getName();
             }
             return $carry;
         }, []);
+        sort($childNodeTypes);
+        return $childNodeTypes;
     }
 
     /**

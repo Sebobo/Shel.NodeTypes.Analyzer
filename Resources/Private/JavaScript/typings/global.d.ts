@@ -17,3 +17,5 @@ interface Window {
         Notification: NeosNotification;
     };
 }
+
+type NodeTypeName = string;

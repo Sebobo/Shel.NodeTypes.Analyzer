@@ -1,12 +1,12 @@
+import { Constraint } from './index';
+
 export default interface NodeTypeConfiguration {
-    name: string;
+    name: NodeTypeName;
     abstract: boolean;
     final: boolean;
     allowedChildNodeTypes: string[];
     usageCount: number;
-    declaredSuperTypes: {
-        [index: string]: boolean;
-    }[];
+    declaredSuperTypes: Constraint[];
     configuration: {
         label: string;
         properties: {
@@ -20,17 +20,14 @@ export default interface NodeTypeConfiguration {
             label?: string;
             icon?: string;
         };
-        superTypes: {
-            [index: string]: boolean;
-        }[];
+        superTypes: Constraint[];
         constraints: {};
         childNodes: {
             [index: string]: {
-                type: string;
+                type: NodeTypeName;
+                allowedChildNodeTypes: NodeTypeName[];
                 constraints?: {
-                    nodeTypes?: {
-                        [key: string]: boolean;
-                    }[];
+                    nodeTypes?: Constraint[];
                 };
             };
         };

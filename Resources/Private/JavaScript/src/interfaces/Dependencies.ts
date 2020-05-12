@@ -9,8 +9,8 @@ export default interface Dependencies {
         children: DataSegment[];
     };
     links: {
-        source: string;
-        target: string;
+        source: NodeTypeName;
+        target: NodeTypeName;
         group: string;
         type: LinkType;
     }[];

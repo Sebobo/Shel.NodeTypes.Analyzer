@@ -50,6 +50,7 @@ export default function NodeTypeTreeNode({ nodeType, level = 1 }: NodeTypeTreeNo
                 Object.keys(configuration.childNodes).map(childNodeName => (
                     <NodeTypeChildTreeNode
                         key={childNodeName}
+                        nodeTypeName={name}
                         name={childNodeName}
                         level={level + 1}
                         type={configuration.childNodes[childNodeName].type}

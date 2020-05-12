@@ -2,7 +2,7 @@ import { useReducer } from 'react';
 import { chartType } from '../constants';
 
 export interface AppState {
-    selectedNodeTypeName: string;
+    selectedNodeTypeName: NodeTypeName;
     selectedPath: string;
     selectedLayout: chartType;
 }
@@ -22,7 +22,7 @@ export enum Action {
 
 type SelectNodeTypeAction = {
     type: Action.SelectNodeType;
-    payload: string;
+    payload: NodeTypeName;
 };
 
 type SelectPathAction = {

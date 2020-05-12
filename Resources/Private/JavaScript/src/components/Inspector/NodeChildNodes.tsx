@@ -24,18 +24,16 @@ export default function NodeChildNodes() {
                 {allowedChildNodeTypes?.length || 0})
             </ToggablePanel.Header>
             <ToggablePanel.Contents>
-                {allowedChildNodeTypes?.length > 0 ? (
-                    showAllowedChildNodes && (
-                        <PropertyList>
-                            {allowedChildNodeTypes.map(nodeTypeName => (
-                                <PropertyListItem
-                                    key={nodeTypeName}
-                                    label={nodePathHelper.resolveNameWithoutVendor(nodeTypeName)}
-                                    value={nodeTypeName}
-                                />
-                            ))}
-                        </PropertyList>
-                    )
+                {allowedChildNodeTypes?.length > 0 && showAllowedChildNodes ? (
+                    <PropertyList>
+                        {allowedChildNodeTypes.map(nodeTypeName => (
+                            <PropertyListItem
+                                key={nodeTypeName}
+                                label={nodePathHelper.resolveNameWithoutVendor(nodeTypeName)}
+                                value={nodeTypeName}
+                            />
+                        ))}
+                    </PropertyList>
                 ) : (
                     <span>{translate('inspector.childNodes.unavailable', 'No childnodes allowed')}</span>
                 )}

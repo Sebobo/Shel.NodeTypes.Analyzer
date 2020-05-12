@@ -4,6 +4,7 @@ import Headline from '@neos-project/react-ui-components/lib-esm/Headline';
 import SelectBox from '@neos-project/react-ui-components/lib-esm/SelectBox';
 
 import { AppTheme, createUseAppStyles, useGraph, useIntl } from '../../core';
+import nodePathHelper from '../../helpers/nodePathHelper';
 
 const useStyles = createUseAppStyles((theme: AppTheme) => ({
     currentSelection: {
@@ -31,9 +32,15 @@ export default function NodeSelection() {
                 {translate('inspector.selection.label', 'Selected NodeType')}
             </Headline>
             <SelectBox
-                options={[{ value: name, label: name, icon: configuration.ui?.icon || 'question' }]}
+                options={[
+                    {
+                        value: selectedNodeTypeName,
+                        label: nodePathHelper.resolveNameWithoutVendor(selectedNodeTypeName),
+                        icon: configuration.ui?.icon || 'question'
+                    }
+                ]}
                 onValueChange={() => null}
-                value={name}
+                value={selectedNodeTypeName}
             />
         </div>
     );

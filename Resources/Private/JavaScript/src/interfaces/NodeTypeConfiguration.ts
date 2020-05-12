@@ -4,9 +4,9 @@ export default interface NodeTypeConfiguration {
     name: NodeTypeName;
     abstract: boolean;
     final: boolean;
-    allowedChildNodeTypes: string[];
+    allowedChildNodeTypes: NodeTypeName[];
     usageCount: number;
-    declaredSuperTypes: Constraint[];
+    declaredSuperTypes: NodeTypeName[];
     configuration: {
         label: string;
         properties: {

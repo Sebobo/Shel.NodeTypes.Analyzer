@@ -47,6 +47,7 @@ function reducer(state: AppState, action: AppAction) {
             return {
                 ...state,
                 selectedNodeTypeName: action.payload,
+                selectedPath: '',
                 selectedLayout: action.payload ? chartType.DEPENDENCIES : state.selectedLayout
             };
         case Action.SelectPath:

@@ -155,7 +155,7 @@ export default function GraphProvider({ children, actions }: GraphProviderProps)
                 const typeToAdd = nodeTypes[typesToAdd.pop()];
                 const superTypes = typeToAdd.declaredSuperTypes;
                 if (superTypes) {
-                    Object.keys(superTypes).forEach(superType => {
+                    superTypes.forEach(superType => {
                         if (superTypes[superType] && Object.keys(types).indexOf(superType) === -1) {
                             typesToAdd.push(superType);
                         }
@@ -175,23 +175,37 @@ export default function GraphProvider({ children, actions }: GraphProviderProps)
             types = nodeTypes;
         }
 
+        const typeNames = Object.keys(types);
+        const includedTypes = [];
+        const linkedTypes = {};
+
         const data = Object.values(types).reduce<Dependencies>(
             (carry, nodeType: NodeTypeConfiguration) => {
+                const nodeTypePath = nodePathHelper.resolveFromType(nodeType);
+                if (selectedPath && nodeTypePath.indexOf(selectedPath) !== 0) {
+                    return carry;
+                }
+
                 carry.nodes.children.push({
                     name: nodeType.name,
-                    group: nodeType.name.split(':')[0],
-                    path: nodePathHelper.resolveFromType(nodeType),
+                    group: nodePathHelper.resolveGroup(nodeType.name),
+                    path: nodeTypePath,
                     value: selectedNodeTypeName === nodeType.name ? 2 : 1
                 });
+                includedTypes.push(nodeType.name);
 
                 if (nodeType.declaredSuperTypes) {
-                    Object.keys(nodeType.declaredSuperTypes).forEach(superType => {
-                        carry.links.push({
-                            source: nodeType.name,
-                            target: superType,
-                            type: LinkType.INHERITS,
-                            group: superType.split(':')[0]
-                        });
+                    nodeType.declaredSuperTypes.forEach(superType => {
+                        if (typeNames.includes(superType)) {
+                            carry.links.push({
+                                source: nodeType.name,
+                                target: superType,
+                                type: LinkType.INHERITS,
+                                group: nodePathHelper.resolveGroup(superType)
+                            });
+                            linkedTypes[superType] = true;
+                        }
+                        // TODO: Show warning when a link cannot be generated due to a missing (unfiltered) type
                     });
                 }
                 return carry;
@@ -204,8 +218,22 @@ export default function GraphProvider({ children, actions }: GraphProviderProps)
             } as Dependencies
         );
 
+        // Add missing nodes that are being linked but not included via the current path
+        if (selectedPath) {
+            Object.keys(linkedTypes)
+                .filter(type => !includedTypes.includes(type))
+                .forEach(linkedType => {
+                    data.nodes.children.push({
+                        name: linkedType,
+                        group: nodePathHelper.resolveGroup(linkedType),
+                        path: nodePathHelper.resolveFromName(linkedType),
+                        value: 1
+                    });
+                });
+        }
+
         setDependencyData(data);
-    }, [nodeTypes, selectedPath, selectedNodeTypeName]);
+    }, [nodeTypes, selectedPath, selectedNodeTypeName, selectedLayout]);
 
     /**
      * Converts tree based nodetypes structure into a form that can be used for graphical charts

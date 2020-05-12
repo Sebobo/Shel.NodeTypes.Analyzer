@@ -53,7 +53,6 @@ export default function Graph() {
             dispatch({ type: Action.SelectNodeType, payload: selection.name });
         } else {
             dispatch({ type: Action.SelectPath, payload: path });
-            dispatch({ type: Action.SelectNodeType, payload: '' });
         }
     };
 
@@ -79,6 +78,9 @@ export default function Graph() {
                 chart = renderSunburstChart({ data, width, height });
                 break;
             case 'dependencies':
+                if (dependencyData.nodes.children.length === 0) {
+                    return;
+                }
                 chart = renderDependencyGraph({
                     data: dependencyData,
                     types: [LinkType.INHERITS],

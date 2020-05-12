@@ -65,34 +65,38 @@ class NodeTypeGraphService
 
         $defaultConfiguration = ['superTypes' => []];
 
-        $nodeTypes = array_reduce($nodeTypes, function (array $carry, NodeType $nodeType) use ($defaultConfiguration, $nodeTypes, $nodeTypeUsage) {
-            $nodeTypeName = $nodeType->getName();
-            $carry[$nodeTypeName] = [
-                'name' => $nodeTypeName,
-                'abstact' => $nodeType->isAbstract(),
-                'final' => $nodeType->isFinal(),
-                'configuration' => array_merge($defaultConfiguration, $nodeType->getFullConfiguration()),
-                'declaredSuperTypes' => array_map(static function (NodeType $superType) {
-                    return $superType->getName();
-                }, $nodeType->getDeclaredSuperTypes()),
-                'usageCount' => array_key_exists($nodeTypeName, $nodeTypeUsage) ? (int)$nodeTypeUsage[$nodeTypeName] : 0,
-            ];
+        $nodeTypes = array_reduce($nodeTypes,
+            function (array $carry, NodeType $nodeType) use ($defaultConfiguration, $nodeTypes, $nodeTypeUsage) {
+                $nodeTypeName = $nodeType->getName();
+                $carry[$nodeTypeName] = [
+                    'name' => $nodeTypeName,
+                    'abstact' => $nodeType->isAbstract(),
+                    'final' => $nodeType->isFinal(),
+                    'configuration' => array_merge($defaultConfiguration, $nodeType->getFullConfiguration()),
+                    'declaredSuperTypes' => array_reduce($nodeType->getDeclaredSuperTypes(),
+                        static function (array $carry, NodeType $superType) {
+                            $carry[] = $superType->getName();
+                            return $carry;
+                        }, []),
+                    'usageCount' => array_key_exists($nodeTypeName,
+                        $nodeTypeUsage) ? (int)$nodeTypeUsage[$nodeTypeName] : 0,
+                ];
 
-            $instantiableNodeTypes = array_filter($nodeTypes, static function (NodeType $nodeType) {
-                return !$nodeType->isAbstract();
-            });
-            $carry[$nodeTypeName]['allowedChildNodeTypes'] = $this->generateAllowedChildNodeTypes($nodeType,
-                $instantiableNodeTypes);
+                $instantiableNodeTypes = array_filter($nodeTypes, static function (NodeType $nodeType) {
+                    return !$nodeType->isAbstract();
+                });
+                $carry[$nodeTypeName]['allowedChildNodeTypes'] = $this->generateAllowedChildNodeTypes($nodeType,
+                    $instantiableNodeTypes);
 
-            if (array_key_exists('childNodes', $carry[$nodeTypeName]['configuration'])) {
-                foreach (array_keys($carry[$nodeTypeName]['configuration']['childNodes']) as $childNodeName) {
-                    $carry[$nodeTypeName]['configuration']['childNodes'][$childNodeName]['allowedChildNodeTypes'] = $this->generateAllowedGrandChildNodeTypes($childNodeName,
-                        $nodeType, $instantiableNodeTypes);
+                if (array_key_exists('childNodes', $carry[$nodeTypeName]['configuration'])) {
+                    foreach (array_keys($carry[$nodeTypeName]['configuration']['childNodes']) as $childNodeName) {
+                        $carry[$nodeTypeName]['configuration']['childNodes'][$childNodeName]['allowedChildNodeTypes'] = $this->generateAllowedGrandChildNodeTypes($childNodeName,
+                            $nodeType, $instantiableNodeTypes);
+                    }
                 }
-            }
 
-            return $carry;
-        }, []);
+                return $carry;
+            }, []);
 
         $this->nodeTypesCache->flush();
         try {
@@ -102,6 +106,27 @@ class NodeTypeGraphService
         }
 
         return $nodeTypes;
+    }
+
+    /**
+     * Return the usage count of each nodetype in the content repository
+     *
+     * @return array
+     */
+    public function getNodeTypeUsageQuery(): array
+    {
+        $qb = $this->entityManager->createQueryBuilder();
+        $nodeTypeUsage = $qb->select('n.nodeType, COUNT(n.identifier) as count')
+            ->from(NodeData::class, 'n')
+            ->groupBy('n.nodeType')
+            ->andWhere('n.removed = false')
+            ->getQuery()
+            ->getScalarResult();
+
+        $nodeTypes = array_column($nodeTypeUsage, 'nodeType');
+        $usageCount = array_column($nodeTypeUsage, 'count');
+
+        return array_combine($nodeTypes, $usageCount);
     }
 
     /**
@@ -146,26 +171,5 @@ class NodeTypeGraphService
             }
             return $carry;
         }, []);
-    }
-
-    /**
-     * Return the usage count of each nodetype in the content repository
-     *
-     * @return array
-     */
-    public function getNodeTypeUsageQuery(): array
-    {
-        $qb = $this->entityManager->createQueryBuilder();
-        $nodeTypeUsage = $qb->select('n.nodeType, COUNT(n.identifier) as count')
-            ->from(NodeData::class, 'n')
-            ->groupBy('n.nodeType')
-            ->andWhere('n.removed = false')
-            ->getQuery()
-            ->getScalarResult();
-
-        $nodeTypes = array_column($nodeTypeUsage, 'nodeType');
-        $usageCount = array_column($nodeTypeUsage, 'count');
-
-        return array_combine($nodeTypes, $usageCount);
     }
 }

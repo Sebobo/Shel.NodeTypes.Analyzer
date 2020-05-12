@@ -17,7 +17,8 @@ export default function NodeGrandChildNodes() {
     return (
         <ToggablePanel onPanelToggle={() => setCollapsed(!collapsed)} isOpen={!collapsed} style="condensed">
             <ToggablePanel.Header>
-                {translate('inspector.grandChildNodes.label', 'Defined childnodes')} ({childNodes?.length || 0})
+                {translate('inspector.grandChildNodes.label', 'Defined childnodes')} (
+                {childNodes ? Object.keys(childNodes).length : 0})
             </ToggablePanel.Header>
             <ToggablePanel.Contents>
                 {!collapsed && childNodes ? (

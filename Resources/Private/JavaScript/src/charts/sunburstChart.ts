@@ -18,8 +18,7 @@ export interface ExtendedArcObject extends DefaultArcObject {
 }
 
 export default function renderSunburstChart({ data, width = 975, height = 800 }: SunburstProps) {
-    const format = d3.format(',d');
-    const radius = width / 2;
+    const radius = Math.max(500, width / 2);
 
     const root = partition(data, radius);
 
@@ -58,7 +57,7 @@ export default function renderSunburstChart({ data, width = 975, height = 800 }:
                         return d.data.name;
                     })
                     .reverse()
-                    .join('/')}\n${format(d.value)}`
+                    .join('/')}`
         );
 
     svg.append('g')

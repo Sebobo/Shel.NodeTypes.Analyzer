@@ -1,5 +1,6 @@
 # Neos CMS Content Repository analysis & visualizer
 
+![](https://github.com/Sebobo/Shel.ContentRepository.Debugger/workflows/Code%20Quality%20Tests/badge.svg)
 [![Latest Stable Version](https://poser.pugx.org/shel/contentrepository-debugger/v/stable)](https://packagist.org/packages/shel/contentrepository-debugger)
 [![Total Downloads](https://poser.pugx.org/shel/contentrepository-debugger/downloads)](https://packagist.org/packages/shel/contentrepository-debugger)
 [![License](https://poser.pugx.org/shel/contentrepository-debugger/license)](https://packagist.org/packages/shel/contentrepository-debugger)

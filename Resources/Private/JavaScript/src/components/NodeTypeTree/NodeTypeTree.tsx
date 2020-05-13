@@ -13,15 +13,15 @@ const useStyles = createUseAppStyles({
 
 export default function NodeTypeTree() {
     const classes = useStyles();
-    const { treeData } = useGraph();
+    const { treeData, nodeTypes } = useGraph();
 
     return (
         <Tree className={classes.tree}>
             {Object.keys(treeData)
                 .sort()
                 .map((segment, index) =>
-                    treeData[segment].name ? (
-                        <NodeTypeTreeNode key={index} nodeType={treeData[segment]} />
+                    treeData[segment].nodeType ? (
+                        <NodeTypeTreeNode key={index} nodeType={nodeTypes[treeData[segment].nodeType]} />
                     ) : (
                         <VendorSegmentTreeNode
                             key={index}

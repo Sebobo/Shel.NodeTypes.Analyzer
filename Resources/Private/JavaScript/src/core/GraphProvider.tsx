@@ -132,8 +132,7 @@ export default function GraphProvider({ children, actions }: GraphProviderProps)
                     return carry;
                 }
             }
-            const segments = nodeType.name.split(':');
-            return $set(segments.join('.'), nodeType, carry);
+            return $set(nodePathHelper.resolveFromType(nodeType), { nodeType: nodeType.name }, carry);
         }, {});
 
         setTreeData(treeData);

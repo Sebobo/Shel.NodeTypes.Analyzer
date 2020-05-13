@@ -25,7 +25,7 @@ export default function VendorSegmentTreeNode({
     icon = 'folder'
 }: VendorSegmentTreeNodeProps) {
     const [collapsed, setCollapsed] = useState(true);
-    const { selectedPath, selectedNodeTypeName, dispatch } = useGraph();
+    const { selectedPath, selectedNodeTypeName, dispatch, nodeTypes } = useGraph();
 
     const hasChildren = subNodes && Object.keys(subNodes).length > 0;
     const isInActivePath =
@@ -51,8 +51,12 @@ export default function VendorSegmentTreeNode({
             {(isInActivePath || !collapsed) &&
                 hasChildren &&
                 Object.keys(subNodes).map((segment, index) =>
-                    subNodes[segment].name ? (
-                        <NodeTypeTreeNode key={index} level={level + 1} nodeType={subNodes[segment]} />
+                    subNodes[segment].nodeType ? (
+                        <NodeTypeTreeNode
+                            key={index}
+                            level={level + 1}
+                            nodeType={nodeTypes[subNodes[segment].nodeType]}
+                        />
                     ) : (
                         <VendorSegmentTreeNode
                             key={index}

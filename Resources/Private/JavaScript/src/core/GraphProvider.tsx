@@ -40,6 +40,8 @@ interface NodeTypeConfigurations {
 export const GraphContext = createContext({} as GraphProviderValues);
 export const useGraph = () => useContext(GraphContext);
 
+const MAX_SUB_SEGMENTS = 10;
+
 export default function GraphProvider({ children, actions }: GraphProviderProps) {
     const Notify = useNotify();
     const [appState, dispatch] = useAppState();
@@ -67,14 +69,31 @@ export default function GraphProvider({ children, actions }: GraphProviderProps)
      * @param path
      */
     const processTreeData = (data, path = '') => {
-        return Object.keys(data).map(name => {
-            const segmentPath = path ? path + '.' + name : name;
-            const node: DataSegment = { name, path: segmentPath };
-            if (data[name].name) {
+        return Object.keys(data).map(segment => {
+            const currentData = data[segment];
+            const segmentPath = path ? path + '.' + segment : segment;
+            const node: DataSegment = { name: segment, path: segmentPath };
+            if (currentData.nodeType) {
                 node['value'] = 1;
-                node['data'] = data[name];
+                node['data'] = currentData;
             } else {
-                node['children'] = processTreeData(data[name], segmentPath);
+                // Only expand
+                const closeToCurrentPath =
+                    selectedPath.length > 0 &&
+                    segmentPath.indexOf(selectedPath) === 0 &&
+                    segmentPath.split('.').length - selectedPath.split('.').length <= 1;
+
+                if (closeToCurrentPath || Object.keys(currentData).length <= MAX_SUB_SEGMENTS) {
+                    node['children'] = processTreeData(currentData, segmentPath);
+                } else {
+                    node['children'] = [
+                        {
+                            name: `>${MAX_SUB_SEGMENTS} subtypes`,
+                            path: segmentPath,
+                            value: MAX_SUB_SEGMENTS
+                        }
+                    ];
+                }
             }
             return node;
         });
@@ -240,7 +259,7 @@ export default function GraphProvider({ children, actions }: GraphProviderProps)
     useEffect(() => {
         if (Object.keys(treeData).length === 0) return;
         setGraphData({ name: 'nodetypes', path: '', children: processTreeData(treeData) });
-    }, [treeData]);
+    }, [treeData, selectedPath]);
 
     return (
         <GraphContext.Provider

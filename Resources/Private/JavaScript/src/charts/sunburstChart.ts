@@ -2,7 +2,7 @@ import * as d3 from 'd3';
 import { DefaultArcObject } from 'd3';
 
 import { DataSegment } from '../interfaces';
-import { partition, autoBox } from './helpers';
+import { partition, autoBox, enableZoom } from './helpers';
 
 interface SunburstProps {
     data: DataSegment;
@@ -19,10 +19,8 @@ export interface ExtendedArcObject extends DefaultArcObject {
 
 export default function renderSunburstChart({ data, width = 975, height = 800 }: SunburstProps) {
     const radius = Math.max(500, width / 2);
-
     const root = partition(data, radius);
-
-    const color = d3.scaleOrdinal(d3.quantize(d3.interpolateRainbow, data.children.length + 1));
+    const color = d3.scaleOrdinal(d3.quantize(d3.interpolateRainbow, data.children?.length + 1));
 
     const arc = d3
         .arc()
@@ -35,7 +33,9 @@ export default function renderSunburstChart({ data, width = 975, height = 800 }:
 
     const svg = d3.create('svg');
 
-    svg.append('g')
+    const g = svg.append('g');
+
+    g.append('g')
         .attr('fill-opacity', 0.6)
         .selectAll('path')
         .data(root.descendants().filter(d => d.depth))
@@ -60,7 +60,7 @@ export default function renderSunburstChart({ data, width = 975, height = 800 }:
                     .join('/')}`
         );
 
-    svg.append('g')
+    g.append('g')
         .attr('text-anchor', 'middle')
         .attr('font-size', 11)
         .attr('font-family', 'Noto Sans')
@@ -86,6 +86,8 @@ export default function renderSunburstChart({ data, width = 975, height = 800 }:
     // @ts-ignore
     svg.attr('viewBox', autoBox);
     svg.attr('height', height);
+
+    enableZoom({ svg, layer: g, width, height });
 
     return svg.node();
 }

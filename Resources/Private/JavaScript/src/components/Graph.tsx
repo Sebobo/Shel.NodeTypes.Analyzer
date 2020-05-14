@@ -2,10 +2,6 @@ import * as React from 'react';
 import { useEffect, useRef } from 'react';
 import { $get } from 'plow-js';
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignore
-import svgPanZoom from 'svg-pan-zoom';
-
 import { Action, AppTheme, createUseAppStyles, useGraph } from '../core';
 import { renderSunburstChart, renderDependencyGraph } from '../charts';
 import { LinkType, DataSegment } from '../interfaces';
@@ -93,13 +89,9 @@ export default function Graph() {
         wrapper.appendChild(chart);
 
         const graphSvg = wrapper.querySelector('svg');
-
-        // Init svg pan and zoom functionality
-        const panZoom = svgPanZoom(graphSvg, {});
         graphSvg.addEventListener('click', selectNodeTypeInGraph);
 
         return () => {
-            panZoom.destroy();
             graphSvg.removeEventListener('click', selectNodeTypeInGraph);
         };
     }, [graphData, selectedPath, dependencyData, selectedLayout]);

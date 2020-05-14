@@ -2,7 +2,7 @@ import * as d3 from 'd3';
 import { rollup, group } from 'd3-array';
 
 import { DataSegment, Dependencies } from '../interfaces';
-import { centroid, linkArc, drag } from './helpers';
+import { centroid, linkArc, drag, enableZoom } from './helpers';
 
 interface DependencyChartProps {
     data: Dependencies;
@@ -138,79 +138,103 @@ export default function renderDependencyGraph({
         .attr('viewBox', [0, 0, width, height].join(' '))
         .style('font', '14px "Noto Sans"');
 
-    svg.append('defs')
-        .selectAll('marker')
-        .data(types)
-        .join('marker')
-        .attr('id', d => `arrow-${d}`)
-        .attr('viewBox', '0 -5 10 10')
-        .attr('refX', 15)
-        .attr('refY', -0.5)
-        .attr('markerWidth', markerSize)
-        .attr('markerHeight', markerSize)
-        .attr('orient', 'auto')
-        .append('path')
-        .attr('fill', linkColor)
-        .attr('d', 'M0,-5L10,0L0,5');
+    const loading = svg
+        .append('text')
+        .attr('dy', '0.35em')
+        .attr('text-anchor', 'middle')
+        .attr('font-family', 'sans-serif')
+        .attr('font-size', 10)
+        .text('Simulating. One moment please…');
 
-    const hull = svg
-        .append('g')
-        .selectAll('path')
-        .data(groups)
-        .join('path')
-        .attr('fill', d => nodeColor(d))
-        .attr('stroke', d => nodeColor(d))
-        .attr('class', 'hull')
-        .attr('id', d => `hull-${d}`);
+    d3.timeout(() => {
+        // Precalculate ticks to reduce initial movement in graph
+        for (
+            let i = 0, n = Math.ceil(Math.log(simulation.alphaMin()) / Math.log(1 - simulation.alphaDecay()));
+            i < n;
+            ++i
+        ) {
+            simulation.tick();
+        }
 
-    const link = svg
-        .append('g')
-        .attr('fill', 'none')
-        .attr('stroke-width', 1.5)
-        .selectAll('path')
-        .data(links)
-        .join('path')
-        .attr('stroke', d => nodeColor(d.group))
-        .attr('marker-end', d => `url(${new URL(`#arrow-${d.type}`, location.toString())})`);
+        loading.remove();
 
-    const node = svg
-        .append('g')
-        .attr('fill', 'currentColor')
-        .attr('stroke-linecap', 'round')
-        .attr('stroke-linejoin', 'round')
-        .selectAll('g')
-        .data(nodes)
-        .join('g');
-    // @ts-ignore
-    node.call(drag(simulation));
+        svg.append('defs')
+            .selectAll('marker')
+            .data(types)
+            .join('marker')
+            .attr('id', d => `arrow-${d}`)
+            .attr('viewBox', '0 -5 10 10')
+            .attr('refX', 15)
+            .attr('refY', -0.5)
+            .attr('markerWidth', markerSize)
+            .attr('markerHeight', markerSize)
+            .attr('orient', 'auto')
+            .append('path')
+            .attr('fill', linkColor)
+            .attr('d', 'M0,-5L10,0L0,5');
 
-    node.append('circle')
-        .attr('stroke', (d: d3.HierarchyCircularNode<DataSegment>) => nodeColor(d.data.group))
-        .attr('stroke-width', 1.5)
-        .attr('r', (d: d3.HierarchyCircularNode<DataSegment>) => 4 * d.data.value);
+        const g = svg.append('g');
 
-    node.append('text')
-        .attr('x', (d: d3.HierarchyCircularNode<DataSegment>) => 4 + 4 * d.data.value)
-        .attr('y', '0.31em')
-        .attr('fill', 'white')
-        .attr('class', 'node')
-        .attr('path', (d: d3.HierarchyCircularNode<DataSegment>) => d.data.path)
-        .text((d: d3.HierarchyCircularNode<DataSegment>) => d.data.name);
+        const hull = g
+            .append('g')
+            .selectAll('path')
+            .data(groups)
+            .join('path')
+            .attr('fill', d => nodeColor(d))
+            .attr('stroke', d => nodeColor(d))
+            .attr('class', 'hull')
+            .attr('id', d => `hull-${d}`);
 
-    simulation.on('tick', () => {
-        link.attr('d', linkArc);
-        node.attr('transform', d => `translate(${d.x},${d.y})`);
-        hull.datum((d, i, g) => {
-            const groupName = g[i]['id'].replace('hull-', '');
-            const points: [number, number][] = simulation
-                .nodes()
-                .filter(({ data }) => data['group'] === groupName)
-                .map(({ x, y }) => [x, y]);
-            return d3.polygonHull(points);
-        }).attr('d', d => (d ? 'M' + d.join('L') + 'Z' : ''));
+        const link = g
+            .append('g')
+            .attr('fill', 'none')
+            .attr('stroke-width', 1.5)
+            .selectAll('path')
+            .data(links)
+            .join('path')
+            .attr('stroke', d => nodeColor(d.group))
+            .attr('marker-end', d => `url(${new URL(`#arrow-${d.type}`, location.toString())})`);
+
+        const node = g
+            .append('g')
+            .attr('fill', 'currentColor')
+            .attr('stroke-linecap', 'round')
+            .attr('stroke-linejoin', 'round')
+            .selectAll('g')
+            .data(nodes)
+            .join('g');
+
+        // @ts-ignore
+        node.call(drag(simulation));
+
+        node.append('circle')
+            .attr('stroke', (d: d3.HierarchyCircularNode<DataSegment>) => nodeColor(d.data.group))
+            .attr('stroke-width', 1.5)
+            .attr('r', (d: d3.HierarchyCircularNode<DataSegment>) => 4 * d.data.value);
+
+        node.append('text')
+            .attr('x', (d: d3.HierarchyCircularNode<DataSegment>) => 4 + 4 * d.data.value)
+            .attr('y', '0.31em')
+            .attr('fill', 'white')
+            .attr('class', 'node')
+            .attr('path', (d: d3.HierarchyCircularNode<DataSegment>) => d.data.path)
+            .text((d: d3.HierarchyCircularNode<DataSegment>) => d.data.name);
+
+        simulation.on('tick', () => {
+            link.attr('d', linkArc);
+            node.attr('transform', d => `translate(${d.x},${d.y})`);
+            hull.datum((d, i, g) => {
+                const groupName = g[i]['id'].replace('hull-', '');
+                const points: [number, number][] = simulation
+                    .nodes()
+                    .filter(({ data }) => data['group'] === groupName)
+                    .map(({ x, y }) => [x, y]);
+                return d3.polygonHull(points);
+            }).attr('d', d => (d ? 'M' + d.join('L') + 'Z' : ''));
+        });
+
+        enableZoom({ svg, layer: g, width, height });
     });
-
-    // invalidation.then(() => simulation.stop());
 
     return svg.node();
 }

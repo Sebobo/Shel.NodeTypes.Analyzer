@@ -45,14 +45,15 @@ export default function Graph() {
     const graphSvgWrapper = useRef();
     const { graphData, treeData, selectedPath, selectedLayout, dependencyData, dispatch } = useGraph();
 
-    const selectNodeTypeInGraph = (e: MouseEvent): void => {
-        const graphNode = e.target as HTMLElement;
-        const path = graphNode.getAttribute('path');
-        const selection = $get(path, treeData);
-        if (selection?.name) {
-            dispatch({ type: Action.SelectNodeType, payload: selection.name });
-        } else {
-            dispatch({ type: Action.SelectPath, payload: path });
+    const selectNodeTypeInGraph = ({ target }): void => {
+        if (target instanceof Element && target.tagName === 'text' && target.classList.contains('node')) {
+            const path = target.getAttribute('path');
+            const selection = $get(path, treeData);
+            if (selection?.nodeType) {
+                dispatch({ type: Action.SelectNodeType, payload: selection.nodeType });
+            } else {
+                dispatch({ type: Action.SelectPath, payload: path });
+            }
         }
     };
 
@@ -92,15 +93,14 @@ export default function Graph() {
         wrapper.appendChild(chart);
 
         const graphSvg = wrapper.querySelector('svg');
-        const nodes = graphSvg.querySelectorAll('text.node');
-        nodes.forEach(node => node.addEventListener('click', selectNodeTypeInGraph));
 
         // Init svg pan and zoom functionality
         const panZoom = svgPanZoom(graphSvg, {});
+        graphSvg.addEventListener('click', selectNodeTypeInGraph);
 
         return () => {
-            nodes.forEach(node => node.removeEventListener('click', selectNodeTypeInGraph));
             panZoom.destroy();
+            graphSvg.removeEventListener('click', selectNodeTypeInGraph);
         };
     }, [graphData, selectedPath, dependencyData, selectedLayout]);
 

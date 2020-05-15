@@ -3,7 +3,8 @@ import * as ReactDOM from 'react-dom';
 import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import memoize from 'lodash.memoize';
-import { hot } from 'react-hot-loader';
+import { hot, setConfig } from 'react-hot-loader';
+import { RecoilRoot } from 'recoil';
 
 import { GraphApp } from './components';
 import { GraphProvider, IntlProvider, AppThemeProvider, NotifyProvider } from './core';
@@ -11,6 +12,9 @@ import { GraphProvider, IntlProvider, AppThemeProvider, NotifyProvider } from '.
 const withDragDropContext = DragDropContext(HTML5Backend);
 declare const module: any;
 const GraphAppWithDnd = withDragDropContext(hot(module)(GraphApp));
+setConfig({
+    showReactDomPatchNotification: false
+});
 
 const loadPlugin = async (): Promise<void> => {
     const NeosApi = window.Typo3Neos;
@@ -27,19 +31,21 @@ const loadPlugin = async (): Promise<void> => {
     const { actions } = JSON.parse(graphAppContainer.dataset.app);
     const { I18n, Notification } = NeosApi;
 
-    let translate = (id, value = null, args = [], packageKey = 'Shel.ContentRepository.Debugger', source = 'Main') => {
-        return I18n.translate(id, value, packageKey, source, args);
-    };
-
-    translate = memoize(translate);
+    const translate = memoize(
+        (id, value = null, args = [], packageKey = 'Shel.ContentRepository.Debugger', source = 'Main') => {
+            return I18n.translate(id, value, packageKey, source, args);
+        }
+    );
 
     ReactDOM.render(
         <IntlProvider translate={translate}>
             <NotifyProvider {...Notification}>
                 <AppThemeProvider>
-                    <GraphProvider actions={actions}>
-                        <GraphAppWithDnd />
-                    </GraphProvider>
+                    <RecoilRoot>
+                        <GraphProvider actions={actions}>
+                            <GraphAppWithDnd />
+                        </GraphProvider>
+                    </RecoilRoot>
                 </AppThemeProvider>
             </NotifyProvider>
         </IntlProvider>,

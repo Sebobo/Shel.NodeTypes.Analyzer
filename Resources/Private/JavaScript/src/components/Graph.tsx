@@ -63,30 +63,36 @@ export default function Graph() {
 
         let chart = null;
         let data = null;
-        switch (selectedLayout) {
-            case 'sunburst':
-                if (selectedPath) {
-                    data = selectedPath.split('.').reduce<DataSegment>((data, segment) => {
-                        return data.children.find(child => child.name === segment);
-                    }, graphData);
-                } else {
-                    data = graphData;
-                }
-                chart = renderSunburstChart({ data, width, height });
-                break;
-            case 'dependencies':
-                if (dependencyData.nodes.children.length === 0) {
-                    return;
-                }
-                chart = renderDependencyGraph({
-                    data: dependencyData,
-                    types: [LinkType.INHERITS],
-                    width,
-                    height
-                });
-                break;
+
+        try {
+            switch (selectedLayout) {
+                case 'sunburst':
+                    if (selectedPath) {
+                        data = selectedPath.split('.').reduce<DataSegment>((data, segment) => {
+                            return data.children.find(child => child.name === segment);
+                        }, graphData);
+                    } else {
+                        data = graphData;
+                    }
+                    chart = renderSunburstChart({ data, width, height });
+                    break;
+                case 'dependencies':
+                    if (dependencyData.nodes.children.length === 0) {
+                        return;
+                    }
+                    chart = renderDependencyGraph({
+                        data: dependencyData,
+                        types: [LinkType.INHERITS],
+                        width,
+                        height
+                    });
+                    break;
+            }
+            wrapper.appendChild(chart);
+        } catch (e) {
+            console.error(e);
+            return null;
         }
-        wrapper.appendChild(chart);
 
         const graphSvg = wrapper.querySelector('svg');
         graphSvg.addEventListener('click', selectNodeTypeInGraph);

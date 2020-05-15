@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { Toolbar, Inspector, Graph, TreeFilter, InvalidNodeTypes, LoadingIndicator } from './index';
+import { Toolbar, Inspector, Graph, TreeFilter, InvalidNodeTypes, LoadingIndicator, SearchBox } from './index';
 import { AppTheme, createUseAppStyles } from '../core';
 import { NodeTypeTree } from './NodeTypeTree';
 
@@ -30,6 +30,7 @@ export default function GraphApp() {
             <LoadingIndicator />
             <div className={classes.left}>
                 <TreeFilter />
+                <SearchBox />
                 <NodeTypeTree />
                 <InvalidNodeTypes />
             </div>

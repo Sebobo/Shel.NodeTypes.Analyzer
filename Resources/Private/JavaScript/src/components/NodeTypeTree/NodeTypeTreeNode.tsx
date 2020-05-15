@@ -20,7 +20,7 @@ export default function NodeTypeTreeNode({ nodeType, level = 1 }: NodeTypeTreeNo
     const [collapsed, setCollapsed] = useState(true);
     const { selectedNodeTypeName, dispatch } = useGraph();
 
-    const hasChildren = configuration.childNodes != null;
+    const hasChildren = !!configuration.childNodes;
     const nodePath = nodePathHelper.resolveFromType(nodeType);
 
     const handleSelectNode = () => {
@@ -43,7 +43,7 @@ export default function NodeTypeTreeNode({ nodeType, level = 1 }: NodeTypeTreeNo
                 level={level}
                 onToggle={() => setCollapsed(!collapsed)}
                 onClick={() => handleSelectNode()}
-                hasChildren={!!configuration.childNodes}
+                hasChildren={hasChildren}
             />
             {!collapsed &&
                 hasChildren &&

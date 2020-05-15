@@ -2,7 +2,15 @@ import * as React from 'react';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { $set } from 'plow-js';
 
-import { Actions, DataSegment, Dependencies, NodeTypeConfiguration, NodeTypeGroup, LinkType } from '../interfaces';
+import {
+    Actions,
+    DataSegment,
+    Dependencies,
+    NodeTypeConfiguration,
+    NodeTypeGroup,
+    LinkType,
+    NodeTypeConfigurations
+} from '../interfaces';
 import fetchData from '../helpers/fetchData';
 import nodePathHelper from '../helpers/nodePathHelper';
 import { useNotify } from './Notify';
@@ -31,10 +39,6 @@ interface GraphProviderValues extends AppState {
     invalidNodeTypes: NodeTypeConfigurations;
     setInvalidNodeTypes: (nodeTypes: NodeTypeConfigurations) => void;
     dispatch: React.Dispatch<AppAction>;
-}
-
-interface NodeTypeConfigurations {
-    [index: string]: NodeTypeConfiguration;
 }
 
 export const GraphContext = createContext({} as GraphProviderValues);

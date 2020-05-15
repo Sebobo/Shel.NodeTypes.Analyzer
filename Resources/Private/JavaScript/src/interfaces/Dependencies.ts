@@ -4,7 +4,7 @@ export enum LinkType {
     INHERITS = 'inherits'
 }
 
-export default interface Dependencies {
+export interface Dependencies {
     nodes: {
         children: DataSegment[];
     };

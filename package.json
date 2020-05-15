@@ -1,6 +1,7 @@
 {
   "name": "shel-contentrepositorydebugger",
   "version": "1.0.0",
+  "sideEffects": false,
   "main": "Resources/Public/JavaScript/index.tsx",
   "repository": "git@github.com:Sebobo/Shel.ContentRepository.Debugger.git",
   "author": "Sebastian Helzle <sebastian@helzle.it>",
@@ -72,6 +73,7 @@
     "postcss-custom-properties": "^9.1.1",
     "postcss-modules": "^1.5.0",
     "prettier": "^1.19.1",
+    "react-hot-loader": "^4.12.21",
     "typescript": "^3.8.2",
     "webpack": "^4.38.0"
   },

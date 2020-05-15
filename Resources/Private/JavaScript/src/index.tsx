@@ -3,12 +3,14 @@ import * as ReactDOM from 'react-dom';
 import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import memoize from 'lodash.memoize';
+import { hot } from 'react-hot-loader';
 
 import { GraphApp } from './components';
 import { GraphProvider, IntlProvider, AppThemeProvider, NotifyProvider } from './core';
 
 const withDragDropContext = DragDropContext(HTML5Backend);
-const GraphAppWithDnd = withDragDropContext(GraphApp);
+declare const module: any;
+const GraphAppWithDnd = withDragDropContext(hot(module)(GraphApp));
 
 const loadPlugin = async (): Promise<void> => {
     const NeosApi = window.Typo3Neos;

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { $set } from 'plow-js';
+import { useRecoilValue } from 'recoil';
 
 import {
     Actions,
@@ -16,6 +17,7 @@ import nodePathHelper from '../helpers/nodePathHelper';
 import { useNotify } from './Notify';
 import { chartType, FilterType } from '../constants';
 import { useAppState, AppAction, AppState } from './index';
+import { filterTypeState } from '../atoms';
 
 export interface GraphProviderProps {
     children: React.ReactElement;
@@ -34,8 +36,6 @@ interface GraphProviderValues extends AppState {
     graphData: DataSegment;
     dependencyData: Dependencies;
     treeData: object;
-    selectedFilter: string;
-    setSelectedFilter: (filter: FilterType) => void;
     invalidNodeTypes: NodeTypeConfigurations;
     setInvalidNodeTypes: (nodeTypes: NodeTypeConfigurations) => void;
     dispatch: React.Dispatch<AppAction>;
@@ -55,7 +55,7 @@ export default function GraphProvider({ children, actions }: GraphProviderProps)
     const [nodeTypes, setNodeTypes] = useState<NodeTypeConfigurations>({});
     const [invalidNodeTypes, setInvalidNodeTypes] = useState<NodeTypeConfigurations>({});
     const [superTypeFilter, setSuperTypeFilter] = useState('');
-    const [selectedFilter, setSelectedFilter] = useState(FilterType.NONE);
+    const selectedFilter = useRecoilValue(filterTypeState);
 
     const { selectedNodeTypeName, selectedPath, selectedLayout } = appState;
 
@@ -279,8 +279,6 @@ export default function GraphProvider({ children, actions }: GraphProviderProps)
                 graphData,
                 dependencyData,
                 treeData,
-                selectedFilter,
-                setSelectedFilter,
                 invalidNodeTypes,
                 setInvalidNodeTypes,
                 ...appState,

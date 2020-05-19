@@ -1,10 +1,12 @@
 import * as React from 'react';
+import { useRecoilState } from 'recoil';
 
 import Headline from '@neos-project/react-ui-components/lib-esm/Headline';
 import SelectBox from '@neos-project/react-ui-components/lib-esm/SelectBox';
 
 import { FilterType } from '../constants';
-import { AppTheme, createUseAppStyles, useGraph, useIntl } from '../core';
+import { AppTheme, createUseAppStyles, useIntl } from '../core';
+import { filterTypeState } from '../atoms';
 
 const useStyles = createUseAppStyles((theme: AppTheme) => ({
     group: {
@@ -23,7 +25,7 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
 export default function TreeFilter() {
     const classes = useStyles();
     const { translate } = useIntl();
-    const { selectedFilter, setSelectedFilter } = useGraph();
+    const [selectedFilter, setSelectedFilter] = useRecoilState(filterTypeState);
 
     const selectableFilters = [
         { label: 'None', value: FilterType.NONE },

@@ -3,7 +3,10 @@ import * as React from 'react';
 import { AppTheme, createUseAppStyles } from '../../core';
 
 const useStyles = createUseAppStyles((theme: AppTheme) => ({
-    propertyList: {},
+    propertyList: {
+        maxHeight: '50vh',
+        overflow: 'auto'
+    },
     propertyListItem: {
         whiteSpace: 'nowrap',
         overflow: 'hidden',

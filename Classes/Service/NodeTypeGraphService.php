@@ -63,21 +63,44 @@ class NodeTypeGraphService
         $nodeTypes = $this->nodeTypeManager->getNodeTypes();
         $nodeTypeUsage = $this->getNodeTypeUsageQuery();
 
-        $defaultConfiguration = ['superTypes' => []];
+        $defaultConfiguration = ['superTypes' => [], 'properties' => [], 'ui' => [], 'abstract' => false, 'final' => false, 'constraints' => [], 'childNodes' => []];
+        $defaultConfigurationKeys = array_keys($defaultConfiguration);
 
         $nodeTypes = array_reduce($nodeTypes,
-            function (array $carry, NodeType $nodeType) use ($defaultConfiguration, $nodeTypes, $nodeTypeUsage) {
+            function (array $carry, NodeType $nodeType) use ($defaultConfiguration, $defaultConfigurationKeys, $nodeTypes, $nodeTypeUsage) {
                 $nodeTypeName = $nodeType->getName();
+
+                $declaredProperties = array_keys($nodeType->getLocalConfiguration()['properties'] ?? []);
+
+                $declaredSuperTyoes = array_reduce($nodeType->getDeclaredSuperTypes(),
+                    static function (array $carry, NodeType $superType) {
+                        $carry[] = $superType->getName();
+                        return $carry;
+                    }, []);
+
+                $configuration = array_merge($defaultConfiguration, $nodeType->getFullConfiguration());
+                // Filter all property configs except type
+                $configuration['properties'] = array_map(static function ($definition) {
+                    return [
+                        'type' => $definition['type'] ?? null,
+                    ];
+                }, $configuration['properties']);
+
+                $configuration['ui'] = array_filter($configuration['ui'], static function ($key) {
+                    return $key === 'label' || $key === 'icon';
+                }, ARRAY_FILTER_USE_KEY);
+
+                $configuration = array_filter($configuration, static function ($key) use($defaultConfigurationKeys) {
+                    return in_array($key, $defaultConfigurationKeys, true);
+                }, ARRAY_FILTER_USE_KEY);
+
                 $carry[$nodeTypeName] = [
                     'name' => $nodeTypeName,
-                    'abstact' => $nodeType->isAbstract(),
+                    'abstract' => $nodeType->isAbstract(),
                     'final' => $nodeType->isFinal(),
-                    'configuration' => array_merge($defaultConfiguration, $nodeType->getFullConfiguration()),
-                    'declaredSuperTypes' => array_reduce($nodeType->getDeclaredSuperTypes(),
-                        static function (array $carry, NodeType $superType) {
-                            $carry[] = $superType->getName();
-                            return $carry;
-                        }, []),
+                    'configuration' => $configuration,
+                    'declaredProperties' => $declaredProperties,
+                    'declaredSuperTypes' => $declaredSuperTyoes,
                     'usageCount' => array_key_exists($nodeTypeName,
                         $nodeTypeUsage) ? (int)$nodeTypeUsage[$nodeTypeName] : 0,
                 ];

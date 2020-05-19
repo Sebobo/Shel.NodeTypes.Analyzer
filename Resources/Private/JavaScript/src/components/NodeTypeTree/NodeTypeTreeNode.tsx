@@ -37,8 +37,8 @@ export default function NodeTypeTreeNode({ nodeType, level = 1 }: NodeTypeTreeNo
                 isLoading={false}
                 hasError={false}
                 label={`${nodePath.split('.').pop()} (${usageCount})`}
-                title={configuration.ui?.label || name}
-                icon={configuration.ui?.icon || 'question'}
+                title={configuration.ui.label || name}
+                icon={configuration.ui.icon || 'question'}
                 nodeDndType={dndTypes.NODE_TYPE}
                 level={level}
                 onToggle={() => setCollapsed(!collapsed)}

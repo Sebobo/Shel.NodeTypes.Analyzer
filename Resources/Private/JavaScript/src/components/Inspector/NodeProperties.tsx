@@ -10,7 +10,8 @@ export default function NodeProperties() {
     const { selectedNodeTypeName, nodeTypes } = useGraph();
     const { translate } = useIntl();
     const {
-        configuration: { properties }
+        configuration: { properties },
+        declaredProperties
     } = nodeTypes[selectedNodeTypeName];
     const [showProperties, setShowProperties] = useState(false);
 
@@ -34,6 +35,7 @@ export default function NodeProperties() {
                                     <PropertyListItem
                                         key={propName}
                                         label={propName}
+                                        highlighted={declaredProperties.includes(propName)}
                                         value={properties[propName].type}
                                     />
                                 ))}

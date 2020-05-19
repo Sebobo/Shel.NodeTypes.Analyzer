@@ -36,7 +36,7 @@ export default function NodeSelection() {
                     {
                         value: selectedNodeTypeName,
                         label: nodePathHelper.resolveNameWithoutVendor(selectedNodeTypeName),
-                        icon: configuration.ui?.icon || 'question'
+                        icon: configuration.ui.icon || 'question'
                     }
                 ]}
                 onValueChange={() => null}

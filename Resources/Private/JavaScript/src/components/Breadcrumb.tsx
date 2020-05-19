@@ -88,7 +88,7 @@ export default function Breadcrumb() {
                         <Icon icon="chevron-right" />
                     </li>
                     <li className={classes.text}>
-                        {selectedNodeType.configuration.ui?.icon && (
+                        {selectedNodeType.configuration.ui.icon && (
                             <Icon icon={selectedNodeType.configuration.ui.icon} />
                         )}
                         {selectedNodeTypeLastSegment}

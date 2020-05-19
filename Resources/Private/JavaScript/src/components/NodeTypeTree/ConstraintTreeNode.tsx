@@ -25,7 +25,7 @@ export default function ConstraintTreeNode({ name, value = true, level = 1, icon
                 hasError={!value}
                 label={name}
                 title={name}
-                icon={nodeTypes[name]?.configuration?.ui?.icon || icon}
+                icon={nodeTypes[name]?.configuration.ui.icon || icon}
                 nodeDndType={dndTypes.NODE_TYPE}
                 level={level}
                 hasChildren={false}

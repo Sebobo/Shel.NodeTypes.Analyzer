@@ -6,16 +6,15 @@ export default interface NodeTypeConfiguration {
     final: boolean;
     allowedChildNodeTypes: NodeTypeName[];
     usageCount: number;
+    declaredProperties: string[];
     declaredSuperTypes: NodeTypeName[];
     configuration: {
-        label: string;
         properties: {
             [index: string]: {
                 [key: string]: any;
                 type: string;
             };
         };
-        options: {};
         ui: {
             label?: string;
             icon?: string;

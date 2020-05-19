@@ -3,26 +3,29 @@ import * as React from 'react';
 import { AppTheme, createUseAppStyles } from '../../core';
 
 const useStyles = createUseAppStyles((theme: AppTheme) => ({
-    propertyList: {
+    propertyList: {},
+    propertyListItem: {
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis'
+    },
+    term: {
+        extend: 'propertyListItem',
+        backgroundColor: props => (props?.highlighted ? theme.colors.primaryViolet : theme.colors.contrastNeutral),
+        fontWeight: 'bold',
+        color: 'white',
         '.neos &': {
-            '& dt, & dd': {
-                backgroundColor: theme.colors.contrastNeutral,
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis'
-            },
-            '& dt': {
-                fontWeight: 'bold',
-                color: 'white',
-                padding: `${theme.spacing.half} ${theme.spacing.half} 0`
-            },
-            '& dd': {
-                backgroundColor: theme.colors.contrastNeutral,
-                marginBottom: '1px',
-                padding: theme.spacing.half,
-                lineHeight: '1.3',
-                color: theme.colors.contrastBright
-            }
+            padding: `${theme.spacing.half} ${theme.spacing.half} 0`
+        }
+    },
+    description: {
+        extend: 'propertyListItem',
+        backgroundColor: props => (props?.highlighted ? theme.colors.primaryViolet : theme.colors.contrastNeutral),
+        lineHeight: '1.3',
+        color: theme.colors.contrastBright,
+        '.neos &': {
+            marginBottom: '1px',
+            padding: theme.spacing.half
         }
     }
 }));
@@ -31,22 +34,25 @@ interface PropertyListProps {
     children: React.ReactElement[];
 }
 
-interface PropertyListItemProps {
-    label: string;
-    value: string;
-}
-
 export function PropertyList({ children }: PropertyListProps) {
     const classes = useStyles();
 
     return <dl className={classes.propertyList}>{children}</dl>;
 }
 
-export function PropertyListItem({ label, value }: PropertyListItemProps) {
+interface PropertyListItemProps {
+    label: string;
+    value: string;
+    highlighted?: boolean;
+}
+
+export function PropertyListItem({ label, value, highlighted = false }: PropertyListItemProps) {
+    const classes = useStyles({ highlighted });
+
     return (
         <>
-            <dt>{label}</dt>
-            <dd>{value}</dd>
+            <dt className={classes.term}>{label}</dt>
+            <dd className={classes.description}>{value}</dd>
         </>
     );
 }

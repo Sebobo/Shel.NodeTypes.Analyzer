@@ -11,23 +11,20 @@ export default function NodeSuperTypes() {
     const { selectedNodeTypeName, nodeTypes } = useGraph();
     const { translate } = useIntl();
     const {
-        configuration: { superTypes }
+        configuration: { superTypes },
+        declaredSuperTypes
     } = nodeTypes[selectedNodeTypeName];
-    const [showSupertypes, setShowSupertypes] = useState(false);
+    const [collapsed, setCollapsed] = useState(true);
 
     return (
-        <ToggablePanel
-            onPanelToggle={() => setShowSupertypes(!showSupertypes)}
-            isOpen={showSupertypes}
-            style="condensed"
-        >
+        <ToggablePanel onPanelToggle={() => setCollapsed(!collapsed)} isOpen={!collapsed} style="condensed">
             <ToggablePanel.Header>
                 {translate('inspector.supertypes.label', 'Supertypes')} (
                 {superTypes ? Object.keys(superTypes).length : 0})
             </ToggablePanel.Header>
             <ToggablePanel.Contents>
                 {superTypes ? (
-                    showSupertypes && (
+                    !collapsed && (
                         <PropertyList>
                             {Object.keys(superTypes)
                                 .filter(superTypeName => superTypes[superTypeName])
@@ -35,6 +32,7 @@ export default function NodeSuperTypes() {
                                 .map(superTypeName => (
                                     <PropertyListItem
                                         key={superTypeName}
+                                        highlighted={declaredSuperTypes.includes(superTypeName)}
                                         label={nodePathHelper.resolveNameWithoutVendor(superTypeName)}
                                         value={superTypeName}
                                     />

@@ -20,7 +20,10 @@ export default function NodeProperties() {
             isOpen={showProperties}
             style="condensed"
         >
-            <ToggablePanel.Header>{translate('inspector.properties.label', 'Properties')}</ToggablePanel.Header>
+            <ToggablePanel.Header>
+                {translate('inspector.properties.label', 'Properties')} (
+                {properties ? Object.keys(properties).length : 0})
+            </ToggablePanel.Header>
             <ToggablePanel.Contents>
                 {properties ? (
                     showProperties && (

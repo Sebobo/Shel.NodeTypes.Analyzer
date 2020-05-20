@@ -10,6 +10,7 @@ use Neos\Fusion\View\FusionView;
 use Neos\Neos\Controller\Module\AbstractModuleController;
 use Neos\Flow\Annotations as Flow;
 use Shel\ContentRepository\Debugger\Service\NodeTypeGraphService;
+use Shel\ContentRepository\Debugger\Service\NodeTypeUsageService;
 
 /**
  * @Flow\Scope("singleton")
@@ -42,6 +43,12 @@ class NodeTypesController extends AbstractModuleController
     protected $nodeTypeGraphService;
 
     /**
+     * @Flow\Inject
+     * @var NodeTypeUsageService
+     */
+    protected $nodeTypeUsageService;
+
+    /**
      * Renders the app to interact with the nodetype graph
      */
     public function indexAction(): void
@@ -58,6 +65,20 @@ class NodeTypesController extends AbstractModuleController
         $this->view->assign('value', [
             'success' => true,
             'nodeTypes' => $nodeTypes,
+        ]);
+    }
+
+    /**
+     * Returns a usage list for a specified nodetype
+     * @param string $nodeTypeName
+     */
+    public function getNodeTypeUsageAction(?string $nodeTypeName): void
+    {
+        $usageLinks = $this->nodeTypeUsageService->getBackendUrlsForNodeType($this->controllerContext, $nodeTypeName);
+
+        $this->view->assign('value', [
+            'success' => true,
+            'usageLinks' => $usageLinks,
         ]);
     }
 }

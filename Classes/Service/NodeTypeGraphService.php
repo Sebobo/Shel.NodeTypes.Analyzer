@@ -25,12 +25,6 @@ class NodeTypeGraphService
     protected $nodeTypeManager;
 
     /**
-     * @Flow\InjectConfiguration("defaults")
-     * @var array
-     */
-    protected $defaults;
-
-    /**
      * @Flow\Inject
      * @var VariableFrontend
      */
@@ -43,6 +37,7 @@ class NodeTypeGraphService
     protected $entityManager;
 
     /**
+     * @Flow\Inject
      * @var StringFrontend
      */
     protected $configurationCache;
@@ -53,9 +48,7 @@ class NodeTypeGraphService
     public function generateNodeTypesData(): array
     {
         $nodeTypesCacheKey = 'NodeTypes_' . $this->configurationCache->get('ConfigurationVersion');
-
         $nodeTypes = $this->nodeTypesCache->get($nodeTypesCacheKey);
-
         if ($nodeTypes) {
             return $nodeTypes;
         }
@@ -161,7 +154,7 @@ class NodeTypeGraphService
      */
     public function generateAllowedChildNodeTypes(NodeType $baseNodeType, array $nodeTypes): array
     {
-        $childNodeTypes = array_reduce($nodeTypes, function (array $carry, NodeType $nodeType) use ($baseNodeType) {
+        $childNodeTypes = array_reduce($nodeTypes, static function (array $carry, NodeType $nodeType) use ($baseNodeType) {
             if ($baseNodeType->allowsChildNodeType($nodeType)) {
                 $carry[] = $nodeType->getName();
             }
@@ -184,7 +177,7 @@ class NodeTypeGraphService
         NodeType $baseNodeType,
         array $nodeTypes
     ): array {
-        return array_reduce($nodeTypes, function (array $carry, NodeType $nodeType) use ($baseNodeType, $childName) {
+        return array_reduce($nodeTypes, static function (array $carry, NodeType $nodeType) use ($baseNodeType, $childName) {
             try {
                 if ($baseNodeType->allowsGrandchildNodeType($childName, $nodeType)) {
                     $carry[] = $nodeType->getName();

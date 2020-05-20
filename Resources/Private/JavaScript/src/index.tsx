@@ -5,21 +5,23 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import memoize from 'lodash.memoize';
 import { hot, setConfig } from 'react-hot-loader';
 import { RecoilRoot } from 'recoil';
+import Modal from 'react-modal';
 
 import { GraphApp } from './components';
 import { GraphProvider, IntlProvider, AppThemeProvider, NotifyProvider } from './core';
 
-const withDragDropContext = DragDropContext(HTML5Backend);
-declare const module: any;
-const GraphAppWithDnd = withDragDropContext(hot(module)(GraphApp));
 setConfig({
     showReactDomPatchNotification: false
 });
 
+const withDragDropContext = DragDropContext(HTML5Backend);
+declare const module: any;
+const GraphAppWithDnd = withDragDropContext(hot(module)(GraphApp));
+
 const loadPlugin = async (): Promise<void> => {
     const NeosApi = window.Typo3Neos;
 
-    while (!NeosApi || !NeosApi.I18n.initialized) {
+    while (!NeosApi?.I18n?.initialized) {
         await new Promise(resolve => setTimeout(resolve, 50));
     }
     const graphAppContainer: HTMLElement = document.getElementById('graphAppContainer');
@@ -28,7 +30,9 @@ const loadPlugin = async (): Promise<void> => {
         return;
     }
 
-    const { actions } = JSON.parse(graphAppContainer.dataset.app);
+    Modal.setAppElement(graphAppContainer);
+
+    const { endpoints } = JSON.parse(graphAppContainer.dataset.app);
     const { I18n, Notification } = NeosApi;
 
     const translate = memoize(
@@ -39,10 +43,10 @@ const loadPlugin = async (): Promise<void> => {
 
     ReactDOM.render(
         <IntlProvider translate={translate}>
-            <NotifyProvider {...Notification}>
+            <NotifyProvider notificationApi={Notification}>
                 <AppThemeProvider>
                     <RecoilRoot>
-                        <GraphProvider actions={actions}>
+                        <GraphProvider endpoints={endpoints}>
                             <GraphAppWithDnd />
                         </GraphProvider>
                     </RecoilRoot>

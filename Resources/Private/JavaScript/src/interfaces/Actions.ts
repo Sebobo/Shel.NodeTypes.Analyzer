@@ -1,4 +1,4 @@
 export default interface Actions {
-    renderGraphSvg: string;
+    getNodeTypeUsage: string;
     getNodeTypeDefinitions: string;
 }

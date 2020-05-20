@@ -52,6 +52,7 @@
     "react-dom": "^16.13.1",
     "react-jss": "^10.0.4",
     "react-keydown": "^1.9.12",
+    "react-modal": "^3.11.2",
     "recoil": "^0.0.7"
   },
   "devDependencies": {

@@ -2,6 +2,7 @@ import * as React from 'react';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { $set } from 'plow-js';
 import { useRecoilValue } from 'recoil';
+import memoize from 'lodash.memoize';
 
 import {
     Actions,
@@ -10,7 +11,8 @@ import {
     NodeTypeConfiguration,
     NodeTypeGroup,
     LinkType,
-    NodeTypeConfigurations
+    NodeTypeConfigurations,
+    NodeTypeUsageLink
 } from '../interfaces';
 import fetchData from '../helpers/fetchData';
 import nodePathHelper from '../helpers/nodePathHelper';
@@ -21,11 +23,10 @@ import { filterTypeState } from '../atoms';
 
 export interface GraphProviderProps {
     children: React.ReactElement;
-    actions: Actions;
+    endpoints: Actions;
 }
 
 interface GraphProviderValues extends AppState {
-    actions: Actions;
     isLoading: boolean;
     nodeTypeGroups: NodeTypeGroup[];
     setNodeTypeGroups: (nodeTypeGroups: NodeTypeGroup[]) => void;
@@ -39,6 +40,7 @@ interface GraphProviderValues extends AppState {
     invalidNodeTypes: NodeTypeConfigurations;
     setInvalidNodeTypes: (nodeTypes: NodeTypeConfigurations) => void;
     dispatch: React.Dispatch<AppAction>;
+    getNodeTypeUsageLinks: (nodeTypeName: NodeTypeName) => Promise<void | NodeTypeUsageLink[]>;
 }
 
 export const GraphContext = createContext({} as GraphProviderValues);
@@ -46,7 +48,7 @@ export const useGraph = () => useContext(GraphContext);
 
 const MAX_SUB_SEGMENTS = 10;
 
-export default function GraphProvider({ children, actions }: GraphProviderProps) {
+export default function GraphProvider({ children, endpoints }: GraphProviderProps) {
     const Notify = useNotify();
     const [appState, dispatch] = useAppState();
 
@@ -103,11 +105,20 @@ export default function GraphProvider({ children, actions }: GraphProviderProps)
         });
     };
 
+    const getNodeTypeUsageLinks = memoize(
+        (nodeTypeName: string): Promise<void | NodeTypeUsageLink[]> => {
+            return fetchData(endpoints.getNodeTypeUsage, { nodeTypeName }, 'GET')
+                .then(({ usageLinks }: { usageLinks: NodeTypeUsageLink[] }) => usageLinks)
+                .catch(error => Notify.error(error))
+                .finally(() => setIsLoading(false));
+        }
+    );
+
     /**
      * Runs initial request to fetch all nodetype definitions
      */
     useEffect(() => {
-        fetchData(actions.getNodeTypeDefinitions, null, 'GET')
+        fetchData(endpoints.getNodeTypeDefinitions, null, 'GET')
             .then((data: any) => {
                 const { nodeTypes } = data;
 
@@ -129,10 +140,9 @@ export default function GraphProvider({ children, actions }: GraphProviderProps)
 
                 setNodeTypes(validNodeTypes);
                 setInvalidNodeTypes(invalidNodeTypes);
-
-                setIsLoading(false);
             })
-            .catch(Notify.error);
+            .catch(error => Notify.error(error))
+            .finally(() => setIsLoading(false));
     }, []);
 
     /**
@@ -268,7 +278,6 @@ export default function GraphProvider({ children, actions }: GraphProviderProps)
     return (
         <GraphContext.Provider
             value={{
-                actions,
                 isLoading,
                 nodeTypeGroups,
                 setNodeTypeGroups,
@@ -281,6 +290,7 @@ export default function GraphProvider({ children, actions }: GraphProviderProps)
                 treeData,
                 invalidNodeTypes,
                 setInvalidNodeTypes,
+                getNodeTypeUsageLinks,
                 ...appState,
                 dispatch
             }}

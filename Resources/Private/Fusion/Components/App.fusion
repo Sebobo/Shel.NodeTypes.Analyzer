@@ -1,13 +1,14 @@
 prototype(Shel.ContentRepository.Debugger:Component.App) < prototype(Neos.Fusion:Component) {
     appData = Neos.Fusion:DataStructure {
-        actions = Neos.Fusion:DataStructure {
-            renderGraphSvg = Neos.Fusion:UriBuilder {
-                action = 'renderGraphSvg'
-                format = 'json'
-            }
+        endpoints = Neos.Fusion:DataStructure {
             getNodeTypeDefinitions = Neos.Fusion:UriBuilder {
                 action = 'getNodeTypeDefinitions'
                 format = 'json'
+            }
+            getNodeTypeUsage = Neos.Fusion:UriBuilder {
+                action = 'getNodeTypeUsage'
+                format = 'json'
+                arguments.nodeTypeName = '${nodeTypeName}'
             }
         }
     }

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useEffect, useRef } from 'react';
 import { $get } from 'plow-js';
+import cloneDeep from 'lodash.clonedeep';
 
 import { Action, AppTheme, createUseAppStyles, useGraph } from '../core';
 import { renderSunburstChart, renderDependencyGraph } from '../charts';
@@ -36,6 +37,8 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
     }
 }));
 
+const MAX_SUB_SEGMENTS = 10;
+
 export default function Graph() {
     const classes = useStyles();
     const graphSvgWrapper = useRef();
@@ -51,6 +54,38 @@ export default function Graph() {
                 dispatch({ type: Action.SelectPath, payload: path });
             }
         }
+    };
+
+    /**
+     * Reduces the visual complexity of a deeply nested graph with many subnodes
+     *
+     * @param data
+     * @param maxDepth
+     * @param maxChildren
+     * @param depth
+     */
+    const reduceHierarchyComplexity = (
+        data: DataSegment,
+        maxDepth,
+        maxChildren = MAX_SUB_SEGMENTS,
+        depth = 1
+    ): DataSegment => {
+        if (data.children) {
+            if (depth < maxDepth || data.children.length < maxChildren) {
+                data.children = data.children.map(childData =>
+                    reduceHierarchyComplexity(childData, maxDepth, maxChildren, depth + 1)
+                );
+            } else {
+                data.children = [
+                    {
+                        name: `>${MAX_SUB_SEGMENTS} types`,
+                        path: data.path,
+                        value: MAX_SUB_SEGMENTS
+                    }
+                ];
+            }
+        }
+        return data;
     };
 
     useEffect(() => {
@@ -74,12 +109,16 @@ export default function Graph() {
                     } else {
                         data = graphData;
                     }
+                    // Use a cloned version before modifying the data
+                    data = reduceHierarchyComplexity(cloneDeep(data), selectedPath.split('.').length + 2);
+                    console.debug(selectedPath, selectedLayout, 'Rendering hierarchy graph');
                     chart = renderSunburstChart({ data, width, height });
                     break;
                 case 'dependencies':
                     if (dependencyData.nodes.children.length === 0) {
                         return;
                     }
+                    console.debug(selectedPath, selectedLayout, 'Rendering dependency graph');
                     chart = renderDependencyGraph({
                         data: dependencyData,
                         types: [LinkType.INHERITS],
@@ -91,7 +130,7 @@ export default function Graph() {
             wrapper.appendChild(chart);
         } catch (e) {
             console.error(e);
-            return null;
+            return;
         }
 
         const graphSvg = wrapper.querySelector('svg');

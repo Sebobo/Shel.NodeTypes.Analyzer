@@ -46,8 +46,6 @@ interface GraphProviderValues extends AppState {
 export const GraphContext = createContext({} as GraphProviderValues);
 export const useGraph = () => useContext(GraphContext);
 
-const MAX_SUB_SEGMENTS = 10;
-
 export default function GraphProvider({ children, endpoints }: GraphProviderProps) {
     const Notify = useNotify();
     const [appState, dispatch] = useAppState();
@@ -83,28 +81,15 @@ export default function GraphProvider({ children, endpoints }: GraphProviderProp
                 node['value'] = 1;
                 node['data'] = currentData;
             } else {
-                // Only expand
-                const closeToCurrentPath =
-                    selectedPath.length > 0 &&
-                    segmentPath.indexOf(selectedPath) === 0 &&
-                    segmentPath.split('.').length - selectedPath.split('.').length <= 1;
-
-                if (closeToCurrentPath || Object.keys(currentData).length <= MAX_SUB_SEGMENTS) {
-                    node['children'] = processTreeData(currentData, segmentPath);
-                } else {
-                    node['children'] = [
-                        {
-                            name: `>${MAX_SUB_SEGMENTS} subtypes`,
-                            path: segmentPath,
-                            value: MAX_SUB_SEGMENTS
-                        }
-                    ];
-                }
+                node['children'] = processTreeData(currentData, segmentPath);
             }
             return node;
         });
     };
 
+    /**
+     * Retrieves a link list of the usages of one nodetype
+     */
     const getNodeTypeUsageLinks = memoize(
         (nodeTypeName: string): Promise<void | NodeTypeUsageLink[]> => {
             return fetchData(endpoints.getNodeTypeUsage, { nodeTypeName }, 'GET')
@@ -273,7 +258,7 @@ export default function GraphProvider({ children, endpoints }: GraphProviderProp
     useEffect(() => {
         if (Object.keys(treeData).length === 0) return;
         setGraphData({ name: 'nodetypes', path: '', children: processTreeData(treeData) });
-    }, [treeData, selectedPath]);
+    }, [treeData]);
 
     return (
         <GraphContext.Provider

@@ -11,7 +11,8 @@ import { searchTermState } from '../atoms';
 const useStyles = createUseAppStyles((theme: AppTheme) => ({
     searchBox: {
         marginTop: theme.spacing.full,
-        border: `1px solid ${theme.colors.contrastDark}`
+        borderTop: 0,
+        display: 'flex'
     },
     dropdown: {
         '.neos & input[type="search"]': {

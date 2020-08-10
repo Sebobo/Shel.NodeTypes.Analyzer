@@ -106,8 +106,11 @@ class NodeTypeGraphService
 
                 if (array_key_exists('childNodes', $carry[$nodeTypeName]['configuration'])) {
                     foreach (array_keys($carry[$nodeTypeName]['configuration']['childNodes']) as $childNodeName) {
-                        $carry[$nodeTypeName]['configuration']['childNodes'][$childNodeName]['allowedChildNodeTypes'] = $this->generateAllowedGrandChildNodeTypes($childNodeName,
-                            $nodeType, $instantiableNodeTypes);
+                        if (is_array($carry[$nodeTypeName]['configuration']['childNodes'][$childNodeName]) && array_key_exists('allowedChildNodeTypes', $carry[$nodeTypeName]['configuration']['childNodes'][$childNodeName])) {
+                            $carry[$nodeTypeName]['configuration']['childNodes'][$childNodeName]['allowedChildNodeTypes'] = $this->generateAllowedGrandChildNodeTypes($childNodeName,
+                                $nodeType, $instantiableNodeTypes);
+                        }
+                        // TODO: Else case should mark child definition as broken for the ui
                     }
                 }
 

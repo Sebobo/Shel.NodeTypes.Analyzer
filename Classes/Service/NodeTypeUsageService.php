@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Shel\ContentRepository\Debugger\Service;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Neos\Cache\Exception as CacheException;
 use Neos\Cache\Frontend\StringFrontend;
 use Neos\Cache\Frontend\VariableFrontend;
 use Neos\ContentRepository\Domain\Model\NodeData;
@@ -56,6 +57,7 @@ class NodeTypeUsageService
      * @param ControllerContext $controllerContext
      * @param string $nodeTypeName
      * @return array containing a link, document title and other information for each instance of the node type
+     * @throws CacheException
      */
     public function getBackendUrlsForNodeType(ControllerContext $controllerContext, string $nodeTypeName): array
     {
@@ -109,7 +111,6 @@ class NodeTypeUsageService
 
     /**
      * @param ControllerContext $controllerContext
-     * @param NodeInterface $baseNode
      * @param NodeInterface $node
      * @return string
      */

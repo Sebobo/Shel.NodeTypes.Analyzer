@@ -3,9 +3,8 @@ declare(strict_types=1);
 
 namespace Shel\ContentRepository\Debugger\Controller;
 
-use Neos\ContentRepository\Domain\Service\NodeTypeManager;
+use Neos\Cache\Exception as CacheException;
 use Neos\Flow\Mvc\View\JsonView;
-use Neos\Flow\Security\Context as SecurityContext;
 use Neos\Fusion\View\FusionView;
 use Neos\Neos\Controller\Module\AbstractModuleController;
 use Neos\Flow\Annotations as Flow;
@@ -70,7 +69,8 @@ class NodeTypesController extends AbstractModuleController
 
     /**
      * Returns a usage list for a specified nodetype
-     * @param string $nodeTypeName
+     * @param string|null $nodeTypeName
+     * @throws CacheException
      */
     public function getNodeTypeUsageAction(?string $nodeTypeName): void
     {

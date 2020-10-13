@@ -96,9 +96,17 @@ class NodeTypeUsageService
                 $documentNode = $documentNode->getParent();
             }
 
+            $url = 'n/a';
+            $title = 'n/a';
+
+            if ($documentNode && $documentNode->getNodeType()->isOfType('Neos.Neos:Document')) {
+                $url = $this->getNodeUri($controllerContext, $documentNode);
+                $title = $documentNode->getLabel();
+            }
+
             $nodeTypeUsages[] = [
-                'url' => $this->getNodeUri($controllerContext, $documentNode),
-                'documentTitle' => $documentNode->getLabel(),
+                'url' => $url,
+                'documentTitle' => $title,
                 'nodeIdentifier' => $node->getIdentifier(),
                 'workspace' => $contentContext->getWorkspaceName(),
                 'dimensions' => $node->getDimensions(),

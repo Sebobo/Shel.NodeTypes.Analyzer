@@ -86,7 +86,12 @@ class NodeTypeUsageService
         $nodeTypeUsages = [];
         foreach ($nodesByType as $nodeData) {
             $contentContext = $this->createContextMatchingNodeData($nodeData);
-            $node = $contentContext->getNodeByIdentifier($nodeData->getIdentifier());
+
+            try {
+                $node = $contentContext->getNodeByIdentifier($nodeData->getIdentifier());
+            } catch (\Exception $e) {
+                continue;
+            }
 
             if (!$node) {
                 continue;
@@ -97,8 +102,8 @@ class NodeTypeUsageService
                 $documentNode = $documentNode->getParent();
             }
 
-            $url = 'n/a';
-            $title = 'n/a';
+            $url = '';
+            $title = 'Unresolveable';
 
             if ($documentNode && $documentNode->getNodeType()->isOfType('Neos.Neos:Document')) {
                 $url = $this->getNodeUri($controllerContext, $documentNode);

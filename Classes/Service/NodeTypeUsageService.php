@@ -78,6 +78,7 @@ class NodeTypeUsageService
         $nodesByType = $qb->select('n')
             ->from(NodeData::class, 'n')
             ->andWhere('n.nodeType = :nodeType')
+            ->andWhere('n.removed = false')
             ->setParameter('nodeType', $nodeType)
             ->getQuery()
             ->execute();

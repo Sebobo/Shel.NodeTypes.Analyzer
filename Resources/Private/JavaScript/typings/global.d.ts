@@ -16,6 +16,10 @@ interface Window {
         I18n: NeosI18n;
         Notification: NeosNotification;
     };
+    NeosCMS: {
+        I18n: NeosI18n;
+        Notification: NeosNotification;
+    };
 }
 
 type NodeTypeName = string;

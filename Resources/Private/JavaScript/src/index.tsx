@@ -19,11 +19,10 @@ declare const module: any;
 const GraphAppWithDnd = withDragDropContext(hot(module)(GraphApp));
 
 const loadPlugin = async (): Promise<void> => {
-    const NeosApi = window.Typo3Neos;
-
-    while (!NeosApi?.I18n?.initialized) {
+    while (!(window.Typo3Neos || window.NeosCMS)?.I18n?.initialized) {
         await new Promise(resolve => setTimeout(resolve, 50));
     }
+    const NeosApi = window.Typo3Neos || window.NeosCMS;
     const graphAppContainer: HTMLElement = document.getElementById('graphAppContainer');
 
     if (!graphAppContainer) {

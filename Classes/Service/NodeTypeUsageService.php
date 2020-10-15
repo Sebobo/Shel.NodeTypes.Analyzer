@@ -114,6 +114,10 @@ class NodeTypeUsageService
             ];
         }
 
+        usort($nodeTypeUsages, static function ($a, $b) {
+            return $a['workspace'] < $b['workspace'] ? -1 : 1;
+        });
+
         $this->nodeTypesCache->set($nodeTypesCacheKey, $nodeTypeUsages);
         return $nodeTypeUsages;
     }

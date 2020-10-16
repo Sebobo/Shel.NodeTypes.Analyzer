@@ -7,18 +7,25 @@ import { NodeTypeTree } from './NodeTypeTree';
 const useStyles = createUseAppStyles((theme: AppTheme) => ({
     app: {
         display: 'grid',
+        height: 'inherit',
         gridGap: theme.spacing.full,
         gridTemplateAreas: `"left main right"`,
         gridTemplateColumns: `${theme.size.sidebarWidth} 1fr ${theme.size.sidebarWidth}`
     },
     left: {
-        gridArea: 'left'
+        gridArea: 'left',
+        maxHeight: 'inherit',
+        overflow: 'auto'
     },
     main: {
-        gridArea: 'main'
+        gridArea: 'main',
+        display: 'flex',
+        flexDirection: 'column'
     },
     right: {
-        gridArea: 'right'
+        gridArea: 'right',
+        maxHeight: 'inherit',
+        overflow: 'auto'
     }
 }));
 

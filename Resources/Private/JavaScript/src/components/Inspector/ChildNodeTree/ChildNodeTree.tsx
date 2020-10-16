@@ -7,8 +7,7 @@ import { NodeTypeChildTreeNode } from '../../NodeTypeTree';
 
 const useStyles = createUseAppStyles({
     tree: {
-        overflow: 'auto',
-        maxHeight: '50vh'
+        overflow: 'auto'
     }
 });
 

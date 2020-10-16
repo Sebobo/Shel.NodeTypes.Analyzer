@@ -12,8 +12,7 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
         '.neos &': {
             backgroundColor: theme.colors.contrastDark,
             border: `1px solid ${theme.colors.contrastBright}`,
-            minHeight: '800px',
-            height: '100%',
+            flex: 1,
             position: 'relative'
         },
         '& svg': {

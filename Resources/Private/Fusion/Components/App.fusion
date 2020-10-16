@@ -17,6 +17,7 @@ prototype(Shel.ContentRepository.Debugger:Component.App) < prototype(Neos.Fusion
         attributes {
             id = "graphAppContainer"
             data-app = ${Json.stringify(props.appData)}
+            style = "height: calc(100vh - 200px); overflow: hidden;"
         }
     }
 }

@@ -4,7 +4,6 @@ import { AppTheme, createUseAppStyles } from '../../core';
 
 const useStyles = createUseAppStyles((theme: AppTheme) => ({
     propertyList: {
-        maxHeight: '50vh',
         overflow: 'auto'
     },
     propertyListItem: {

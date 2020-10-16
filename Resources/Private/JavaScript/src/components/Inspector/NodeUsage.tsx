@@ -129,9 +129,13 @@ export default function NodeSelection() {
                                 .map((link, index) => (
                                     <tr key={index}>
                                         <td>
-                                            <a href={link.url} target="_blank" rel="noopener noreferrer">
-                                                {link.documentTitle}
-                                            </a>
+                                            {link.url ? (
+                                                <a href={link.url} target="_blank" rel="noopener noreferrer">
+                                                    {link.documentTitle}
+                                                </a>
+                                            ) : (
+                                                link.documentTitle
+                                            )}
                                         </td>
                                         <td>{link.workspace}</td>
                                         <td>

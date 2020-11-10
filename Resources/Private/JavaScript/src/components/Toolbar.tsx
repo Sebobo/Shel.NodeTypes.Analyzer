@@ -22,6 +22,7 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
         flex: '0 1 auto',
         display: 'flex',
         alignItems: 'center',
+        alignSelf: 'center',
         border: `1px solid ${theme.colors.contrastDark}`
     },
     headline: {

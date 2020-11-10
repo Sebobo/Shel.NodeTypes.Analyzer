@@ -10,7 +10,6 @@ import { searchTermState } from '../atoms';
 
 const useStyles = createUseAppStyles((theme: AppTheme) => ({
     searchBox: {
-        marginTop: theme.spacing.full,
         borderTop: 0,
         display: 'flex'
     },

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { $set } from 'plow-js';
 import { useRecoilValue } from 'recoil';
 import memoize from 'lodash.memoize';
@@ -39,6 +39,7 @@ interface GraphProviderValues extends AppState {
     treeData: object;
     invalidNodeTypes: NodeTypeConfigurations;
     setInvalidNodeTypes: (nodeTypes: NodeTypeConfigurations) => void;
+    fetchGraphData: () => void;
     dispatch: React.Dispatch<AppAction>;
     getNodeTypeUsageLinks: (nodeTypeName: NodeTypeName) => Promise<void | NodeTypeUsageLink[]>;
 }
@@ -99,10 +100,7 @@ export default function GraphProvider({ children, endpoints }: GraphProviderProp
         }
     );
 
-    /**
-     * Runs initial request to fetch all nodetype definitions
-     */
-    useEffect(() => {
+    const fetchGraphData = useCallback(() => {
         fetchData(endpoints.getNodeTypeDefinitions, null, 'GET')
             .then((data: any) => {
                 const { nodeTypes } = data;
@@ -129,6 +127,11 @@ export default function GraphProvider({ children, endpoints }: GraphProviderProp
             .catch(error => Notify.error(error))
             .finally(() => setIsLoading(false));
     }, []);
+
+    /**
+     * Runs initial request to fetch all nodetype definitions
+     */
+    useEffect(fetchGraphData, []);
 
     /**
      * Converts flat nodetypes structure into tree
@@ -276,6 +279,7 @@ export default function GraphProvider({ children, endpoints }: GraphProviderProp
                 invalidNodeTypes,
                 setInvalidNodeTypes,
                 getNodeTypeUsageLinks,
+                fetchGraphData,
                 ...appState,
                 dispatch
             }}

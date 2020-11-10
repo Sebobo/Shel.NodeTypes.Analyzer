@@ -1,7 +1,9 @@
 import * as React from 'react';
+import { useCallback } from 'react';
 
 import Headline from '@neos-project/react-ui-components/lib-esm/Headline';
 import SelectBox from '@neos-project/react-ui-components/lib-esm/SelectBox';
+import IconButton from '@neos-project/react-ui-components/lib-esm/IconButton';
 
 import { Action, AppTheme, createUseAppStyles, useGraph, useIntl } from '../core';
 import { chartType } from '../constants';
@@ -32,15 +34,31 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
 export default function Toolbar() {
     const classes = useStyles();
     const { translate } = useIntl();
-    const { selectedLayout, dispatch } = useGraph();
+    const { selectedLayout, dispatch, fetchGraphData } = useGraph();
 
     const selectableLayouts = [
         { label: 'Hierarchy', value: chartType.SUNBURST },
         { label: 'Dependencies', value: chartType.DEPENDENCIES }
     ];
 
+    const handleReloadClick = useCallback(() => {
+        dispatch({ type: Action.Reset });
+        fetchGraphData();
+    }, []);
+
     return (
         <div className={classes.toolbar}>
+            <div className={classes.group}>
+                <IconButton
+                    icon="sync"
+                    size="small"
+                    style="transparent"
+                    hoverStyle="brand"
+                    title={translate('action.reloadGraphData.title', 'Reload data')}
+                    onClick={handleReloadClick}
+                />
+            </div>
+
             <div className={classes.group}>
                 <Breadcrumb />
             </div>

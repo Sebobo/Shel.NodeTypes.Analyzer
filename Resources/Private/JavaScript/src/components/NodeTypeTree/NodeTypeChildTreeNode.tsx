@@ -26,7 +26,7 @@ export default function NodeTypeChildTreeNode({
     showConstraints = false
 }: NodeTypeChildTreeNodeProps) {
     const { nodeTypes } = useGraph();
-    const constraints = nodeTypes[nodeTypeName].configuration.childNodes[name].allowedChildNodeTypes;
+    const constraints = nodeTypes[nodeTypeName].configuration.childNodes[name].allowedChildNodeTypes ?? [];
 
     return (
         <Tree.Node>

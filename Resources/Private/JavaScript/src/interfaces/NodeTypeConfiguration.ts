@@ -24,7 +24,7 @@ export default interface NodeTypeConfiguration {
         childNodes: {
             [index: string]: {
                 type: NodeTypeName;
-                allowedChildNodeTypes: NodeTypeName[];
+                allowedChildNodeTypes?: NodeTypeName[];
                 constraints?: {
                     nodeTypes?: Constraint[];
                 };

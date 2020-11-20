@@ -23,7 +23,7 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
     }
 }));
 
-export default function InvalidNodeTypes() {
+const InvalidNodeTypes = () => {
     const classes = useStyles();
     const { invalidNodeTypes } = useGraph();
 
@@ -41,4 +41,6 @@ export default function InvalidNodeTypes() {
     ) : (
         <></>
     );
-}
+};
+
+export default React.memo(InvalidNodeTypes);

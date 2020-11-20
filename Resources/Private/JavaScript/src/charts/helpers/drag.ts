@@ -1,6 +1,8 @@
 import * as d3 from 'd3';
 
-export default function drag(simulation: d3.Simulation<d3.HierarchyCircularNode<unknown>, undefined>) {
+const drag = (
+    simulation: d3.Simulation<d3.HierarchyCircularNode<unknown>, undefined>
+): d3.DragBehavior<Element, unknown, unknown> => {
     function dragstarted(d) {
         if (!d3.event.active) simulation.alphaTarget(0.3).restart();
         d.fx = d.x;
@@ -23,4 +25,6 @@ export default function drag(simulation: d3.Simulation<d3.HierarchyCircularNode<
         .on('start', dragstarted)
         .on('drag', dragged)
         .on('end', dragended);
-}
+};
+
+export default drag;

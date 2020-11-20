@@ -6,7 +6,7 @@ import ToggablePanel from '@neos-project/react-ui-components/lib-esm/ToggablePan
 import { useGraph, useIntl } from '../../core';
 import ChildNodeTree from './ChildNodeTree/ChildNodeTree';
 
-export default function NodeGrandChildNodes() {
+const NodeGrandChildNodes = () => {
     const { selectedNodeTypeName, nodeTypes } = useGraph();
     const { translate } = useIntl();
     const {
@@ -29,4 +29,6 @@ export default function NodeGrandChildNodes() {
             </ToggablePanel.Contents>
         </ToggablePanel>
     );
-}
+};
+
+export default React.memo(NodeGrandChildNodes);

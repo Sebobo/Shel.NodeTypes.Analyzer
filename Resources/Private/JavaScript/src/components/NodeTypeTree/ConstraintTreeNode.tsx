@@ -12,7 +12,7 @@ interface ConstraintTreeNodeProps {
     icon?: string;
 }
 
-export default function ConstraintTreeNode({ name, value = true, level = 1, icon = 'child' }: ConstraintTreeNodeProps) {
+const ConstraintTreeNode = ({ name, value = true, level = 1, icon = 'child' }: ConstraintTreeNodeProps) => {
     const { nodeTypes } = useGraph();
 
     return (
@@ -32,4 +32,6 @@ export default function ConstraintTreeNode({ name, value = true, level = 1, icon
             />
         </Tree.Node>
     );
-}
+};
+
+export default React.memo(ConstraintTreeNode);

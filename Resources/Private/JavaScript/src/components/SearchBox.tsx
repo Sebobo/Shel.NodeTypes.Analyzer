@@ -7,6 +7,7 @@ import { Action, AppTheme, createUseAppStyles, useGraph, useIntl } from '../core
 import { NodeTypeConfigurations } from '../interfaces';
 import nodePathHelper from '../helpers/nodePathHelper';
 import { searchTermState } from '../atoms';
+import { ReactElement } from 'react';
 
 const useStyles = createUseAppStyles((theme: AppTheme) => ({
     searchBox: {
@@ -36,7 +37,7 @@ function getOptionsForTerm(nodeTypes: NodeTypeConfigurations, searchTerm: string
         });
 }
 
-export default function SearchBox() {
+const SearchBox = (): ReactElement => {
     const classes = useStyles();
     const { translate } = useIntl();
     const { nodeTypes, dispatch } = useGraph();
@@ -68,4 +69,5 @@ export default function SearchBox() {
             />
         </div>
     );
-}
+};
+export default React.memo(SearchBox);

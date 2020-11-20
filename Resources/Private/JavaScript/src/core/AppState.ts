@@ -1,4 +1,4 @@
-import { useReducer } from 'react';
+import { Dispatch, useReducer } from 'react';
 import { chartType } from '../constants';
 
 export interface AppState {
@@ -61,6 +61,6 @@ function reducer(state: AppState, action: AppAction) {
     }
 }
 
-export default function useAppState() {
-    return useReducer(reducer, initialState);
-}
+const useAppState = (): [AppState, Dispatch<any>] => useReducer(reducer, initialState);
+
+export default useAppState;

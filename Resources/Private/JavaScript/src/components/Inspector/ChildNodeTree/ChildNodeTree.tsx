@@ -4,6 +4,7 @@ import Tree from '@neos-project/react-ui-components/lib-esm/Tree';
 
 import { createUseAppStyles, useGraph } from '../../../core';
 import { NodeTypeChildTreeNode } from '../../NodeTypeTree';
+import { ReactElement } from 'react';
 
 const useStyles = createUseAppStyles({
     tree: {
@@ -11,7 +12,7 @@ const useStyles = createUseAppStyles({
     }
 });
 
-export default function ChildNodeTree() {
+const ChildNodeTree = (): ReactElement => {
     const classes = useStyles();
     const { selectedNodeTypeName, nodeTypes } = useGraph();
 
@@ -33,4 +34,6 @@ export default function ChildNodeTree() {
                 ))}
         </Tree>
     );
-}
+};
+
+export default React.memo(ChildNodeTree);

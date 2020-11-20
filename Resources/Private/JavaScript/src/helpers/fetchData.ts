@@ -1,6 +1,6 @@
 type FETCH_METHOD = 'POST' | 'GET';
 
-export default (path: string, body?: object, method: FETCH_METHOD = 'POST'): Promise<any> => {
+export default (path: string, body?: Record<string, string>, method: FETCH_METHOD = 'POST'): Promise<any> => {
     if (method === 'GET' && body) {
         Object.keys(body).forEach(key => (path = path.replace(escape('${' + key + '}'), body[key])));
     }

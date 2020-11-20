@@ -7,7 +7,7 @@ import { useGraph, useIntl } from '../../core';
 import { PropertyList, PropertyListItem } from './index';
 import nodePathHelper from '../../helpers/nodePathHelper';
 
-export default function NodeChildNodes() {
+const NodeChildNodes = () => {
     const { selectedNodeTypeName, nodeTypes } = useGraph();
     const { translate } = useIntl();
     const { allowedChildNodeTypes } = nodeTypes[selectedNodeTypeName];
@@ -40,4 +40,5 @@ export default function NodeChildNodes() {
             </ToggablePanel.Contents>
         </ToggablePanel>
     );
-}
+};
+export default React.memo(NodeChildNodes);

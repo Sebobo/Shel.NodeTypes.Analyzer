@@ -9,9 +9,10 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
     }
 }));
 
-export default function Inspector() {
+const Inspector = () => {
     const classes = useStyles();
     const { selectedNodeTypeName } = useGraph();
 
     return <div className={classes.inspector}>{selectedNodeTypeName && <NodeTypeProfile />}</div>;
-}
+};
+export default React.memo(Inspector);

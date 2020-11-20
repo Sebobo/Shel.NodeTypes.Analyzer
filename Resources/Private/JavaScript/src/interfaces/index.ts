@@ -8,6 +8,7 @@ import DataSegment from './DataSegment';
 import { Dependencies, LinkType } from './Dependencies';
 import Constraint from './Constraint';
 import NodeTypeUsageLink from './NodeTypeUsageLink';
+import TreeDataPoint from './TreeDataPoint';
 
 export {
     Actions,
@@ -20,5 +21,6 @@ export {
     DataSegment,
     Dependencies,
     LinkType,
-    Constraint
+    Constraint,
+    TreeDataPoint
 };

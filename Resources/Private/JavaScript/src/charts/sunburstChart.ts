@@ -17,7 +17,7 @@ export interface ExtendedArcObject extends DefaultArcObject {
     y1: number;
 }
 
-export default function renderSunburstChart({ data, width = 975, height = 800 }: SunburstProps) {
+export default ({ data, width = 975, height = 800 }: SunburstProps): SVGSVGElement => {
     const radius = Math.max(500, width / 2);
     const root = partition(data, radius);
     const color = d3.scaleOrdinal(d3.quantize(d3.interpolateRainbow, data.children?.length + 1));
@@ -84,10 +84,12 @@ export default function renderSunburstChart({ data, width = 975, height = 800 }:
         });
 
     // @ts-ignore
-    svg.attr('viewBox', autoBox);
+    svg.attr('viewBox', function() {
+        autoBox(this);
+    });
     svg.attr('height', height);
 
     enableZoom({ svg, layer: g, width, height });
 
     return svg.node();
-}
+};

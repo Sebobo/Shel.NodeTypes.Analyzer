@@ -25,6 +25,7 @@ const forceCluster = () => {
     let nodes;
 
     function force(alpha) {
+        // @ts-ignore
         const centroids = rollup(nodes, centroid, (d: { data: DataSegment }) => d.data.group);
         const l = alpha * strength;
         for (const d of nodes) {
@@ -70,8 +71,10 @@ const forceCollide = () => {
                                 l = Math.hypot(x, y);
                             if (l < r) {
                                 l = ((l - r) / l) * alpha;
-                                (d.x -= x *= l), (d.y -= y *= l);
-                                (q.data.x += x), (q.data.y += y);
+                                d.x -= x *= l;
+                                d.y -= y *= l;
+                                q.data.x += x;
+                                q.data.y += y;
                             }
                         }
                     } while ((q = q.next));
@@ -94,13 +97,13 @@ const pack = (width, height, data) =>
         .size([width, height])
         .padding(1)(d3.hierarchy<DataSegment>(data).sum(d => d.value));
 
-export default function renderDependencyGraph({
+const renderDependencyGraph = ({
     data,
     types,
     width = 975,
     height = 800,
     markerSize = 10
-}: DependencyChartProps) {
+}: DependencyChartProps): SVGSVGElement => {
     const links = data.links.map(d => Object.create(d));
     const linkColor = d3.scaleOrdinal(d3.schemeCategory10);
     const nodeColor = d3.scaleOrdinal(d3.schemeCategory10);
@@ -237,4 +240,6 @@ export default function renderDependencyGraph({
     });
 
     return svg.node();
-}
+};
+
+export default renderDependencyGraph;

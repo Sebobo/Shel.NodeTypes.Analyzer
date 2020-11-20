@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { createTheming, createUseStyles } from 'react-jss';
 import { config } from '@neos-project/build-essentials/src/styles/styleConstants';
+import { ReactElement } from 'react';
 
 const ThemeContext = React.createContext({} as AppTheme);
 const theming = createTheming(ThemeContext);
@@ -59,8 +60,9 @@ export interface AppTheme {
     };
 }
 
-export const createUseAppStyles = styles => createUseStyles<AppTheme>(styles, { theming } as object);
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+export const createUseAppStyles = styles => createUseStyles<AppTheme>(styles, { theming } as Record<string, unknown>);
 
-export function AppThemeProvider({ children }: { children: React.ReactElement }) {
-    return <ThemeProvider theme={config}>{children}</ThemeProvider>;
-}
+export const AppThemeProvider = ({ children }: { children: React.ReactElement }): ReactElement => (
+    <ThemeProvider theme={config}>{children}</ThemeProvider>
+);

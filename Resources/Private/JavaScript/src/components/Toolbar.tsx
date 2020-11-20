@@ -32,7 +32,7 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
     }
 }));
 
-export default function Toolbar() {
+const Toolbar = () => {
     const classes = useStyles();
     const { translate } = useIntl();
     const { selectedLayout, dispatch, fetchGraphData } = useGraph();
@@ -76,4 +76,5 @@ export default function Toolbar() {
             </div>
         </div>
     );
-}
+};
+export default React.memo(Toolbar);

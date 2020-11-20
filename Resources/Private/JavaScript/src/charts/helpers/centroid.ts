@@ -1,4 +1,4 @@
-export default function centroid(nodes) {
+const centroid = (nodes: { r: number; x: number; y: number }[]): { x: number; y: number } => {
     let x = 0;
     let y = 0;
     let z = 0;
@@ -9,4 +9,5 @@ export default function centroid(nodes) {
         z += k;
     }
     return { x: x / z, y: y / z };
-}
+};
+export default centroid;

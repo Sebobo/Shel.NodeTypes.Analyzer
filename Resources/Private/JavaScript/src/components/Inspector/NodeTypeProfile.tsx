@@ -3,7 +3,7 @@ import * as React from 'react';
 import { useGraph } from '../../core';
 import { NodeChildNodes, NodeGrandChildNodes, NodeProperties, NodeSelection, NodeSuperTypes, NodeUsage } from './index';
 
-export default function NodeTypeProfile() {
+const NodeTypeProfile = () => {
     const { selectedNodeTypeName } = useGraph();
 
     return (
@@ -20,4 +20,6 @@ export default function NodeTypeProfile() {
             )}
         </div>
     );
-}
+};
+
+export default React.memo(NodeTypeProfile);

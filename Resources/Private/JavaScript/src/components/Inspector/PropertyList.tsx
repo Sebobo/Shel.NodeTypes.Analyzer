@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 import { AppTheme, createUseAppStyles } from '../../core';
+import { ReactElement } from 'react';
 
 const useStyles = createUseAppStyles((theme: AppTheme) => ({
     propertyList: {
@@ -36,11 +37,11 @@ interface PropertyListProps {
     children: React.ReactElement[];
 }
 
-export function PropertyList({ children }: PropertyListProps) {
+export const PropertyList = ({ children }: PropertyListProps): ReactElement => {
     const classes = useStyles();
 
     return <dl className={classes.propertyList}>{children}</dl>;
-}
+};
 
 interface PropertyListItemProps {
     label: string;
@@ -48,7 +49,7 @@ interface PropertyListItemProps {
     highlighted?: boolean;
 }
 
-export function PropertyListItem({ label, value, highlighted = false }: PropertyListItemProps) {
+export const PropertyListItem = ({ label, value, highlighted = false }: PropertyListItemProps): ReactElement => {
     const classes = useStyles({ highlighted });
 
     return (
@@ -57,4 +58,4 @@ export function PropertyListItem({ label, value, highlighted = false }: Property
             <dd className={classes.description}>{value}</dd>
         </>
     );
-}
+};

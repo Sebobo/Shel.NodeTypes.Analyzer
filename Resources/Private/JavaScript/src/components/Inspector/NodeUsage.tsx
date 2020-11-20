@@ -51,7 +51,7 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
     }
 }));
 
-export default function NodeSelection() {
+const NodeSelection = () => {
     const classes = useStyles();
     const { selectedNodeTypeName, nodeTypes, getNodeTypeUsageLinks } = useGraph();
     const { translate } = useIntl();
@@ -153,4 +153,6 @@ export default function NodeSelection() {
             </Modal>
         </>
     );
-}
+};
+
+export default React.memo(NodeSelection);

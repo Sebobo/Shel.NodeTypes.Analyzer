@@ -7,23 +7,18 @@ import { dndTypes } from '../../constants';
 import { NodeTypeTreeNode } from './index';
 import { Action, useGraph } from '../../core';
 import nodePathHelper from '../../helpers/nodePathHelper';
+import { TreeDataPoint } from '../../interfaces';
 
 interface VendorSegmentTreeNodeProps {
     isActive?: boolean;
     path: string;
     segment: string;
-    subNodes?: object;
+    subNodes?: TreeDataPoint;
     level?: number;
     icon?: string;
 }
 
-export default function VendorSegmentTreeNode({
-    path,
-    segment,
-    subNodes,
-    level = 1,
-    icon = 'folder'
-}: VendorSegmentTreeNodeProps) {
+const VendorSegmentTreeNode = ({ path, segment, subNodes, level = 1, icon = 'folder' }: VendorSegmentTreeNodeProps) => {
     const [collapsed, setCollapsed] = useState(true);
     const { selectedPath, selectedNodeTypeName, dispatch, nodeTypes } = useGraph();
 
@@ -51,11 +46,11 @@ export default function VendorSegmentTreeNode({
             {(isInActivePath || !collapsed) &&
                 hasChildren &&
                 Object.keys(subNodes).map((segment, index) =>
-                    subNodes[segment].nodeType ? (
+                    subNodes[segment]['nodeType'] ? (
                         <NodeTypeTreeNode
                             key={index}
                             level={level + 1}
-                            nodeType={nodeTypes[subNodes[segment].nodeType]}
+                            nodeType={nodeTypes[subNodes[segment]['nodeType']]}
                         />
                     ) : (
                         <VendorSegmentTreeNode
@@ -69,4 +64,6 @@ export default function VendorSegmentTreeNode({
                 )}
         </Tree.Node>
     );
-}
+};
+
+export default React.memo(VendorSegmentTreeNode);

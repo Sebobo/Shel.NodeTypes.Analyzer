@@ -3,6 +3,7 @@ import * as React from 'react';
 import { Toolbar, Inspector, Graph, TreeFilter, InvalidNodeTypes, LoadingIndicator, SearchBox } from './index';
 import { AppTheme, createUseAppStyles } from '../core';
 import { NodeTypeTree } from './NodeTypeTree';
+import { ReactElement } from 'react';
 
 const useStyles = createUseAppStyles((theme: AppTheme) => ({
     app: {
@@ -29,7 +30,7 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
     }
 }));
 
-export default function GraphApp() {
+const GraphApp = (): ReactElement => {
     const classes = useStyles();
 
     return (
@@ -50,4 +51,5 @@ export default function GraphApp() {
             </div>
         </div>
     );
-}
+};
+export default GraphApp;

@@ -31,7 +31,7 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
     }
 }));
 
-export default function Breadcrumb() {
+const Breadcrumb = () => {
     const classes = useStyles();
     const { nodeTypes, selectedNodeTypeName, selectedPath, dispatch } = useGraph();
 
@@ -97,4 +97,6 @@ export default function Breadcrumb() {
             )}
         </ul>
     );
-}
+};
+
+export default React.memo(Breadcrumb);

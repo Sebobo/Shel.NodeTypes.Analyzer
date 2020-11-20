@@ -1,6 +1,8 @@
-export default function autoBox() {
-    document.body.appendChild(this);
-    const { x, y, width, height } = this.getBBox();
-    document.body.removeChild(this);
+const autoBox = (node: SVGGraphicsElement): number[] => {
+    document.body.appendChild(<Node>node);
+    const { x, y, width, height } = node.getBBox();
+    document.body.removeChild(<Node>node);
     return [x, y, width, height];
-}
+};
+
+export default autoBox;

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { createContext, ReactElement, useCallback, useContext, useEffect, useState } from 'react';
 import { $set } from 'plow-js';
 import { useRecoilValue } from 'recoil';
 import memoize from 'lodash.memoize';
@@ -12,7 +12,8 @@ import {
     NodeTypeGroup,
     LinkType,
     NodeTypeConfigurations,
-    NodeTypeUsageLink
+    NodeTypeUsageLink,
+    TreeDataPoint
 } from '../interfaces';
 import fetchData from '../helpers/fetchData';
 import nodePathHelper from '../helpers/nodePathHelper';
@@ -36,7 +37,7 @@ interface GraphProviderValues extends AppState {
     setSuperTypeFilter: (filter: string) => void;
     graphData: DataSegment;
     dependencyData: Dependencies;
-    treeData: object;
+    treeData: TreeDataPoint;
     invalidNodeTypes: NodeTypeConfigurations;
     setInvalidNodeTypes: (nodeTypes: NodeTypeConfigurations) => void;
     fetchGraphData: () => void;
@@ -45,9 +46,9 @@ interface GraphProviderValues extends AppState {
 }
 
 export const GraphContext = createContext({} as GraphProviderValues);
-export const useGraph = () => useContext(GraphContext);
+export const useGraph = (): GraphProviderValues => useContext(GraphContext);
 
-export default function GraphProvider({ children, endpoints }: GraphProviderProps) {
+const GraphProvider = ({ children, endpoints }: GraphProviderProps): ReactElement => {
     const Notify = useNotify();
     const [appState, dispatch] = useAppState();
 
@@ -139,7 +140,7 @@ export default function GraphProvider({ children, endpoints }: GraphProviderProp
     useEffect(() => {
         if (Object.keys(nodeTypes).length === 0) return;
 
-        const treeData = Object.values(nodeTypes).reduce((carry: object, nodeType) => {
+        const treeData = Object.values(nodeTypes).reduce((carry: Record<string, { nodeType: string }>, nodeType) => {
             // TODO: Extract filter methods
             if (selectedFilter === FilterType.UNUSED_CONTENT || selectedFilter === FilterType.UNUSED_DOCUMENTS) {
                 if (
@@ -287,4 +288,6 @@ export default function GraphProvider({ children, endpoints }: GraphProviderProp
             {children}
         </GraphContext.Provider>
     );
-}
+};
+
+export default GraphProvider;

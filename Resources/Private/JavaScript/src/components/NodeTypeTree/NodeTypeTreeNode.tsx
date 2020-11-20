@@ -15,7 +15,7 @@ interface NodeTypeTreeNodeProps {
     icon?: string;
 }
 
-export default function NodeTypeTreeNode({ nodeType, level = 1 }: NodeTypeTreeNodeProps) {
+const NodeTypeTreeNode = ({ nodeType, level = 1 }: NodeTypeTreeNodeProps) => {
     const { name, configuration, usageCount } = nodeType;
     const [collapsed, setCollapsed] = useState(true);
     const { selectedNodeTypeName, dispatch } = useGraph();
@@ -59,4 +59,5 @@ export default function NodeTypeTreeNode({ nodeType, level = 1 }: NodeTypeTreeNo
                 ))}
         </Tree.Node>
     );
-}
+};
+export default React.memo(NodeTypeTreeNode);

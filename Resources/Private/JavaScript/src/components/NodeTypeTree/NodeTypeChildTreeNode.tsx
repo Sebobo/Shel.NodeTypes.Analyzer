@@ -16,7 +16,7 @@ interface NodeTypeChildTreeNodeProps {
     showConstraints?: boolean;
 }
 
-export default function NodeTypeChildTreeNode({
+const NodeTypeChildTreeNode = ({
     isActive = false,
     nodeTypeName,
     name,
@@ -24,7 +24,7 @@ export default function NodeTypeChildTreeNode({
     level = 1,
     onClick,
     showConstraints = false
-}: NodeTypeChildTreeNodeProps) {
+}: NodeTypeChildTreeNodeProps) => {
     const { nodeTypes } = useGraph();
     const constraints = nodeTypes[nodeTypeName].configuration.childNodes[name].allowedChildNodeTypes ?? [];
 
@@ -50,4 +50,5 @@ export default function NodeTypeChildTreeNode({
                     .map((constraint, index) => <ConstraintTreeNode key={index} name={constraint} level={level + 1} />)}
         </Tree.Node>
     );
-}
+};
+export default React.memo(NodeTypeChildTreeNode);

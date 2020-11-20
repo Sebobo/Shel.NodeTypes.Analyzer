@@ -7,7 +7,7 @@ import { useGraph, useIntl } from '../../core';
 import { PropertyList, PropertyListItem } from './index';
 import nodePathHelper from '../../helpers/nodePathHelper';
 
-export default function NodeSuperTypes() {
+const NodeSuperTypes = () => {
     const { selectedNodeTypeName, nodeTypes } = useGraph();
     const { translate } = useIntl();
     const {
@@ -45,4 +45,5 @@ export default function NodeSuperTypes() {
             </ToggablePanel.Contents>
         </ToggablePanel>
     );
-}
+};
+export default React.memo(NodeSuperTypes);

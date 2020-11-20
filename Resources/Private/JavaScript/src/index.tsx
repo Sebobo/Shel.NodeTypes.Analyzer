@@ -1,9 +1,9 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { DragDropContext } from 'react-dnd';
+import { DndProvider } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import memoize from 'lodash.memoize';
-import { hot, setConfig } from 'react-hot-loader';
+import { setConfig } from 'react-hot-loader';
 import { RecoilRoot } from 'recoil';
 import Modal from 'react-modal';
 
@@ -14,9 +14,9 @@ setConfig({
     showReactDomPatchNotification: false
 });
 
-const withDragDropContext = DragDropContext(HTML5Backend);
-declare const module: any;
-const GraphAppWithDnd = withDragDropContext(hot(module)(GraphApp));
+// const withDragDropContext = DragDropContext(HTML5Backend);
+// declare const module: any;
+// const GraphAppWithDnd = withDragDropContext(hot(module)(GraphApp));
 
 const loadPlugin = async (): Promise<void> => {
     while (!(window.Typo3Neos || window.NeosCMS)?.I18n?.initialized) {
@@ -46,7 +46,9 @@ const loadPlugin = async (): Promise<void> => {
                 <AppThemeProvider>
                     <RecoilRoot>
                         <GraphProvider endpoints={endpoints}>
-                            <GraphAppWithDnd />
+                            <DndProvider backend={HTML5Backend}>
+                                <GraphApp />
+                            </DndProvider>
                         </GraphProvider>
                     </RecoilRoot>
                 </AppThemeProvider>

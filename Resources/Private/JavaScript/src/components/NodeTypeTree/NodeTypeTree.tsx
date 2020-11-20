@@ -10,7 +10,7 @@ const useStyles = createUseAppStyles({
     }
 });
 
-export default function NodeTypeTree() {
+const NodeTypeTree = () => {
     const classes = useStyles();
     const { treeData, nodeTypes } = useGraph();
 
@@ -32,4 +32,5 @@ export default function NodeTypeTree() {
                 )}
         </Tree>
     );
-}
+};
+export default React.memo(NodeTypeTree);

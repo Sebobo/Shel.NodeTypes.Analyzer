@@ -22,7 +22,7 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
     }
 }));
 
-export default function TreeFilter() {
+const TreeFilter = () => {
     const classes = useStyles();
     const { translate } = useIntl();
     const [selectedFilter, setSelectedFilter] = useRecoilState(filterTypeState);
@@ -45,4 +45,6 @@ export default function TreeFilter() {
             />
         </div>
     );
-}
+};
+
+export default React.memo(TreeFilter);

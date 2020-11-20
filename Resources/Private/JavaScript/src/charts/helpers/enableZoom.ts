@@ -9,7 +9,7 @@ interface EnableZoomProps {
     maxExtend?: number;
 }
 
-export default function enableZoom({ svg, layer, width, height, minExtend = 0.25, maxExtend = 3 }: EnableZoomProps) {
+const enableZoom = ({ svg, layer, width, height, minExtend = 0.25, maxExtend = 3 }: EnableZoomProps): void => {
     function zoomed() {
         layer.attr('transform', d3.event.transform);
     }
@@ -24,4 +24,6 @@ export default function enableZoom({ svg, layer, width, height, minExtend = 0.25
             .scaleExtent([minExtend, maxExtend])
             .on('zoom', zoomed)
     );
-}
+};
+
+export default enableZoom;

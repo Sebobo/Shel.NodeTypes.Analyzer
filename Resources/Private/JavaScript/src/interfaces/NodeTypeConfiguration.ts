@@ -20,7 +20,7 @@ export default interface NodeTypeConfiguration {
             icon?: string;
         };
         superTypes: Constraint[];
-        constraints: {};
+        constraints: NodeTypeName[];
         childNodes: {
             [index: string]: {
                 type: NodeTypeName;

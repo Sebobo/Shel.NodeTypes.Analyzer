@@ -6,7 +6,7 @@ import ToggablePanel from '@neos-project/react-ui-components/lib-esm/ToggablePan
 import { useGraph, useIntl } from '../../core';
 import { PropertyList, PropertyListItem } from './index';
 
-export default function NodeProperties() {
+const NodeProperties = () => {
     const { selectedNodeTypeName, nodeTypes } = useGraph();
     const { translate } = useIntl();
     const {
@@ -47,4 +47,5 @@ export default function NodeProperties() {
             </ToggablePanel.Contents>
         </ToggablePanel>
     );
-}
+};
+export default React.memo(NodeProperties);

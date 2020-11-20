@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useEffect, useRef } from 'react';
+import { ReactElement, useEffect, useRef } from 'react';
 import { $get } from 'plow-js';
 import cloneDeep from 'lodash.clonedeep';
 
@@ -38,7 +38,7 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
 
 const MAX_SUB_SEGMENTS = 10;
 
-export default function Graph() {
+const Graph = (): ReactElement => {
     const classes = useStyles();
     const graphSvgWrapper = useRef();
     const { graphData, treeData, selectedPath, selectedLayout, dependencyData, dispatch } = useGraph();
@@ -141,4 +141,6 @@ export default function Graph() {
     }, [graphData, selectedPath, dependencyData, selectedLayout]);
 
     return <div ref={graphSvgWrapper} />;
-}
+};
+
+export default React.memo(Graph);

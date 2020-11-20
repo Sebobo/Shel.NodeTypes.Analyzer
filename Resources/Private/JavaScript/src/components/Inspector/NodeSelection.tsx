@@ -20,7 +20,7 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
     }
 }));
 
-export default function NodeSelection() {
+const NodeSelection = () => {
     const classes = useStyles();
     const { selectedNodeTypeName, nodeTypes } = useGraph();
     const { translate } = useIntl();
@@ -44,4 +44,5 @@ export default function NodeSelection() {
             />
         </div>
     );
-}
+};
+export default React.memo(NodeSelection);

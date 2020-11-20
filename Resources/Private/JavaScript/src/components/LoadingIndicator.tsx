@@ -35,7 +35,7 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
     }
 }));
 
-export default function LoadingIndicator() {
+const LoadingIndicator = () => {
     const classes = useStyles();
     const { isLoading } = useGraph();
 
@@ -50,4 +50,5 @@ export default function LoadingIndicator() {
             )}
         </>
     );
-}
+};
+export default React.memo(LoadingIndicator);

@@ -24,7 +24,9 @@ const VendorSegmentTreeNode = ({ path, segment, subNodes, level = 1, icon = 'fol
 
     const hasChildren = subNodes && Object.keys(subNodes).length > 0;
     const isInActivePath =
-        selectedPath.indexOf(path) === 0 || nodePathHelper.resolveFromName(selectedNodeTypeName).indexOf(path) === 0;
+        selectedPath === path ||
+        selectedPath.indexOf(path + '.') === 0 ||
+        nodePathHelper.resolveFromName(selectedNodeTypeName).indexOf(path + '.') === 0;
 
     return (
         <Tree.Node>

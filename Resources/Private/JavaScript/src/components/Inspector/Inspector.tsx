@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { AppTheme, createUseAppStyles, useGraph } from '../../core';
-import { NodeTypeProfile } from './index';
+import { NodeTypeProfile, NodePathProfile, CurrentSelection } from './index';
 
 const useStyles = createUseAppStyles((theme: AppTheme) => ({
     inspector: {
@@ -11,8 +11,13 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
 
 const Inspector = () => {
     const classes = useStyles();
-    const { selectedNodeTypeName } = useGraph();
+    const { selectedNodeTypeName, selectedPath } = useGraph();
 
-    return <div className={classes.inspector}>{selectedNodeTypeName && <NodeTypeProfile />}</div>;
+    return (
+        <div className={classes.inspector}>
+            <CurrentSelection />
+            {selectedNodeTypeName ? <NodeTypeProfile /> : <NodePathProfile nodePath={selectedPath} />}
+        </div>
+    );
 };
 export default React.memo(Inspector);

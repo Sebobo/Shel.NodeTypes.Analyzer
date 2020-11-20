@@ -1,6 +1,15 @@
 import * as React from 'react';
 
-import { Toolbar, Inspector, Graph, TreeFilter, InvalidNodeTypes, LoadingIndicator, SearchBox } from './index';
+import {
+    Toolbar,
+    Inspector,
+    Graph,
+    TreeFilter,
+    InvalidNodeTypes,
+    LoadingIndicator,
+    SearchBox,
+    NodeTypeCounter
+} from './index';
 import { AppTheme, createUseAppStyles } from '../core';
 import { NodeTypeTree } from './NodeTypeTree';
 import { ReactElement } from 'react';
@@ -41,6 +50,7 @@ const GraphApp = (): ReactElement => {
                 <SearchBox />
                 <NodeTypeTree />
                 <InvalidNodeTypes />
+                <NodeTypeCounter />
             </div>
             <div className={classes.main}>
                 <Toolbar />

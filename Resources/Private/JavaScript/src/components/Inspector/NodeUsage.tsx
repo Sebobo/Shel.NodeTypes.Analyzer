@@ -48,6 +48,33 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
             fontSize: '1rem',
             marginBottom: theme.spacing.goldenUnit
         }
+    },
+    usageCountByInheritance: {
+        '.neos &': {
+            marginTop: theme.spacing.full,
+            '& table': {
+                marginTop: theme.spacing.half,
+                width: '100%',
+                '& td': {
+                    color: theme.colors.contrastBright,
+                    padding: '4px 0',
+                    borderBottom: `1px solid ${theme.colors.contrastDark}`
+                },
+                '& td:last-child': {
+                    textAlign: 'right'
+                },
+                '& tr:last-child td': {
+                    border: 'none'
+                },
+                '& span': {
+                    textOverflow: 'ellipsis',
+                    whitespace: 'nowrap',
+                    display: 'block',
+                    width: '230px',
+                    overflow: 'hidden'
+                }
+            }
+        }
     }
 }));
 
@@ -55,7 +82,7 @@ const NodeSelection = () => {
     const classes = useStyles();
     const { selectedNodeTypeName, nodeTypes, getNodeTypeUsageLinks } = useGraph();
     const { translate } = useIntl();
-    const { usageCount, abstract } = nodeTypes[selectedNodeTypeName];
+    const { usageCount, usageCountByInheritance, abstract } = nodeTypes[selectedNodeTypeName];
     const [nodeTypeUsageLinks, setNodeTypeUsageLinks] = useState<NodeTypeUsageLink[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [showUsageLinks, setShowUsageLinks] = useState(false);
@@ -84,6 +111,28 @@ const NodeSelection = () => {
                         </p>
                     ) : (
                         <p>{translate('inspector.usage.unused', 'Not used')}</p>
+                    )}
+                    {Object.keys(usageCountByInheritance).length > 0 && (
+                        <div className={classes.usageCountByInheritance}>
+                            <p>
+                                {translate(
+                                    'inspector.usage.byInheritance',
+                                    'This nodetype is being used by the following types via inheritance:'
+                                )}
+                            </p>
+                            <table>
+                                {Object.keys(usageCountByInheritance)
+                                    .sort()
+                                    .map(subTypeName => (
+                                        <tr key={subTypeName}>
+                                            <td>
+                                                <span title={subTypeName}>{subTypeName}</span>
+                                            </td>
+                                            <td>{usageCountByInheritance[subTypeName]}</td>
+                                        </tr>
+                                    ))}
+                            </table>
+                        </div>
                     )}
                 </ToggablePanel.Contents>
             </ToggablePanel>

@@ -96,6 +96,7 @@ class NodeTypeGraphService
                     'declaredSuperTypes' => $declaredSuperTyoes,
                     'usageCount' => array_key_exists($nodeTypeName,
                         $nodeTypeUsage) ? (int)$nodeTypeUsage[$nodeTypeName] : 0,
+                    'usageCountByInheritance' => []
                 ];
 
                 $instantiableNodeTypes = array_filter($nodeTypes, static function (NodeType $nodeType) {
@@ -116,6 +117,8 @@ class NodeTypeGraphService
 
                 return $carry;
             }, []);
+
+        $this->calculateUsageCountByInheritance($nodeTypes);
 
         $this->nodeTypesCache->flush();
         try {
@@ -190,5 +193,43 @@ class NodeTypeGraphService
             }
             return $carry;
         }, []);
+    }
+
+    /**
+     * @param array $nodeTypes
+     */
+    protected function calculateUsageCountByInheritance(array &$nodeTypes): void
+    {
+        foreach($nodeTypes as $nodeType => $nodeTypeConfig) {
+            if ($nodeTypeConfig['usageCount'] === 0) {
+                continue;
+            }
+
+            foreach ($nodeTypeConfig['declaredSuperTypes'] as $declaredSuperType) {
+                $this->addUsageCountToSuperType([$nodeType], $nodeTypes, $declaredSuperType, $nodeType, $nodeTypeConfig['usageCount']);
+            }
+        }
+    }
+
+    /**
+     * @param array $inheritanceList
+     * @param array $nodeTypes
+     * @param string $superType
+     * @param string $nodeType
+     * @param int $count
+     */
+    protected function addUsageCountToSuperType(array $inheritanceList, array &$nodeTypes, string $superType, string $nodeType, int $count): void
+    {
+        // Prevent endless loops by stoping if a type occurs two times
+        if (in_array($superType, $inheritanceList, true)) {
+            return;
+        }
+
+        $inheritanceList[] = $superType;
+        $nodeTypes[$superType]['usageCountByInheritance'][$nodeType] = $count;
+
+        foreach ($nodeTypes[$superType]['declaredSuperTypes'] as $declaredSuperType) {
+            $this->addUsageCountToSuperType($inheritanceList, $nodeTypes, $declaredSuperType, $nodeType, $count);
+        }
     }
 }

@@ -6,6 +6,7 @@ export default interface NodeTypeConfiguration {
     final: boolean;
     allowedChildNodeTypes: NodeTypeName[];
     usageCount: number;
+    usageCountByInheritance: { [key: string]: number };
     declaredProperties: string[];
     declaredSuperTypes: NodeTypeName[];
     configuration: {

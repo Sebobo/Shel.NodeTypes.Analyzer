@@ -16,12 +16,13 @@ interface NodeTypeTreeNodeProps {
 }
 
 const NodeTypeTreeNode = ({ nodeType, level = 1 }: NodeTypeTreeNodeProps) => {
-    const { name, configuration, usageCount } = nodeType;
+    const { name, configuration, usageCount, usageCountByInheritance } = nodeType;
     const [collapsed, setCollapsed] = useState(true);
     const { selectedNodeTypeName, dispatch } = useGraph();
 
     const hasChildren = Object.keys(configuration.childNodes).length > 0;
     const nodePath = nodePathHelper.resolveFromType(nodeType);
+    const usageCountSum = Object.values(usageCountByInheritance).reduce((carry, usage) => carry + usage, 0);
 
     const handleSelectNode = () => {
         setCollapsed(false);
@@ -36,7 +37,7 @@ const NodeTypeTreeNode = ({ nodeType, level = 1 }: NodeTypeTreeNodeProps) => {
                 isFocused={selectedNodeTypeName === name}
                 isLoading={false}
                 hasError={false}
-                label={`${nodePath.split('.').pop()} (${usageCount})`}
+                label={`${nodePath.split('.').pop()} (${usageCount}, ${usageCountSum})`}
                 title={configuration.ui.label || name}
                 icon={configuration.ui.icon || 'question'}
                 nodeDndType={dndTypes.NODE_TYPE}

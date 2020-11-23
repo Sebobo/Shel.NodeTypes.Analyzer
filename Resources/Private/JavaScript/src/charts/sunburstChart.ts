@@ -84,9 +84,7 @@ export default ({ data, width = 975, height = 800 }: SunburstProps): SVGSVGEleme
         });
 
     // @ts-ignore
-    svg.attr('viewBox', function() {
-        autoBox(this);
-    });
+    svg.attr('viewBox', autoBox(svg.node()));
     svg.attr('height', height);
 
     enableZoom({ svg, layer: g, width, height });

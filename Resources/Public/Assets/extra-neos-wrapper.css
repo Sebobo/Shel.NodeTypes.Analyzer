@@ -683,18 +683,56 @@
     position: absolute;
     left: 0;
     right: 0;
-    padding-left: 15px; }
+    padding-left: 15px;
+    height: 2px; }
   .neos ._dropTarget--before_f8458 {
     top: -5px;
     z-index: 1;
     padding-top: 4px;
     padding-bottom: 4px; }
   .neos ._dropTarget--after_f8458 {
-    bottom: 0;
+    bottom: 1px;
     z-index: 2;
     padding-top: 6px;
     padding-bottom: 0; }
   .neos ._dropTarget__inner_f8458 {
-    height: 2px; }
+    visibility: hidden;
+    margin-top: -8px;
+    height: 0; }
   .neos ._dropTarget__inner--acceptsDrop_f8458 {
-    background-color: #00adee; }
+    z-index: 100000;
+    visibility: visible; }
+  .neos ._dropTarget__inner_f8458 svg {
+    fill: #00adee; }
+  .neos ._layer_82081 {
+    position: fixed;
+    pointer-events: none;
+    z-index: 2147483646;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%; }
+  .neos ._dragWrapper_82081 {
+    display: inline-block;
+    position: relative;
+    opacity: .7;
+    left: 0; }
+  .neos ._count_82081 {
+    z-index: 2147483646;
+    position: absolute;
+    top: -10px;
+    left: 5px;
+    width: 20px;
+    height: 20px;
+    color: #fff;
+    background-color: #ff460d;
+    border-radius: 50%;
+    padding: 1px;
+    font-size: 12px;
+    font-weight: 700;
+    text-align: center; }
+  .neos ._node_82081 {
+    position: absolute;
+    width: 280px;
+    background-color: #323232;
+    border: 1px solid #3f3f3f; }

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import Tree from '@neos-project/react-ui-components/lib-esm/Tree';
 
@@ -24,10 +24,10 @@ const NodeTypeTreeNode = ({ nodeType, level = 1 }: NodeTypeTreeNodeProps) => {
     const nodePath = nodePathHelper.resolveFromType(nodeType);
     const usageCountSum = Object.values(usageCountByInheritance).reduce((carry, usage) => carry + usage, 0);
 
-    const handleSelectNode = () => {
+    const handleSelectNode = useCallback(() => {
         setCollapsed(false);
         dispatch({ type: Action.SelectNodeType, payload: name });
-    };
+    }, [name, setCollapsed, dispatch]);
 
     return (
         <Tree.Node>
@@ -37,13 +37,13 @@ const NodeTypeTreeNode = ({ nodeType, level = 1 }: NodeTypeTreeNodeProps) => {
                 isFocused={selectedNodeTypeName === name}
                 isLoading={false}
                 hasError={false}
-                label={`${nodePath.split('.').pop()} (${usageCount}, ${usageCountSum})`}
+                label={`${nodePath.split('.').pop()} (${usageCount + usageCountSum})`}
                 title={configuration.ui.label || name}
                 icon={configuration.ui.icon || 'question'}
                 nodeDndType={dndTypes.NODE_TYPE}
                 level={level}
                 onToggle={() => setCollapsed(!collapsed)}
-                onClick={() => handleSelectNode()}
+                onClick={handleSelectNode}
                 hasChildren={hasChildren}
             />
             {!collapsed &&

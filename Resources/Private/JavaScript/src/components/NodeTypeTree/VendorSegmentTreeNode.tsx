@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import Tree from '@neos-project/react-ui-components/lib-esm/Tree';
 
@@ -28,11 +28,28 @@ const VendorSegmentTreeNode = ({ path, segment, subNodes, level = 1, icon = 'fol
         selectedPath.indexOf(path + '.') === 0 ||
         nodePathHelper.resolveFromName(selectedNodeTypeName).indexOf(path + '.') === 0;
 
+    useEffect(() => {
+        if (isInActivePath) {
+            setCollapsed(false);
+        }
+    }, [isInActivePath, setCollapsed]);
+
+    const handleToggle = useCallback(() => {
+        setCollapsed(!collapsed);
+    }, [collapsed, setCollapsed]);
+
+    const handleSelect = useCallback(() => {
+        setCollapsed(false);
+        dispatch({ type: Action.SelectPath, payload: path });
+    }, [dispatch, path]);
+
+    const showChildNodes = hasChildren && !collapsed;
+
     return (
         <Tree.Node>
             <Tree.Node.Header
                 isActive={isInActivePath}
-                isCollapsed={collapsed && !isInActivePath}
+                isCollapsed={collapsed}
                 isFocused={selectedPath === path}
                 isLoading={false}
                 hasError={false}
@@ -41,12 +58,11 @@ const VendorSegmentTreeNode = ({ path, segment, subNodes, level = 1, icon = 'fol
                 icon={icon}
                 nodeDndType={dndTypes.NODE_TYPE}
                 level={level}
-                onToggle={() => setCollapsed(!collapsed)}
-                onClick={() => dispatch({ type: Action.SelectPath, payload: path })}
+                onToggle={handleToggle}
+                onClick={handleSelect}
                 hasChildren={hasChildren}
             />
-            {(isInActivePath || !collapsed) &&
-                hasChildren &&
+            {showChildNodes &&
                 Object.keys(subNodes).map((segment, index) =>
                     subNodes[segment]['nodeType'] ? (
                         <NodeTypeTreeNode

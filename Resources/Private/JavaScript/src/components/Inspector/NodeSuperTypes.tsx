@@ -16,6 +16,11 @@ const NodeSuperTypes = () => {
     } = nodeTypes[selectedNodeTypeName];
     const [collapsed, setCollapsed] = useState(true);
 
+    const nonAbstractInheritanceWarning = translate(
+        'inspector.supertypes.warning.nonAbstractInheritance',
+        'You are inheriting from a non abstract nodetype. Try to use mixins instead.'
+    );
+
     return (
         <ToggablePanel onPanelToggle={() => setCollapsed(!collapsed)} isOpen={!collapsed} style="condensed">
             <ToggablePanel.Header>
@@ -35,6 +40,10 @@ const NodeSuperTypes = () => {
                                         highlighted={declaredSuperTypes.includes(superTypeName)}
                                         label={nodePathHelper.resolveNameWithoutVendor(superTypeName)}
                                         value={superTypeName}
+                                        icon={!nodeTypes[superTypeName].abstract ? 'warning' : null}
+                                        title={
+                                            !nodeTypes[superTypeName].abstract ? nonAbstractInheritanceWarning : null
+                                        }
                                     />
                                 ))}
                         </PropertyList>

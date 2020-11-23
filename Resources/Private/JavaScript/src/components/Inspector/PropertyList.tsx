@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import { AppTheme, createUseAppStyles } from '../../core';
 import { ReactElement } from 'react';
+import Icon from '@neos-project/react-ui-components/lib-esm/Icon';
 
 const useStyles = createUseAppStyles((theme: AppTheme) => ({
     propertyList: {
@@ -17,8 +18,13 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
         backgroundColor: props => (props?.highlighted ? theme.colors.primaryViolet : theme.colors.contrastNeutral),
         fontWeight: 'bold',
         color: 'white',
+        display: 'flex',
+        justifyContent: 'space-between',
         '.neos &': {
-            padding: `${theme.spacing.half} ${theme.spacing.half} 0`
+            padding: `${theme.spacing.half} ${theme.spacing.half} 0`,
+            '& svg': {
+                color: theme.colors.warn
+            }
         }
     },
     description: {
@@ -47,14 +53,24 @@ interface PropertyListItemProps {
     label: string;
     value: string;
     highlighted?: boolean;
+    icon?: string;
+    title?: string;
 }
 
-export const PropertyListItem = ({ label, value, highlighted = false }: PropertyListItemProps): ReactElement => {
+export const PropertyListItem = ({
+    label,
+    value,
+    icon = null,
+    title = null,
+    highlighted = false
+}: PropertyListItemProps): ReactElement => {
     const classes = useStyles({ highlighted });
 
     return (
         <>
-            <dt className={classes.term}>{label}</dt>
+            <dt className={classes.term} title={title}>
+                {label} {icon && <Icon icon={icon} />}
+            </dt>
             <dd className={classes.description}>{value}</dd>
         </>
     );

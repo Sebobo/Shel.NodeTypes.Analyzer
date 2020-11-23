@@ -83,7 +83,7 @@ const NodeSelection = () => {
     const classes = useStyles();
     const { selectedNodeTypeName, nodeTypes, getNodeTypeUsageLinks } = useGraph();
     const { translate } = useIntl();
-    const { usageCount, usageCountByInheritance, abstract } = nodeTypes[selectedNodeTypeName];
+    const { usageCount, usageCountByInheritance, abstract, final } = nodeTypes[selectedNodeTypeName];
     const [nodeTypeUsageLinks, setNodeTypeUsageLinks] = useState<NodeTypeUsageLink[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [showUsageLinks, setShowUsageLinks] = useState(false);
@@ -101,17 +101,18 @@ const NodeSelection = () => {
             <ToggablePanel onPanelToggle={() => setShowDetails(!showDetails)} isOpen={showDetails} style="condensed">
                 <ToggablePanel.Header>{translate('inspector.usage.label', 'Details')}</ToggablePanel.Header>
                 <ToggablePanel.Contents>
-                    {abstract ? (
-                        <p>{translate('inspector.usage.isAbstract', 'This is an abstract nodetype')}</p>
-                    ) : usageCount > 0 ? (
+                    {abstract && <p>{translate('inspector.usage.isAbstract', 'This is an abstract nodetype.')}</p>}
+                    {final && <p>{translate('inspector.usage.isFinal', 'This is an final nodetype.')}</p>}
+                    {usageCount > 0 && (
                         <p>
                             {translate('inspector.usage.prefix', 'This nodetype is being used')}{' '}
                             <Button onClick={() => setShowUsageLinks(true)} style="lighter" hoverStyle="brand">
                                 {usageCount} {translate('inspector.usage.button', 'times')}
                             </Button>
                         </p>
-                    ) : (
-                        <p>{translate('inspector.usage.unused', 'Not used')}</p>
+                    )}
+                    {usageCount == 0 && Object.keys(usageCountByInheritance).length == 0 && (
+                        <p>{translate('inspector.usage.unused', 'Not directly used.')}</p>
                     )}
                     {Object.keys(usageCountByInheritance).length > 0 && (
                         <div className={classes.usageCountByInheritance}>

@@ -3,6 +3,7 @@ import { AppTheme, createUseAppStyles, useGraph, useIntl } from '../core';
 
 const useStyles = createUseAppStyles((theme: AppTheme) => ({
     nodeTypeCount: {
+        userSelect: 'none',
         borderTop: `1px solid ${theme.colors.contrastDark}`,
         '.neos &': {
             marginTop: theme.spacing.full,

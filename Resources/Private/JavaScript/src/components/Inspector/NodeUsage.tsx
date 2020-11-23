@@ -70,6 +70,7 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
                     textOverflow: 'ellipsis',
                     whitespace: 'nowrap',
                     display: 'block',
+                    lineHeight: 1.2,
                     width: '230px',
                     overflow: 'hidden'
                 }
@@ -121,16 +122,18 @@ const NodeSelection = () => {
                                 )}
                             </p>
                             <table>
-                                {Object.keys(usageCountByInheritance)
-                                    .sort()
-                                    .map(subTypeName => (
-                                        <tr key={subTypeName}>
-                                            <td>
-                                                <span title={subTypeName}>{subTypeName}</span>
-                                            </td>
-                                            <td>{usageCountByInheritance[subTypeName]}</td>
-                                        </tr>
-                                    ))}
+                                <tbody>
+                                    {Object.keys(usageCountByInheritance)
+                                        .sort()
+                                        .map(subTypeName => (
+                                            <tr key={subTypeName}>
+                                                <td>
+                                                    <span title={subTypeName}>{subTypeName}</span>
+                                                </td>
+                                                <td>{usageCountByInheritance[subTypeName]}</td>
+                                            </tr>
+                                        ))}
+                                </tbody>
                             </table>
                         </div>
                     )}

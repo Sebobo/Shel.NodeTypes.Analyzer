@@ -1,5 +1,6 @@
 prototype(Shel.ContentRepository.Debugger:Component.App) < prototype(Neos.Fusion:Component) {
     appData = Neos.Fusion:DataStructure {
+        csrfToken = ${Security.csrfToken()}
         endpoints = Neos.Fusion:DataStructure {
             getNodeTypeDefinitions = Neos.Fusion:UriBuilder {
                 action = 'getNodeTypeDefinitions'
@@ -9,6 +10,23 @@ prototype(Shel.ContentRepository.Debugger:Component.App) < prototype(Neos.Fusion
                 action = 'getNodeTypeUsage'
                 format = 'json'
                 arguments.nodeTypeName = '${nodeTypeName}'
+            }
+            evaluateEelExpression = Neos.Fusion:UriBuilder {
+                controller = 'Repl'
+                action = 'evaluateEelExpression'
+                format = 'json'
+                arguments.expression = '${expression}'
+            }
+            getContextData = Neos.Fusion:UriBuilder {
+                controller = 'Repl'
+                action = 'getContextData'
+                format = 'json'
+            }
+            flushCache = Neos.Fusion:UriBuilder {
+                controller = 'Repl'
+                action = 'flushCache'
+                format = 'json'
+                arguments.cacheIdentifier = '${cacheIdentifier}'
             }
         }
     }

@@ -7,7 +7,7 @@ import { setConfig } from 'react-hot-loader';
 import { RecoilRoot } from 'recoil';
 import Modal from 'react-modal';
 
-import { GraphApp } from './components';
+import { DebuggerModule } from './components';
 import { GraphProvider, IntlProvider, AppThemeProvider, NotifyProvider } from './core';
 
 setConfig({
@@ -31,7 +31,7 @@ const loadPlugin = async (): Promise<void> => {
 
     Modal.setAppElement(graphAppContainer);
 
-    const { endpoints } = JSON.parse(graphAppContainer.dataset.app);
+    const { endpoints, csrfToken } = JSON.parse(graphAppContainer.dataset.app);
     const { I18n, Notification } = NeosApi;
 
     const translate = memoize(
@@ -45,9 +45,9 @@ const loadPlugin = async (): Promise<void> => {
             <NotifyProvider notificationApi={Notification}>
                 <AppThemeProvider>
                     <RecoilRoot>
-                        <GraphProvider endpoints={endpoints}>
+                        <GraphProvider endpoints={endpoints} csrfToken={csrfToken}>
                             <DndProvider backend={HTML5Backend}>
-                                <GraphApp />
+                                <DebuggerModule />
                             </DndProvider>
                         </GraphProvider>
                     </RecoilRoot>

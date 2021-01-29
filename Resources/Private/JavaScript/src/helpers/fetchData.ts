@@ -5,13 +5,15 @@ export default (path: string, body?: Record<string, string>, method: FETCH_METHO
         Object.keys(body).forEach(key => (path = path.replace(escape('${' + key + '}'), body[key])));
     }
 
+    const finalBody = body && method === 'POST' ? JSON.stringify(body) : null;
+
     const options: RequestInit = {
         method,
         credentials: 'include',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: body && method === 'POST' ? JSON.stringify(body) : null
+        body: finalBody
     };
 
     return fetch(path, options)

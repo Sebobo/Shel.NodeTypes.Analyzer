@@ -8,11 +8,13 @@ import {
     InvalidNodeTypes,
     LoadingIndicator,
     SearchBox,
-    NodeTypeCounter
+    NodeTypeCounter,
+    ToggleRepl
 } from './index';
 import { AppTheme, createUseAppStyles } from '../core';
 import { NodeTypeTree } from './NodeTypeTree';
 import { ReactElement } from 'react';
+import { ReplModal } from './Repl';
 
 const useStyles = createUseAppStyles((theme: AppTheme) => ({
     app: {
@@ -39,13 +41,14 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
     }
 }));
 
-const GraphApp = (): ReactElement => {
+const DebuggerModule = (): ReactElement => {
     const classes = useStyles();
 
     return (
         <div className={classes.app}>
             <LoadingIndicator />
             <div className={classes.left}>
+                <ToggleRepl />
                 <TreeFilter />
                 <SearchBox />
                 <NodeTypeTree />
@@ -59,7 +62,8 @@ const GraphApp = (): ReactElement => {
             <div className={classes.right}>
                 <Inspector />
             </div>
+            <ReplModal />
         </div>
     );
 };
-export default GraphApp;
+export default DebuggerModule;

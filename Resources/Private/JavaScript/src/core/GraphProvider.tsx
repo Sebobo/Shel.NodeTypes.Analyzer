@@ -13,7 +13,8 @@ import {
     LinkType,
     NodeTypeConfigurations,
     NodeTypeUsageLink,
-    TreeDataPoint
+    TreeDataPoint,
+    ContextData
 } from '../interfaces';
 import fetchData from '../helpers/fetchData';
 import nodePathHelper from '../helpers/nodePathHelper';
@@ -25,6 +26,7 @@ import { filterTypeState } from '../atoms';
 export interface GraphProviderProps {
     children: React.ReactElement;
     endpoints: Actions;
+    csrfToken: string;
 }
 
 interface GraphProviderValues extends AppState {
@@ -43,12 +45,15 @@ interface GraphProviderValues extends AppState {
     fetchGraphData: () => void;
     dispatch: React.Dispatch<AppAction>;
     getNodeTypeUsageLinks: (nodeTypeName: NodeTypeName) => Promise<void | NodeTypeUsageLink[]>;
+    evaluateEelExpression: (expression: string) => Promise<void | string>;
+    getContextData: () => Promise<void | ContextData>;
+    flushCache: (cacheIdentifier: string) => Promise<void | string>;
 }
 
 export const GraphContext = createContext({} as GraphProviderValues);
 export const useGraph = (): GraphProviderValues => useContext(GraphContext);
 
-const GraphProvider = ({ children, endpoints }: GraphProviderProps): ReactElement => {
+const GraphProvider = ({ children, endpoints, csrfToken }: GraphProviderProps): ReactElement => {
     const Notify = useNotify();
     const [appState, dispatch] = useAppState();
 
@@ -89,6 +94,8 @@ const GraphProvider = ({ children, endpoints }: GraphProviderProps): ReactElemen
         });
     };
 
+    // TODO: Convert all async calls into hooks
+
     /**
      * Retrieves a link list of the usages of one nodetype
      */
@@ -96,10 +103,44 @@ const GraphProvider = ({ children, endpoints }: GraphProviderProps): ReactElemen
         (nodeTypeName: string): Promise<void | NodeTypeUsageLink[]> => {
             return fetchData(endpoints.getNodeTypeUsage, { nodeTypeName }, 'GET')
                 .then(({ usageLinks }: { usageLinks: NodeTypeUsageLink[] }) => usageLinks)
-                .catch(error => Notify.error(error))
+                .catch(error => Notify.error(error.message))
                 .finally(() => setIsLoading(false));
         }
     );
+
+    /**
+     * Retrieves a link list of the usages of one nodetype
+     */
+    const evaluateEelExpression = memoize(
+        (expression: string): Promise<void | string> => {
+            return fetchData(endpoints.evaluateEelExpression, { expression }, 'GET')
+                .then(({ result }: { result: string }) => result)
+                .catch(error => Notify.error(error.message))
+                .finally(() => setIsLoading(false));
+        }
+    );
+
+    /**
+     * Retrieves context data for the current user and site
+     */
+    const getContextData = memoize(
+        (): Promise<void | ContextData> => {
+            return fetchData(endpoints.getContextData, {}, 'GET')
+                .then((context: ContextData) => context)
+                .catch(error => Notify.error(error.message))
+                .finally(() => setIsLoading(false));
+        }
+    );
+
+    /**
+     * Retrieves context data for the current user and site
+     */
+    const flushCache = (cacheIdentifier): Promise<void | string> => {
+        return fetchData(endpoints.flushCache, { cacheIdentifier }, 'GET')
+            .then(({ message }) => message)
+            .catch(error => Notify.error(error.message))
+            .finally(() => setIsLoading(false));
+    };
 
     const fetchGraphData = useCallback(() => {
         fetchData(endpoints.getNodeTypeDefinitions, null, 'GET')
@@ -280,7 +321,10 @@ const GraphProvider = ({ children, endpoints }: GraphProviderProps): ReactElemen
                 invalidNodeTypes,
                 setInvalidNodeTypes,
                 getNodeTypeUsageLinks,
+                evaluateEelExpression,
                 fetchGraphData,
+                getContextData,
+                flushCache,
                 ...appState,
                 dispatch
             }}

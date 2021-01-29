@@ -1,0 +1,16 @@
+Neos:
+  Flow:
+    mvc:
+      routes:
+        'Shel.ContentRepository.Debugger':
+          position: 'start'
+
+    security:
+      authentication:
+        providers:
+          'Neos.Neos:Backend':
+            requestPatterns:
+              'Shel.ContentRepository.Debugger:Controllers':
+                pattern: 'ControllerObjectName'
+                patternOptions:
+                  controllerObjectNamePattern: 'Shel\ContentRepository\Debugger\Controller\.*'

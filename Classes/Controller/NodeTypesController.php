@@ -3,11 +3,21 @@ declare(strict_types=1);
 
 namespace Shel\ContentRepository\Debugger\Controller;
 
+/**
+ * This file is part of the Shel.ContentRepository.Debugger package.
+ *
+ * (c) 2021 Sebastian Helzle
+ *
+ * This package is Open Source Software. For the full copyright and license
+ * information, please view the LICENSE file which was distributed with this
+ * source code.
+ */
+
 use Neos\Cache\Exception as CacheException;
+use Neos\Flow\Annotations as Flow;
 use Neos\Flow\Mvc\View\JsonView;
 use Neos\Fusion\View\FusionView;
 use Neos\Neos\Controller\Module\AbstractModuleController;
-use Neos\Flow\Annotations as Flow;
 use Shel\ContentRepository\Debugger\Service\NodeTypeGraphService;
 use Shel\ContentRepository\Debugger\Service\NodeTypeUsageService;
 

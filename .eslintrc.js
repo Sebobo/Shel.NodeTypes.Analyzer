@@ -1,11 +1,12 @@
 module.exports = {
+    root: true,
     parser: '@typescript-eslint/parser',
     extends: [
         'eslint:recommended',
         'plugin:@typescript-eslint/recommended',
         'prettier/@typescript-eslint',
         'plugin:prettier/recommended',
-        'plugin:react/recommended'
+        'plugin:react/recommended',
     ],
     plugins: ['@typescript-eslint', 'prettier', 'react'],
     /*parserOptions: {
@@ -14,16 +15,17 @@ module.exports = {
     },*/
     settings: {
         react: {
-            version: 'detect'
-        }
+            version: 'detect',
+        },
     },
     env: {
         browser: true,
         es6: true,
-        node: true
+        node: true,
     },
     ignorePatterns: ['.cache', 'dist', 'node_modules/'],
     rules: {
+        'react/prop-types': 'off',
         '@typescript-eslint/indent': ['error', 4],
         '@typescript-eslint/explicit-function-return-type': 'off',
         '@typescript-eslint/no-explicit-any': 'off',
@@ -36,8 +38,8 @@ module.exports = {
                 semi: true,
                 singleQuote: true,
                 tabWidth: 4,
-                printWidth: 120
-            }
-        ]
-    }
+                printWidth: 120,
+            },
+        ],
+    },
 };

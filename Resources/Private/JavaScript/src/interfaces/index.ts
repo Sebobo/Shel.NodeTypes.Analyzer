@@ -9,6 +9,7 @@ import { Dependencies, LinkType } from './Dependencies';
 import Constraint from './Constraint';
 import NodeTypeUsageLink from './NodeTypeUsageLink';
 import TreeDataPoint from './TreeDataPoint';
+import ContextData from './ContextData';
 
 export {
     Actions,
@@ -22,5 +23,6 @@ export {
     Dependencies,
     LinkType,
     Constraint,
-    TreeDataPoint
+    TreeDataPoint,
+    ContextData
 };

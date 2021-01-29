@@ -1,49 +1,18 @@
 import * as React from 'react';
 import { useState } from 'react';
-import Modal from 'react-modal';
 
 import ToggablePanel from '@neos-project/react-ui-components/lib-esm/ToggablePanel';
 import Button from '@neos-project/react-ui-components/lib-esm/Button';
 
 import { AppTheme, createUseAppStyles, useGraph, useIntl } from '../../core';
 import { NodeTypeUsageLink } from '../../interfaces';
-import IconButton from '@neos-project/react-ui-components/lib-esm/IconButton';
+import { Modal } from '../index';
 
 const useStyles = createUseAppStyles((theme: AppTheme) => ({
     usageTable: {
         '.neos &': {}
     },
-    modal: {
-        position: 'absolute',
-        top: `calc(2 * ${theme.spacing.goldenUnit})`,
-        left: theme.spacing.goldenUnit,
-        right: theme.spacing.goldenUnit,
-        bottom: theme.spacing.goldenUnit,
-        color: 'white',
-        outline: 'none',
-        overflow: 'auto',
-        backgroundColor: theme.colors.contrastDarker,
-        '.neos &': {
-            padding: theme.spacing.goldenUnit
-        }
-    },
-    overlay: {
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, .85)',
-        zIndex: 10300
-    },
-    closeButton: {
-        top: theme.spacing.half,
-        right: theme.spacing.half,
-        '.neos &': {
-            position: 'absolute'
-        }
-    },
-    usageHeader: {
+    replHeader: {
         '.neos &': {
             fontSize: '1rem',
             marginBottom: theme.spacing.goldenUnit
@@ -144,25 +113,12 @@ const NodeSelection = () => {
             <Modal
                 isOpen={showUsageLinks}
                 onAfterOpen={afterOpenModal}
-                onRequestClose={() => setShowUsageLinks(false)}
-                contentLabel={selectedNodeTypeName + ' Usage'}
-                className={classes.modal}
-                overlayClassName={classes.overlay}
+                onClose={() => setShowUsageLinks(false)}
+                label={selectedNodeTypeName + ' Usage'}
             >
-                <h2 className={classes.usageHeader}>
+                <h2 className={classes.replHeader}>
                     {translate('inspector.usage.modal.header', 'Usage for')} {selectedNodeTypeName}
                 </h2>
-                <IconButton
-                    className={classes.closeButton}
-                    size="small"
-                    style="transparent"
-                    hoverStyle="brand"
-                    icon="times-circle"
-                    onClick={() => setShowUsageLinks(false)}
-                    title={translate('inspector.usage.modal.close', 'Close')}
-                >
-                    {translate('inspector.usage.modal.close', 'Close')}
-                </IconButton>
 
                 {isLoading ? (
                     <p>{translate('inspector.usage.modal.loading', 'Loading usage links...')}</p>

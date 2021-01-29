@@ -3,6 +3,16 @@ declare(strict_types=1);
 
 namespace Shel\ContentRepository\Debugger\Service;
 
+/**
+ * This file is part of the Shel.ContentRepository.Debugger package.
+ *
+ * (c) 2021 Sebastian Helzle
+ *
+ * This package is Open Source Software. For the full copyright and license
+ * information, please view the LICENSE file which was distributed with this
+ * source code.
+ */
+
 use Doctrine\ORM\EntityManagerInterface;
 use Neos\Cache\Exception as CacheException;
 use Neos\Cache\Frontend\StringFrontend;

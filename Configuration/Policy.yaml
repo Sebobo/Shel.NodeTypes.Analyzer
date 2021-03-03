@@ -10,6 +10,9 @@ privilegeTargets:
 roles:
   'Shel.ContentRepository.Debugger:NodeTypesAnalyzer':
     privileges:
+      # Grant access to the administration tab (not all its modules) so the module can be accessed
+      - privilegeTarget: 'Neos.Neos:Backend.Module.Administration'
+        permission: GRANT
       - privilegeTarget: 'Shel.ContentRepository.Debugger:Backend.Module.Administration.NodeTypes.AnalyzeNodeTypes'
         permission: GRANT
       - privilegeTarget: 'Shel.ContentRepository.Debugger:Backend.Module.Administration.NodeTypes'

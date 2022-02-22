@@ -1,4 +1,5 @@
 import Inspector from './Inspector';
+import NodeAnnotations from './NodeAnnotations';
 import NodeProperties from './NodeProperties';
 import NodeTypeProfile from './NodeTypeProfile';
 import NodePathProfile from './NodePathProfile';
@@ -10,6 +11,7 @@ import NodeUsage from './NodeUsage';
 import { PropertyList, PropertyListItem } from './PropertyList';
 
 export {
+    NodeAnnotations,
     NodeTypeProfile,
     NodePathProfile,
     NodeProperties,

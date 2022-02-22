@@ -33,6 +33,30 @@ drill down through your namespaces.
 A second graph layout allows your to inspect all direct and indirect dependencies.
 
 ![Dependency inspection](Documentation/Images/NodeTypeDependencies.png "Dependency inspection")
+
+## Additional nodetype annotations
+
+You can set the following options on each nodetype for additional output in the module:
+
+```yaml
+My.Vendor:Content.MyNodetype:
+  superTypes:
+    Neos.Neos:Content: true
+  ui:
+    label: i18n
+  options:
+    Shel.ContentRepository.Debugger:
+      deprecated: true
+      note: This is someething related to this nodetype
+```
+
+### Mark deprecated nodetypes
+
+Marking a nodetype as deprecated will show a warning in the modules inspector and in the nodetype tree.
+
+### Add notes to nodetypes
+
+Adding notes to nodetypes will show them in the module.
  
 ## Contributing
 

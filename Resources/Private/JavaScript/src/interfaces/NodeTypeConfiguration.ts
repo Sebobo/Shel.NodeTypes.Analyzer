@@ -31,5 +31,11 @@ export default interface NodeTypeConfiguration {
                 };
             };
         };
+        options?: {
+            'Shel.ContentRepository.Debugger': {
+                deprecated?: boolean;
+                note?: string;
+            };
+        };
     };
 }

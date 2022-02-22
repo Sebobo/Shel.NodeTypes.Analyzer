@@ -2,11 +2,12 @@ import * as React from 'react';
 import { useCallback, useState } from 'react';
 
 import Tree from '@neos-project/react-ui-components/lib-esm/Tree';
+import Icon from '@neos-project/react-ui-components/lib-esm/Icon';
 
 import { dndTypes } from '../../constants';
 import { NodeTypeConfiguration } from '../../interfaces';
 import { NodeTypeChildTreeNode } from './index';
-import { Action, useGraph } from '../../core';
+import { Action, useGraph, useIntl } from '../../core';
 import nodePathHelper from '../../helpers/nodePathHelper';
 
 interface NodeTypeTreeNodeProps {
@@ -20,6 +21,7 @@ const NodeTypeTreeNode = ({ nodeType, level = 1 }: NodeTypeTreeNodeProps) => {
     const [collapsed, setCollapsed] = useState(true);
     const { selectedNodeTypeName, dispatch } = useGraph();
 
+    const hasError = false;
     const hasChildren = Object.keys(configuration.childNodes).length > 0;
     const nodePath = nodePathHelper.resolveFromType(nodeType);
     const usageCountSum = Object.values(usageCountByInheritance).reduce((carry, usage) => carry + usage, 0);
@@ -29,6 +31,13 @@ const NodeTypeTreeNode = ({ nodeType, level = 1 }: NodeTypeTreeNodeProps) => {
         dispatch({ type: Action.SelectNodeType, payload: name });
     }, [name, setCollapsed, dispatch]);
 
+    const icon = (
+        <Icon
+            icon={configuration.ui.icon || 'question'}
+            color={configuration.options['Shel.ContentRepository.Debugger']?.deprecated ? 'warn' : 'default'}
+        />
+    );
+
     return (
         <Tree.Node>
             <Tree.Node.Header
@@ -36,10 +45,10 @@ const NodeTypeTreeNode = ({ nodeType, level = 1 }: NodeTypeTreeNodeProps) => {
                 isCollapsed={collapsed}
                 isFocused={selectedNodeTypeName === name}
                 isLoading={false}
-                hasError={false}
+                hasError={hasError}
                 label={`${nodePath.split('.').pop()} (${usageCount + usageCountSum})`}
                 title={configuration.ui.label || name}
-                icon={configuration.ui.icon || 'question'}
+                customIconComponent={icon}
                 nodeDndType={dndTypes.NODE_TYPE}
                 level={level}
                 onToggle={() => setCollapsed(!collapsed)}

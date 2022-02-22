@@ -23,7 +23,8 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
         gridTemplateColumns: `${theme.size.sidebarWidth} 1fr ${theme.size.sidebarWidth}`,
         '& svg.neos-svg-inline--fa': {
             width: '14px',
-            height: '14px'
+            height: '14px',
+            alignSelf: 'center'
         }
     },
     left: {
@@ -40,7 +41,7 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
         gridArea: 'right',
         maxHeight: 'inherit',
         overflow: 'auto'
-    },
+    }
 }));
 
 const GraphApp: React.FC = (): ReactElement => {

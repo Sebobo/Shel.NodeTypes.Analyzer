@@ -83,7 +83,7 @@ const NodeSelection = () => {
     const classes = useStyles();
     const { selectedNodeTypeName, nodeTypes, getNodeTypeUsageLinks } = useGraph();
     const { translate } = useIntl();
-    const { usageCount, usageCountByInheritance, abstract, final } = nodeTypes[selectedNodeTypeName];
+    const { usageCount, usageCountByInheritance, abstract, final, configuration } = nodeTypes[selectedNodeTypeName];
     const [nodeTypeUsageLinks, setNodeTypeUsageLinks] = useState<NodeTypeUsageLink[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [showUsageLinks, setShowUsageLinks] = useState(false);

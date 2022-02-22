@@ -1,7 +1,14 @@
 import * as React from 'react';
 
 import { useGraph } from '../../core';
-import { NodeChildNodes, NodeGrandChildNodes, NodeProperties, NodeSuperTypes, NodeUsage } from './index';
+import {
+    NodeAnnotations,
+    NodeChildNodes,
+    NodeGrandChildNodes,
+    NodeProperties,
+    NodeSuperTypes,
+    NodeUsage
+} from './index';
 
 const NodeTypeProfile = () => {
     const { selectedNodeTypeName } = useGraph();
@@ -12,6 +19,7 @@ const NodeTypeProfile = () => {
 
     return (
         <div>
+            <NodeAnnotations />
             <NodeUsage />
             <NodeProperties />
             <NodeSuperTypes />

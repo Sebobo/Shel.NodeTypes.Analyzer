@@ -56,7 +56,16 @@ class NodeTypeGraphService
         $nodeTypes = $this->nodeTypeManager->getNodeTypes();
         $nodeTypeUsage = $this->getNodeTypeUsageQuery();
 
-        $defaultConfiguration = ['superTypes' => [], 'properties' => [], 'ui' => [], 'abstract' => false, 'final' => false, 'constraints' => [], 'childNodes' => []];
+        $defaultConfiguration = [
+            'superTypes' => [],
+            'properties' => [],
+            'ui' => [],
+            'abstract' => false,
+            'final' => false,
+            'constraints' => [],
+            'childNodes' => [],
+            'options' => []
+        ];
         $defaultConfigurationKeys = array_keys($defaultConfiguration);
 
         $nodeTypes = array_reduce($nodeTypes,
@@ -65,7 +74,7 @@ class NodeTypeGraphService
 
                 $declaredProperties = array_keys($nodeType->getLocalConfiguration()['properties'] ?? []);
 
-                $declaredSuperTyoes = array_reduce($nodeType->getDeclaredSuperTypes(),
+                $declaredSuperTypes = array_reduce($nodeType->getDeclaredSuperTypes(),
                     static function (array $carry, NodeType $superType) {
                         $carry[] = $superType->getName();
                         return $carry;
@@ -93,7 +102,7 @@ class NodeTypeGraphService
                     'final' => $nodeType->isFinal(),
                     'configuration' => $configuration,
                     'declaredProperties' => $declaredProperties,
-                    'declaredSuperTypes' => $declaredSuperTyoes,
+                    'declaredSuperTypes' => $declaredSuperTypes,
                     'usageCount' => array_key_exists($nodeTypeName,
                         $nodeTypeUsage) ? (int)$nodeTypeUsage[$nodeTypeName] : 0,
                     'usageCountByInheritance' => []

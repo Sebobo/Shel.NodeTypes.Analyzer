@@ -61,7 +61,8 @@ export interface AppTheme {
 }
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export const createUseAppStyles = styles => createUseStyles<AppTheme>(styles, { theming } as Record<string, unknown>);
+export const createUseAppStyles = styles =>
+    createUseStyles<any, any, AppTheme>(styles, { theming } as Record<string, unknown>);
 
 export const AppThemeProvider = ({ children }: { children: React.ReactElement }): ReactElement => (
     <ThemeProvider theme={config}>{children}</ThemeProvider>

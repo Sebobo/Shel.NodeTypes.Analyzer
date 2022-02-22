@@ -20,7 +20,11 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
         height: 'inherit',
         gridGap: theme.spacing.full,
         gridTemplateAreas: `"left main right"`,
-        gridTemplateColumns: `${theme.size.sidebarWidth} 1fr ${theme.size.sidebarWidth}`
+        gridTemplateColumns: `${theme.size.sidebarWidth} 1fr ${theme.size.sidebarWidth}`,
+        '& svg.neos-svg-inline--fa': {
+            width: '14px',
+            height: '14px'
+        }
     },
     left: {
         gridArea: 'left',
@@ -36,10 +40,10 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
         gridArea: 'right',
         maxHeight: 'inherit',
         overflow: 'auto'
-    }
+    },
 }));
 
-const GraphApp = (): ReactElement => {
+const GraphApp: React.FC = (): ReactElement => {
     const classes = useStyles();
 
     return (
@@ -62,4 +66,4 @@ const GraphApp = (): ReactElement => {
         </div>
     );
 };
-export default GraphApp;
+export default React.memo(GraphApp);

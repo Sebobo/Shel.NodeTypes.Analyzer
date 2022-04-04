@@ -69,7 +69,7 @@
     "eslint-plugin-react": "^7.18.3",
     "express": "^4.17.1",
     "husky": "^4.2.5",
-    "node-sass": "^5.0",
+    "node-sass": "^7.0",
     "parcel-bundler": "^1.12.4",
     "postcss-custom-properties": "^9.1.1",
     "postcss-modules": "^1.5.0",

@@ -8,19 +8,19 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
     invalidNodeTypesList: {
         '.neos &': {
             '& ul': {
-                paddingLeft: theme.spacing.full
+                paddingLeft: theme.spacing.full,
             },
             '& li': {
-                listStyleType: 'disc'
-            }
-        }
+                listStyleType: 'disc',
+            },
+        },
     },
     headline: {
         '.neos &': {
             fontWeight: 'bold',
-            lineHeight: theme.spacing.goldenUnit
-        }
-    }
+            lineHeight: theme.spacing.goldenUnit,
+        },
+    },
 }));
 
 const InvalidNodeTypes = () => {
@@ -33,7 +33,7 @@ const InvalidNodeTypes = () => {
                 Invalid nodetypes
             </Headline>
             <ul>
-                {Object.keys(invalidNodeTypes).map(nodeTypeName => (
+                {Object.keys(invalidNodeTypes).map((nodeTypeName) => (
                     <li key={nodeTypeName}>{nodeTypeName}</li>
                 ))}
             </ul>

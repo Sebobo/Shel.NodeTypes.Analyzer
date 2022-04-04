@@ -10,14 +10,14 @@ export interface AppState {
 const initialState: AppState = {
     selectedNodeTypeName: '',
     selectedPath: '',
-    selectedLayout: chartType.SUNBURST
+    selectedLayout: chartType.SUNBURST,
 };
 
 export enum Action {
     SelectNodeType,
     SelectPath,
     SelectLayout,
-    Reset
+    Reset,
 }
 
 type SelectNodeTypeAction = {
@@ -48,7 +48,7 @@ function reducer(state: AppState, action: AppAction) {
                 ...state,
                 selectedNodeTypeName: action.payload,
                 selectedPath: '',
-                selectedLayout: action.payload ? chartType.DEPENDENCIES : state.selectedLayout
+                selectedLayout: action.payload ? chartType.DEPENDENCIES : state.selectedLayout,
             };
         case Action.SelectPath:
             return { ...state, selectedNodeTypeName: '', selectedPath: action.payload };

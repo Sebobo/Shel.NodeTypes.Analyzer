@@ -1,4 +1,4 @@
 const dndTypes = {
-    NODE_TYPE: 'neos-tree-node-type'
+    NODE_TYPE: 'neos-tree-node-type',
 };
 export default dndTypes;

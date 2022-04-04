@@ -12,27 +12,27 @@ import { ReactElement } from 'react';
 const useStyles = createUseAppStyles((theme: AppTheme) => ({
     searchBox: {
         borderTop: 0,
-        display: 'flex'
+        display: 'flex',
     },
     dropdown: {
         '.neos & input[type="search"]': {
             backgroundColor: theme.colors.contrastNeutral,
             border: 0,
             '&:focus': {
-                border: 0
-            }
-        }
-    }
+                border: 0,
+            },
+        },
+    },
 }));
 
 function getOptionsForTerm(nodeTypes: NodeTypeConfigurations, searchTerm: string) {
     return Object.keys(nodeTypes)
-        .filter(nodeTypeName => nodeTypeName.toLowerCase().indexOf(searchTerm.toLowerCase()) >= 0)
-        .map(nodeTypeName => {
+        .filter((nodeTypeName) => nodeTypeName.toLowerCase().indexOf(searchTerm.toLowerCase()) >= 0)
+        .map((nodeTypeName) => {
             return {
                 label: nodeTypeName,
                 value: nodeTypeName,
-                group: nodePathHelper.resolveGroup(nodeTypeName)
+                group: nodePathHelper.resolveGroup(nodeTypeName),
             };
         });
 }
@@ -57,8 +57,8 @@ const SearchBox = (): ReactElement => {
                 displaySearchBox={true}
                 options={options}
                 value={searchTerm}
-                onValueChange={value => onValueChange(value)}
-                onSearchTermChange={value => setSearchTerm(value)}
+                onValueChange={(value) => onValueChange(value)}
+                onSearchTermChange={(value) => setSearchTerm(value)}
                 searchBoxLeftToTypeLabel={translate(
                     'searchBox.enterMoreLetters',
                     'Enter more characters to get results'

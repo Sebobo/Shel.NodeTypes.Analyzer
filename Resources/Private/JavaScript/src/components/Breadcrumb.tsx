@@ -16,19 +16,19 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
         flexDirection: 'row',
         '& li': {
             '& button': {
-                lineHeight: 1
-            }
-        }
+                lineHeight: 1,
+            },
+        },
     },
     text: {
         '.neos &': {
             padding: `0 ${theme.spacing.half}`,
             '& svg': {
                 verticalAlign: 'bottom',
-                marginRight: theme.spacing.quarter
-            }
-        }
-    }
+                marginRight: theme.spacing.quarter,
+            },
+        },
+    },
 }));
 
 const Breadcrumb = () => {
@@ -64,7 +64,7 @@ const Breadcrumb = () => {
             </li>
             {currentPath
                 .split('.')
-                .filter(segment => segment)
+                .filter((segment) => segment)
                 .map((segment, index) => (
                     <React.Fragment key={index}>
                         <li>

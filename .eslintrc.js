@@ -6,7 +6,7 @@ module.exports = {
         'plugin:@typescript-eslint/recommended',
         'prettier/@typescript-eslint',
         'plugin:prettier/recommended',
-        'plugin:react/recommended'
+        'plugin:react/recommended',
     ],
     plugins: ['@typescript-eslint', 'prettier', 'react'],
     /*parserOptions: {
@@ -15,13 +15,13 @@ module.exports = {
     },*/
     settings: {
         react: {
-            version: 'detect'
-        }
+            version: 'detect',
+        },
     },
     env: {
         browser: true,
         es6: true,
-        node: true
+        node: true,
     },
     ignorePatterns: ['.cache', 'dist', 'node_modules/'],
     rules: {
@@ -37,8 +37,8 @@ module.exports = {
                 semi: true,
                 singleQuote: true,
                 tabWidth: 4,
-                printWidth: 120
-            }
-        ]
-    }
+                printWidth: 120,
+            },
+        ],
+    },
 };

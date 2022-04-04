@@ -32,7 +32,7 @@
     "@fortawesome/react-fontawesome": "^0.1.9",
     "@friendsofreactjs/react-css-themr": "^4.1.0",
     "@neos-project/neos-ui-extensibility": "^5.3",
-    "@neos-project/react-ui-components": "^5.3",
+    "@neos-project/react-ui-components": "5.3.14",
     "classnames": "^2.2.6",
     "d3": "^5.16.0",
     "d3-array": "2",
@@ -53,7 +53,7 @@
     "react-jss": "^10.0.4",
     "react-keydown": "^1.9.12",
     "react-modal": "^3.11.2",
-    "recoil": "^0.6"
+    "recoil": "^0.7"
   },
   "devDependencies": {
     "@babel/core": "^7.8.4",
@@ -79,6 +79,7 @@
   },
   "browserslist": [
     "> 1%",
-    "Last 2 versions"
+    "Last 2 versions",
+    "not dead"
   ]
 }

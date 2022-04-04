@@ -13,13 +13,13 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
         flex: '0 1 auto',
         display: 'flex',
         alignItems: 'center',
-        border: `1px solid ${theme.colors.contrastDark}`
+        border: `1px solid ${theme.colors.contrastDark}`,
     },
     headline: {
         '.neos &': {
-            padding: `0 ${theme.spacing.half}`
-        }
-    }
+            padding: `0 ${theme.spacing.half}`,
+        },
+    },
 }));
 
 const TreeFilter = () => {
@@ -30,7 +30,7 @@ const TreeFilter = () => {
     const selectableFilters = [
         { label: 'None', value: FilterType.NONE },
         { label: 'Unused content', value: FilterType.UNUSED_CONTENT },
-        { label: 'Unused documents', value: FilterType.UNUSED_DOCUMENTS }
+        { label: 'Unused documents', value: FilterType.UNUSED_DOCUMENTS },
     ];
 
     return (
@@ -40,7 +40,7 @@ const TreeFilter = () => {
             </Headline>
             <SelectBox
                 options={selectableFilters}
-                onValueChange={filter => setSelectedFilter(filter)}
+                onValueChange={(filter) => setSelectedFilter(filter)}
                 value={selectedFilter}
             />
         </div>

@@ -13,7 +13,7 @@ import {
     LinkType,
     NodeTypeConfigurations,
     NodeTypeUsageLink,
-    TreeDataPoint
+    TreeDataPoint,
 } from '../interfaces';
 import fetchData from '../helpers/fetchData';
 import nodePathHelper from '../helpers/nodePathHelper';
@@ -28,6 +28,7 @@ export interface GraphProviderProps {
 }
 
 interface GraphProviderValues extends AppState {
+    endpoints: Actions;
     isLoading: boolean;
     nodeTypeGroups: NodeTypeGroup[];
     setNodeTypeGroups: (nodeTypeGroups: NodeTypeGroup[]) => void;
@@ -75,7 +76,7 @@ const GraphProvider = ({ children, endpoints }: GraphProviderProps): ReactElemen
      * @param path
      */
     const processTreeData = (data, path = '') => {
-        return Object.keys(data).map(segment => {
+        return Object.keys(data).map((segment) => {
             const currentData = data[segment];
             const segmentPath = path ? path + '.' + segment : segment;
             const node: DataSegment = { name: segment, path: segmentPath };
@@ -92,14 +93,12 @@ const GraphProvider = ({ children, endpoints }: GraphProviderProps): ReactElemen
     /**
      * Retrieves a link list of the usages of one nodetype
      */
-    const getNodeTypeUsageLinks = memoize(
-        (nodeTypeName: string): Promise<void | NodeTypeUsageLink[]> => {
-            return fetchData(endpoints.getNodeTypeUsage, { nodeTypeName }, 'GET')
-                .then(({ usageLinks }: { usageLinks: NodeTypeUsageLink[] }) => usageLinks)
-                .catch(error => Notify.error(error))
-                .finally(() => setIsLoading(false));
-        }
-    );
+    const getNodeTypeUsageLinks = memoize((nodeTypeName: string): Promise<void | NodeTypeUsageLink[]> => {
+        return fetchData(endpoints.getNodeTypeUsage, { nodeTypeName }, 'GET')
+            .then(({ usageLinks }: { usageLinks: NodeTypeUsageLink[] }) => usageLinks)
+            .catch((error) => Notify.error(error))
+            .finally(() => setIsLoading(false));
+    });
 
     const fetchGraphData = useCallback(() => {
         fetchData(endpoints.getNodeTypeDefinitions, null, 'GET')
@@ -118,14 +117,14 @@ const GraphProvider = ({ children, endpoints }: GraphProviderProps): ReactElemen
                     },
                     {
                         validNodeTypes: {},
-                        invalidNodeTypes: {}
+                        invalidNodeTypes: {},
                     }
                 );
 
                 setNodeTypes(validNodeTypes);
                 setInvalidNodeTypes(invalidNodeTypes);
             })
-            .catch(error => Notify.error(error))
+            .catch((error) => Notify.error(error))
             .finally(() => setIsLoading(false));
     }, []);
 
@@ -176,7 +175,7 @@ const GraphProvider = ({ children, endpoints }: GraphProviderProps): ReactElemen
                 const typeToAdd = nodeTypes[typesToAdd.pop()];
                 const superTypes = typeToAdd.declaredSuperTypes;
                 if (superTypes) {
-                    superTypes.forEach(superType => {
+                    superTypes.forEach((superType) => {
                         if (superTypes[superType] && Object.keys(types).indexOf(superType) === -1) {
                             typesToAdd.push(superType);
                         }
@@ -186,7 +185,7 @@ const GraphProvider = ({ children, endpoints }: GraphProviderProps): ReactElemen
             }
 
             if (selectedNodeType.configuration.superTypes) {
-                Object.keys(selectedNodeType.configuration.superTypes).forEach(superType => {
+                Object.keys(selectedNodeType.configuration.superTypes).forEach((superType) => {
                     if (selectedNodeType.configuration.superTypes[superType]) {
                         types[superType] = nodeTypes[superType];
                     }
@@ -211,18 +210,18 @@ const GraphProvider = ({ children, endpoints }: GraphProviderProps): ReactElemen
                     name: nodeType.name,
                     group: nodePathHelper.resolveGroup(nodeType.name),
                     path: nodeTypePath,
-                    value: selectedNodeTypeName === nodeType.name ? 2 : 1
+                    value: selectedNodeTypeName === nodeType.name ? 2 : 1,
                 });
                 includedTypes.push(nodeType.name);
 
                 if (nodeType.declaredSuperTypes) {
-                    nodeType.declaredSuperTypes.forEach(superType => {
+                    nodeType.declaredSuperTypes.forEach((superType) => {
                         if (typeNames.includes(superType)) {
                             carry.links.push({
                                 source: nodeType.name,
                                 target: superType,
                                 type: LinkType.INHERITS,
-                                group: nodePathHelper.resolveGroup(superType)
+                                group: nodePathHelper.resolveGroup(superType),
                             });
                             linkedTypes[superType] = true;
                         }
@@ -233,22 +232,22 @@ const GraphProvider = ({ children, endpoints }: GraphProviderProps): ReactElemen
             },
             {
                 nodes: {
-                    children: []
+                    children: [],
                 },
-                links: []
+                links: [],
             } as Dependencies
         );
 
         // Add missing nodes that are being linked but not included via the current path
         if (selectedPath) {
             Object.keys(linkedTypes)
-                .filter(type => !includedTypes.includes(type))
-                .forEach(linkedType => {
+                .filter((type) => !includedTypes.includes(type))
+                .forEach((linkedType) => {
                     data.nodes.children.push({
                         name: linkedType,
                         group: nodePathHelper.resolveGroup(linkedType),
                         path: nodePathHelper.resolveFromName(linkedType),
-                        value: 1
+                        value: 1,
                     });
                 });
         }
@@ -267,6 +266,7 @@ const GraphProvider = ({ children, endpoints }: GraphProviderProps): ReactElemen
     return (
         <GraphContext.Provider
             value={{
+                endpoints,
                 isLoading,
                 nodeTypeGroups,
                 setNodeTypeGroups,
@@ -282,7 +282,7 @@ const GraphProvider = ({ children, endpoints }: GraphProviderProps): ReactElemen
                 getNodeTypeUsageLinks,
                 fetchGraphData,
                 ...appState,
-                dispatch
+                dispatch,
             }}
         >
             {children}

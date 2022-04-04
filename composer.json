@@ -1,36 +1,37 @@
 {
-    "name": "shel/contentrepository-debugger",
-    "description": "Graphical analysis & visualizer for the Neos CMS Content Repository as backend module",
-    "type": "neos-package",
-    "license": "GPL-3.0",
-    "keywords": [
-        "neos",
-        "neoscms",
-        "flow",
-        "contentrepository",
-        "analysis",
-        "visualizer",
-        "charts"
-    ],
-    "authors": [
-        {
-            "name": "Sebastian Helzle",
-            "email": "sebastian@helzle.it",
-            "homepage": "https://www.helzle.it",
-            "role": "Developer"
-        }
-    ],
-    "require": {
-        "neos/neos": "^4.3 || ^5.0 || ^7.0 || dev-master"
-    },
-    "autoload": {
-        "psr-4": {
-            "Shel\\ContentRepository\\Debugger\\": "Classes"
-        }
-    },
-    "extra": {
-        "neos": {
-            "package-key": "Shel.ContentRepository.Debugger"
-        }
+  "name": "shel/contentrepository-debugger",
+  "description": "Graphical analysis & visualizer for the Neos CMS Content Repository as backend module",
+  "type": "neos-package",
+  "license": "GPL-3.0",
+  "keywords": [
+    "neos",
+    "neoscms",
+    "flow",
+    "contentrepository",
+    "analysis",
+    "visualizer",
+    "charts"
+  ],
+  "authors": [
+    {
+      "name": "Sebastian Helzle",
+      "email": "sebastian@helzle.it",
+      "homepage": "https://www.helzle.it",
+      "role": "Developer"
     }
+  ],
+  "require": {
+    "php": ">= 7.3",
+    "neos/neos": "^4.3 || ^5.0 || ^7.0 || ^8.0 || dev-master"
+  },
+  "autoload": {
+    "psr-4": {
+      "Shel\\ContentRepository\\Debugger\\": "Classes"
+    }
+  },
+  "extra": {
+    "neos": {
+      "package-key": "Shel.ContentRepository.Debugger"
+    }
+  }
 }

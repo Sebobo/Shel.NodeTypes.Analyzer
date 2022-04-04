@@ -11,7 +11,7 @@ const NodeProperties = () => {
     const { translate } = useIntl();
     const {
         configuration: { properties },
-        declaredProperties
+        declaredProperties,
     } = nodeTypes[selectedNodeTypeName];
     const [showProperties, setShowProperties] = useState(false);
 
@@ -31,7 +31,7 @@ const NodeProperties = () => {
                         <PropertyList>
                             {Object.keys(properties)
                                 .sort()
-                                .map(propName => (
+                                .map((propName) => (
                                     <PropertyListItem
                                         key={propName}
                                         label={propName}

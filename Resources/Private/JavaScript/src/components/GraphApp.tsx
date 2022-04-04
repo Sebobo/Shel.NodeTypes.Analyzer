@@ -8,7 +8,8 @@ import {
     InvalidNodeTypes,
     LoadingIndicator,
     SearchBox,
-    NodeTypeCounter
+    NodeTypeCounter,
+    NodeTypeExportButton,
 } from './index';
 import { AppTheme, createUseAppStyles } from '../core';
 import { NodeTypeTree } from './NodeTypeTree';
@@ -24,24 +25,24 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
         '& svg.neos-svg-inline--fa': {
             width: '14px',
             height: '14px',
-            alignSelf: 'center'
-        }
+            alignSelf: 'center',
+        },
     },
     left: {
         gridArea: 'left',
         maxHeight: 'inherit',
-        overflow: 'auto'
+        overflow: 'auto',
     },
     main: {
         gridArea: 'main',
         display: 'flex',
-        flexDirection: 'column'
+        flexDirection: 'column',
     },
     right: {
         gridArea: 'right',
         maxHeight: 'inherit',
-        overflow: 'auto'
-    }
+        overflow: 'auto',
+    },
 }));
 
 const GraphApp: React.FC = (): ReactElement => {
@@ -56,6 +57,7 @@ const GraphApp: React.FC = (): ReactElement => {
                 <NodeTypeTree />
                 <InvalidNodeTypes />
                 <NodeTypeCounter />
+                <NodeTypeExportButton />
             </div>
             <div className={classes.main}>
                 <Toolbar />

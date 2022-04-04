@@ -15,21 +15,21 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
         display: 'flex',
         justifyContent: 'space-between',
         '.neos &': {
-            marginBottom: theme.spacing.half
-        }
+            marginBottom: theme.spacing.half,
+        },
     },
     group: {
         flex: '0 1 auto',
         display: 'flex',
         alignItems: 'center',
         alignSelf: 'center',
-        border: `1px solid ${theme.colors.contrastDark}`
+        border: `1px solid ${theme.colors.contrastDark}`,
     },
     headline: {
         '.neos &': {
-            padding: `0 ${theme.spacing.half}`
-        }
-    }
+            padding: `0 ${theme.spacing.half}`,
+        },
+    },
 }));
 
 const Toolbar = () => {
@@ -39,7 +39,7 @@ const Toolbar = () => {
 
     const selectableLayouts = [
         { label: 'Hierarchy', value: chartType.SUNBURST },
-        { label: 'Dependencies', value: chartType.DEPENDENCIES }
+        { label: 'Dependencies', value: chartType.DEPENDENCIES },
     ];
 
     const handleReloadClick = useCallback(() => {
@@ -70,7 +70,7 @@ const Toolbar = () => {
                 </Headline>
                 <SelectBox
                     options={selectableLayouts}
-                    onValueChange={layout => dispatch({ type: Action.SelectLayout, payload: layout })}
+                    onValueChange={(layout) => dispatch({ type: Action.SelectLayout, payload: layout })}
                     value={selectedLayout}
                 />
             </div>

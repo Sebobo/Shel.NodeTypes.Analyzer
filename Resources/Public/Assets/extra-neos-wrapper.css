@@ -7,7 +7,6 @@
     margin: 0;
     padding: 0; }
   .neos ._reset_75441, .neos ._reset_75441:after, .neos ._reset_75441:before {
-    -webkit-box-sizing: border-box;
     box-sizing: border-box; }
   .neos ._reset_75441 button, .neos ._reset_75441 input, .neos ._reset_75441 select, .neos ._reset_75441 textarea {
     font-size: 14px;
@@ -57,7 +56,6 @@
     position: absolute;
     right: 16px;
     top: 50%;
-    -webkit-transform: translateY(-50%);
     transform: translateY(-50%); }
   .neos ._dropDown__contents_00852 {
     position: absolute;
@@ -69,7 +67,6 @@
     margin: 0;
     list-style: none;
     background: #323232;
-    -webkit-box-shadow: 0 5px 5px rgba(0, 0, 0, 0.2);
     box-shadow: 0 5px 5px rgba(0, 0, 0, 0.2); }
   .neos ._dropDown__contents--scrollable_00852 {
     position: fixed;
@@ -104,7 +101,6 @@
     padding-right: 0; }
   .neos ._selectBox__contents_1b914 {
     min-width: 160px;
-    -webkit-box-shadow: 0 5px 5px rgba(0, 0, 0, 0.2);
     box-shadow: 0 5px 5px rgba(0, 0, 0, 0.2);
     z-index: 4;
     margin-top: -2px; }
@@ -122,7 +118,6 @@
     line-height: 30px;
     text-transform: uppercase; }
   .neos ._selectBox--disabled_1b914 {
-    -webkit-filter: opacity(50%);
     filter: opacity(50%);
     cursor: not-allowed; }
   .neos ._listPreviewElement_30f9e {
@@ -695,8 +690,6 @@
   .neos ._icon--color-primaryBlue_fcc58 {
     color: #00adee; }
   .neos ._selectBoxHeader_c6ea0 {
-    display: -webkit-box;
-    display: -ms-flexbox;
     display: flex;
     width: 100%; }
   .neos ._selectBoxHeader__innerPreview_c6ea0 {
@@ -783,8 +776,6 @@
     width: 32px !important;
     min-width: 32px !important; }
   .neos ._selectBoxHeaderWithSearchInput_b46c2 {
-    display: -webkit-box;
-    display: -ms-flexbox;
     display: flex;
     padding-left: 16px; }
   .neos ._selectBoxHeaderWithSearchInput__inputContainer_b46c2 {
@@ -836,7 +827,6 @@
     right: 0; }
   .neos ._panel__contents_db627 {
     padding: 0 16px;
-    -webkit-transition: padding .25s ease;
     transition: padding .25s ease; }
   .neos ._panel--isOpen_db627 ._panel__contents_db627 {
     padding-top: 5px;
@@ -867,7 +857,6 @@
   .neos ._header__chevron_f8458:hover {
     color: #00adee; }
   .neos ._header__chevron--isCollapsed_f8458 > svg {
-    -webkit-transform: translateY(3px) translateX(-2px) rotate(-90deg);
     transform: translateY(3px) translateX(-2px) rotate(-90deg); }
   .neos ._header__chevron--isHiddenInIndex_f8458 {
     opacity: .5; }

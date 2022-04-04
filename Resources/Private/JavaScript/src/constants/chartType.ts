@@ -1,4 +1,4 @@
 export enum chartType {
     SUNBURST = 'sunburst',
-    DEPENDENCIES = 'dependencies'
+    DEPENDENCIES = 'dependencies',
 }

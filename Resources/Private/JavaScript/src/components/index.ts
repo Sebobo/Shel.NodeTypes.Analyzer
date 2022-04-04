@@ -8,6 +8,7 @@ import InvalidNodeTypes from './InvalidNodeTypes';
 import LoadingIndicator from './LoadingIndicator';
 import SearchBox from './SearchBox';
 import NodeTypeCounter from './NodeTypeCounter';
+import NodeTypeExportButton from './NodeTypeExportButton';
 
 export {
     TreeFilter,
@@ -19,5 +20,6 @@ export {
     InvalidNodeTypes,
     LoadingIndicator,
     SearchBox,
-    NodeTypeCounter
+    NodeTypeCounter,
+    NodeTypeExportButton,
 };

@@ -17,5 +17,5 @@ export {
     useAppState,
     AppState,
     Action,
-    AppAction
+    AppAction,
 };

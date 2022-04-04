@@ -8,6 +8,9 @@
             <trans-unit id="module.description" xml:space="preserve">
                 <source>Analyze your nodetype structure</source>
             </trans-unit>
+            <trans-unit id="nodeTypeCounter.label" xml:space="preserve">
+                <source>{count} nodetypes</source>
+            </trans-unit>
         </body>
     </file>
 </xliff>

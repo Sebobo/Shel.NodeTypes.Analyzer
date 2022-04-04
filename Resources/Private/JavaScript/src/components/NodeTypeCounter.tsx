@@ -1,4 +1,6 @@
 import * as React from 'react';
+import { useMemo } from 'react';
+
 import { AppTheme, createUseAppStyles, useGraph, useIntl } from '../core';
 
 const useStyles = createUseAppStyles((theme: AppTheme) => ({
@@ -7,20 +9,25 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
         borderTop: `1px solid ${theme.colors.contrastDark}`,
         '.neos &': {
             marginTop: theme.spacing.full,
-            paddingTop: theme.spacing.full
-        }
-    }
+            paddingTop: theme.spacing.full,
+        },
+    },
 }));
 
 const NodeTypeCounter = () => {
     const classes = useStyles();
     const { translate } = useIntl();
     const { nodeTypes } = useGraph();
-    const nodeTypeCount = Object.keys(nodeTypes).length;
+
+    const nodeTypeCount = useMemo(() => {
+        return Object.keys(nodeTypes).length;
+    }, [nodeTypes]);
+
+    console.debug(nodeTypeCount);
 
     return (
         <div className={classes.nodeTypeCount}>
-            {nodeTypeCount} {translate('nodeTypeCounter.label', 'Nodetypes')}
+            {translate('nodeTypeCounter.label', '{count} nodetypes', { count: nodeTypeCount })}
         </div>
     );
 };

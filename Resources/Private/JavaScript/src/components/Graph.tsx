@@ -110,14 +110,12 @@ const Graph = (): ReactElement => {
                     }
                     // Use a cloned version before modifying the data
                     data = reduceHierarchyComplexity(cloneDeep(data), selectedPath.split('.').length + 2);
-                    console.debug(selectedPath, selectedLayout, 'Rendering hierarchy graph');
                     chart = renderSunburstChart({ data, width, height });
                     break;
                 case 'dependencies':
                     if (dependencyData.nodes.children.length === 0) {
                         return;
                     }
-                    console.debug(selectedPath, selectedLayout, 'Rendering dependency graph');
                     chart = renderDependencyGraph({
                         data: dependencyData,
                         types: [LinkType.INHERITS],

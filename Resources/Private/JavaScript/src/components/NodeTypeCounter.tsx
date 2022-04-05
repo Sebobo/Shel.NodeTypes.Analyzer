@@ -23,8 +23,6 @@ const NodeTypeCounter = () => {
         return Object.keys(nodeTypes).length;
     }, [nodeTypes]);
 
-    console.debug(nodeTypeCount);
-
     return (
         <div className={classes.nodeTypeCount}>
             {translate('nodeTypeCounter.label', '{count} nodetypes', { count: nodeTypeCount })}

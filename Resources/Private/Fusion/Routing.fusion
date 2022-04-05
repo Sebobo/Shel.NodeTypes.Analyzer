@@ -1,3 +1,3 @@
-Shel.ContentRepository.Debugger.NodeTypesController {
-    index = Shel.ContentRepository.Debugger:Component.App
+Shel.NodeTypes.Analyzer.NodeTypesController {
+    index = Shel.NodeTypes.Analyzer:Component.App
 }

@@ -12,7 +12,7 @@ const NodeAnnotations: React.FC = () => {
     const { configuration } = nodeTypes[selectedNodeTypeName];
     const [open, setOpen] = useState(true);
 
-    const annotations = configuration.options ? configuration.options['Shel.ContentRepository.Debugger'] || {} : {};
+    const annotations = configuration.options ? configuration.options['Shel.NodeTypes.Analyzer'] || {} : {};
 
     if (!Object.keys(annotations).length) {
         return null;

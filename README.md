@@ -1,9 +1,9 @@
 # Neos CMS Content Repository analysis & visualizer
 
-![](https://github.com/Sebobo/Shel.ContentRepository.Debugger/workflows/Code%20Quality%20Tests/badge.svg)
-[![Latest Stable Version](https://poser.pugx.org/shel/contentrepository-debugger/v/stable)](https://packagist.org/packages/shel/contentrepository-debugger)
-[![Total Downloads](https://poser.pugx.org/shel/contentrepository-debugger/downloads)](https://packagist.org/packages/shel/contentrepository-debugger)
-[![License](https://poser.pugx.org/shel/contentrepository-debugger/license)](https://packagist.org/packages/shel/contentrepository-debugger)
+![](https://github.com/Sebobo/Shel.NodeTypes.Analyzer/workflows/Code%20Quality%20Tests/badge.svg)
+[![Latest Stable Version](https://poser.pugx.org/shel/nodetypes-analyzer/v/stable)](https://packagist.org/packages/shel/nodetypes-analyzer)
+[![Total Downloads](https://poser.pugx.org/shel/nodetypes-analyzer/downloads)](https://packagist.org/packages/shel/nodetypes-analyzer)
+[![License](https://poser.pugx.org/shel/nodetypes-analyzer/license)](https://packagist.org/packages/shel/nodetypes-analyzer)
 
 This package allows to output the nodetypes of your Neos CMS project
 as various types of graphs via a backend module.
@@ -17,7 +17,7 @@ refactoring our code structuring efforts easier.
 It is recommended to install this package only as development
 dependency and not to run it in production except specifically required.
 
-    composer require --dev shel/contentrepository-debugger
+    composer require --dev shel/nodetypes-analyzer
     
 ## Usage
 
@@ -45,7 +45,7 @@ My.Vendor:Content.MyNodetype:
   ui:
     label: i18n
   options:
-    Shel.ContentRepository.Debugger:
+    Shel.NodeTypes.Analyzer:
       deprecated: true
       note: This is someething related to this nodetype
 ```

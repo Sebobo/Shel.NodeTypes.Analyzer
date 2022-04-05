@@ -34,7 +34,7 @@ const NodeTypeTreeNode = ({ nodeType, level = 1 }: NodeTypeTreeNodeProps) => {
     const icon = (
         <Icon
             icon={configuration.ui.icon || 'question'}
-            color={configuration.options['Shel.ContentRepository.Debugger']?.deprecated ? 'warn' : 'default'}
+            color={configuration.options['Shel.NodeTypes.Analyzer']?.deprecated ? 'warn' : 'default'}
         />
     );
 

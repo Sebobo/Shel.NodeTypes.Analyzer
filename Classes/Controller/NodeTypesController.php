@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Shel\ContentRepository\Debugger\Controller;
+namespace Shel\NodeTypes\Analyzer\Controller;
 
 use League\Csv\Writer;
 use Neos\Cache\Exception as CacheException;
@@ -12,8 +12,8 @@ use Neos\Flow\Mvc\View\JsonView;
 use Neos\Fusion\View\FusionView;
 use Neos\Neos\Controller\Module\AbstractModuleController;
 use Neos\Flow\Annotations as Flow;
-use Shel\ContentRepository\Debugger\Service\NodeTypeGraphService;
-use Shel\ContentRepository\Debugger\Service\NodeTypeUsageService;
+use Shel\NodeTypes\Analyzer\Service\NodeTypeGraphService;
+use Shel\NodeTypes\Analyzer\Service\NodeTypeUsageService;
 
 /**
  * @Flow\Scope("singleton")

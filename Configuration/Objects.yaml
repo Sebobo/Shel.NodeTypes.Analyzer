@@ -1,4 +1,4 @@
-Shel\ContentRepository\Debugger\Service\NodeTypeGraphService:
+Shel\NodeTypes\Analyzer\Service\NodeTypeGraphService:
   properties:
     nodeTypesCache:
       object:
@@ -6,7 +6,7 @@ Shel\ContentRepository\Debugger\Service\NodeTypeGraphService:
         factoryMethodName: getCache
         arguments:
           1:
-            value: ShelContentRepositoryDebugger_NodeTypesCache
+            value: ShelNodeTypesAnalyzer_NodeTypesCache
 
     configurationCache:
       object:
@@ -16,7 +16,7 @@ Shel\ContentRepository\Debugger\Service\NodeTypeGraphService:
           1:
             value: Neos_Neos_Configuration_Version
 
-Shel\ContentRepository\Debugger\Service\NodeTypeUsageService:
+Shel\NodeTypes\Analyzer\Service\NodeTypeUsageService:
   properties:
     nodeTypesCache:
       object:
@@ -24,7 +24,7 @@ Shel\ContentRepository\Debugger\Service\NodeTypeUsageService:
         factoryMethodName: getCache
         arguments:
           1:
-            value: ShelContentRepositoryDebugger_NodeTypesCache
+            value: ShelNodeTypesAnalyzer_NodeTypesCache
 
     configurationCache:
       object:

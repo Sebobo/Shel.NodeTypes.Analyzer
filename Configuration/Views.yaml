@@ -1,7 +1,7 @@
 -
-  requestFilter: 'isPackage("Shel.ContentRepository.Debugger") && isController("NodeTypes") && isFormat("html")'
+  requestFilter: 'isPackage("Shel.NodeTypes.Analyzer") && isController("NodeTypes") && isFormat("html")'
   viewObjectName: 'Neos\Fusion\View\FusionView'
   options:
     fusionPathPatterns:
       - 'resource://Neos.Fusion/Private/Fusion'
-      - 'resource://Shel.ContentRepository.Debugger/Private/Fusion'
+      - 'resource://Shel.NodeTypes.Analyzer/Private/Fusion'

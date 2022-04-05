@@ -1,4 +1,4 @@
-prototype(Shel.ContentRepository.Debugger:Component.App) < prototype(Neos.Fusion:Component) {
+prototype(Shel.NodeTypes.Analyzer:Component.App) < prototype(Neos.Fusion:Component) {
     appData = Neos.Fusion:DataStructure {
         endpoints = Neos.Fusion:DataStructure {
             getNodeTypeDefinitions = Neos.Fusion:UriBuilder {

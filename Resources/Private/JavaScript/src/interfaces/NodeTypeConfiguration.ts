@@ -32,7 +32,7 @@ export default interface NodeTypeConfiguration {
             };
         };
         options?: {
-            'Shel.ContentRepository.Debugger': {
+            'Shel.NodeTypes.Analyzer': {
                 deprecated?: boolean;
                 note?: string;
             };

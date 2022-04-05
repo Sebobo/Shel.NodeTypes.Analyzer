@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Shel\ContentRepository\Debugger\Service;
+namespace Shel\NodeTypes\Analyzer\Service;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Neos\Cache\Exception as CacheException;

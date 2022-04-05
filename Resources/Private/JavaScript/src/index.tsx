@@ -37,7 +37,7 @@ const loadPlugin = async (): Promise<void> => {
         id,
         value = null,
         args: Record<string, string | number> | any[] = {},
-        packageKey = 'Shel.ContentRepository.Debugger',
+        packageKey = 'Shel.NodeTypes.Analyzer',
         source = 'Main'
     ) => {
         return I18n.translate(id, value, packageKey, source, args);

@@ -1,6 +1,6 @@
 {
-  "name": "shel/contentrepository-debugger",
-  "description": "Graphical analysis & visualizer for the Neos CMS Content Repository as backend module",
+  "name": "shel/nodetypes-analyzer",
+  "description": "Graphical analysis & visualizer for the Neos CMS nodetypes as backend module",
   "type": "neos-package",
   "license": "GPL-3.0",
   "keywords": [
@@ -24,14 +24,17 @@
     "php": ">= 7.3",
     "neos/neos": "^4.3 || ^5.0 || ^7.0 || ^8.0 || dev-master"
   },
+  "replace": {
+    "shel/contentrepository-debugger": "*"
+  },
   "autoload": {
     "psr-4": {
-      "Shel\\ContentRepository\\Debugger\\": "Classes"
+      "Shel\\NodeTypes\\Analyzer\\": "Classes"
     }
   },
   "extra": {
     "neos": {
-      "package-key": "Shel.ContentRepository.Debugger"
+      "package-key": "Shel.NodeTypes.Analyzer"
     }
   }
 }

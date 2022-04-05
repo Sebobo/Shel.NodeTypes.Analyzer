@@ -1,14 +1,14 @@
 {
-  "name": "shel-contentrepositorydebugger",
+  "name": "shel-nodetypes-analyzer",
   "version": "1.0.0",
   "sideEffects": false,
   "main": "Resources/Public/JavaScript/index.tsx",
-  "repository": "git@github.com:Sebobo/Shel.ContentRepository.Debugger.git",
+  "repository": "git@github.com:Sebobo/Shel.NodeTypes.Analyzer.git",
   "author": "Sebastian Helzle <sebastian@helzle.it>",
   "license": "GNU GPLv3",
   "private": true,
   "bugs": {
-    "url": "https://github.com/Sebobo/Shel.ContentRepository.Debugger/issues"
+    "url": "https://github.com/Sebobo/Shel.NodeTypes.Analyzer/issues"
   },
   "scripts": {
     "lint": "tsc --noEmit && eslint 'Resources/Private/JavaScript/**/*.{js,jsx,ts,tsx}'",

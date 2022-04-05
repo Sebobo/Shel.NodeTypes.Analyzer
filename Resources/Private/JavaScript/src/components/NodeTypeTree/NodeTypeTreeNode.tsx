@@ -7,7 +7,7 @@ import Icon from '@neos-project/react-ui-components/lib-esm/Icon';
 import { dndTypes } from '../../constants';
 import { NodeTypeConfiguration } from '../../interfaces';
 import { NodeTypeChildTreeNode } from './index';
-import { Action, useGraph, useIntl } from '../../core';
+import { Action, useGraph } from '../../core';
 import nodePathHelper from '../../helpers/nodePathHelper';
 
 interface NodeTypeTreeNodeProps {
@@ -57,7 +57,7 @@ const NodeTypeTreeNode = ({ nodeType, level = 1 }: NodeTypeTreeNodeProps) => {
             />
             {!collapsed &&
                 hasChildren &&
-                Object.keys(configuration.childNodes).map(childNodeName => (
+                Object.keys(configuration.childNodes).map((childNodeName) => (
                     <NodeTypeChildTreeNode
                         key={childNodeName}
                         nodeTypeName={name}

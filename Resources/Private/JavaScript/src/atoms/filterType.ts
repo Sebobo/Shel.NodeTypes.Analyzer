@@ -3,7 +3,7 @@ import { FilterType } from '../constants';
 
 const filterTypeState = atom({
     key: 'filterType',
-    default: FilterType.NONE
+    default: FilterType.NONE,
 });
 
 export default filterTypeState;

@@ -20,11 +20,7 @@ const drag = (
         d.fy = null;
     }
 
-    return d3
-        .drag()
-        .on('start', dragstarted)
-        .on('drag', dragged)
-        .on('end', dragended);
+    return d3.drag().on('start', dragstarted).on('drag', dragged).on('end', dragended);
 };
 
 export default drag;

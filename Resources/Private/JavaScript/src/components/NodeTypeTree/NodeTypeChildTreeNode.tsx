@@ -23,7 +23,7 @@ const NodeTypeChildTreeNode = ({
     type,
     level = 1,
     onClick,
-    showConstraints = false
+    showConstraints = false,
 }: NodeTypeChildTreeNodeProps) => {
     const { nodeTypes } = useGraph();
     const constraints = nodeTypes[nodeTypeName].configuration.childNodes[name].allowedChildNodeTypes ?? [];

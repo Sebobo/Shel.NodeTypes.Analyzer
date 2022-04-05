@@ -10,7 +10,7 @@ const NodeGrandChildNodes = () => {
     const { selectedNodeTypeName, nodeTypes } = useGraph();
     const { translate } = useIntl();
     const {
-        configuration: { childNodes }
+        configuration: { childNodes },
     } = nodeTypes[selectedNodeTypeName];
     const [collapsed, setCollapsed] = useState(true);
 

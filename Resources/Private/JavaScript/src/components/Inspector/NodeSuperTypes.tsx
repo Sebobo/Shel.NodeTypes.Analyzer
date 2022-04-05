@@ -12,7 +12,7 @@ const NodeSuperTypes = () => {
     const { translate } = useIntl();
     const {
         configuration: { superTypes },
-        declaredSuperTypes
+        declaredSuperTypes,
     } = nodeTypes[selectedNodeTypeName];
     const [collapsed, setCollapsed] = useState(true);
 
@@ -32,9 +32,9 @@ const NodeSuperTypes = () => {
                     !collapsed && (
                         <PropertyList>
                             {Object.keys(superTypes)
-                                .filter(superTypeName => superTypes[superTypeName])
+                                .filter((superTypeName) => superTypes[superTypeName])
                                 .sort()
-                                .map(superTypeName => (
+                                .map((superTypeName) => (
                                     <PropertyListItem
                                         key={superTypeName}
                                         highlighted={declaredSuperTypes.includes(superTypeName)}

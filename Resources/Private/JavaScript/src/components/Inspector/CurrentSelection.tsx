@@ -10,15 +10,15 @@ import { useCallback } from 'react';
 const useStyles = createUseAppStyles((theme: AppTheme) => ({
     currentSelection: {
         '.neos &': {
-            marginBottom: theme.spacing.full
-        }
+            marginBottom: theme.spacing.full,
+        },
     },
     headline: {
         '.neos &': {
             fontWeight: 'bold',
-            lineHeight: theme.spacing.goldenUnit
-        }
-    }
+            lineHeight: theme.spacing.goldenUnit,
+        },
+    },
 }));
 
 const CurrentSelection = () => {
@@ -26,19 +26,18 @@ const CurrentSelection = () => {
     const { selectedNodeTypeName, selectedPath, nodeTypes, dispatch } = useGraph();
     const { translate } = useIntl();
 
-    const selectedPathSegments = (selectedNodeTypeName
-        ? nodePathHelper.resolveFromName(selectedNodeTypeName)
-        : selectedPath
+    const selectedPathSegments = (
+        selectedNodeTypeName ? nodePathHelper.resolveFromName(selectedNodeTypeName) : selectedPath
     ).split('.');
     const options = selectedPathSegments.map((pathSegment, index) => {
         return {
             value: selectedPathSegments.slice(0, index + 1).join('.'),
             label: pathSegment,
-            icon: 'folder'
+            icon: 'folder',
         };
     });
 
-    const onSelect = useCallback(path => {
+    const onSelect = useCallback((path) => {
         dispatch({ type: Action.SelectPath, payload: path });
     }, []);
 
@@ -48,7 +47,7 @@ const CurrentSelection = () => {
         options.push({
             value: selectedNodeTypeName,
             label: nodePathHelper.resolveNameWithoutVendor(selectedNodeTypeName),
-            icon: nodeTypes[selectedNodeTypeName].configuration.ui.icon || 'question'
+            icon: nodeTypes[selectedNodeTypeName].configuration.ui.icon || 'question',
         });
     }
 

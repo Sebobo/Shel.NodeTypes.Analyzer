@@ -7,7 +7,7 @@ import {
     NodeGrandChildNodes,
     NodeProperties,
     NodeSuperTypes,
-    NodeUsage
+    NodeUsage,
 } from './index';
 
 const NodeTypeProfile = () => {

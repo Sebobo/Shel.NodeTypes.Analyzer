@@ -19,7 +19,7 @@ const enableZoom = ({ svg, layer, width, height, minExtend = 0.25, maxExtend = 3
             .zoom()
             .extent([
                 [0, 0],
-                [width, height]
+                [width, height],
             ])
             .scaleExtent([minExtend, maxExtend])
             .on('zoom', zoomed)

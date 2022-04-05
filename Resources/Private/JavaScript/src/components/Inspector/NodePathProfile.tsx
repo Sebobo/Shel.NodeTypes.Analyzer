@@ -17,7 +17,7 @@ const NodePathProfile = ({ nodePath }: NodePathProfileProps) => {
             return Object.keys(nodeTypes).length;
         }
         return Object.keys(nodeTypes).filter(
-            nodeTypeName => nodePathHelper.resolveFromName(nodeTypeName).indexOf(nodePath + '.') === 0
+            (nodeTypeName) => nodePathHelper.resolveFromName(nodeTypeName).indexOf(nodePath + '.') === 0
         ).length;
     }, [nodeTypes, nodePath]);
 

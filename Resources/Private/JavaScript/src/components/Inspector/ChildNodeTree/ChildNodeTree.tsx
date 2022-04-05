@@ -8,8 +8,8 @@ import { ReactElement } from 'react';
 
 const useStyles = createUseAppStyles({
     tree: {
-        overflow: 'auto'
-    }
+        overflow: 'auto',
+    },
 });
 
 const ChildNodeTree = (): ReactElement => {
@@ -22,7 +22,7 @@ const ChildNodeTree = (): ReactElement => {
         <Tree className={classes.tree}>
             {Object.keys(currentNodeType.configuration.childNodes)
                 .sort()
-                .map(childNodeName => (
+                .map((childNodeName) => (
                     <NodeTypeChildTreeNode
                         key={childNodeName}
                         nodeTypeName={selectedNodeTypeName}

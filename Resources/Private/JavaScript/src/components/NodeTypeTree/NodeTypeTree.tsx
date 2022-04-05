@@ -6,8 +6,8 @@ import { createUseAppStyles, useGraph } from '../../core';
 
 const useStyles = createUseAppStyles({
     tree: {
-        overflow: 'auto'
-    }
+        overflow: 'auto',
+    },
 });
 
 const NodeTypeTree = () => {

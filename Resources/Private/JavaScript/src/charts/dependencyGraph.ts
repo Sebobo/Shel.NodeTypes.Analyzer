@@ -35,7 +35,7 @@ const forceCluster = () => {
         }
     }
 
-    force.initialize = _ => (nodes = _);
+    force.initialize = (_) => (nodes = _);
 
     return force;
 };
@@ -50,8 +50,8 @@ const forceCollide = () => {
     function force() {
         const quadtree = d3.quadtree<QuadTreeNode>(
             nodes,
-            d => d.x,
-            d => d.y
+            (d) => d.x,
+            (d) => d.y
         );
         for (const d of nodes) {
             const r = d.r + maxRadius;
@@ -84,7 +84,7 @@ const forceCollide = () => {
         }
     }
 
-    force.initialize = _ =>
+    force.initialize = (_) =>
         (maxRadius =
             d3.max((nodes = _), (d: d3.HierarchyCircularNode<DataSegment>) => d.r) + Math.max(padding1, padding2));
 
@@ -92,19 +92,16 @@ const forceCollide = () => {
 };
 
 const pack = (width, height, data) =>
-    d3
-        .pack()
-        .size([width, height])
-        .padding(1)(d3.hierarchy<DataSegment>(data).sum(d => d.value));
+    d3.pack().size([width, height]).padding(1)(d3.hierarchy<DataSegment>(data).sum((d) => d.value));
 
 const renderDependencyGraph = ({
     data,
     types,
     width = 975,
     height = 800,
-    markerSize = 10
+    markerSize = 10,
 }: DependencyChartProps): SVGSVGElement => {
-    const links = data.links.map(d => Object.create(d));
+    const links = data.links.map((d) => Object.create(d));
     const linkColor = d3.scaleOrdinal(d3.schemeCategory10);
     const nodeColor = d3.scaleOrdinal(d3.schemeCategory10);
     const groups = Object.keys(
@@ -116,9 +113,9 @@ const renderDependencyGraph = ({
 
     const treeData = {
         children: Array.from(
-            group(data.nodes.children, d => d.group),
+            group(data.nodes.children, (d) => d.group),
             ([, children]) => ({ children })
-        )
+        ),
     };
 
     const nodes = pack(width, height, treeData).leaves();
@@ -136,10 +133,7 @@ const renderDependencyGraph = ({
         .force('cluster', forceCluster())
         .force('collide', forceCollide());
 
-    const svg = d3
-        .create('svg')
-        .attr('viewBox', [0, 0, width, height].join(' '))
-        .style('font', '14px "Noto Sans"');
+    const svg = d3.create('svg').attr('viewBox', [0, 0, width, height].join(' ')).style('font', '14px "Noto Sans"');
 
     const loading = svg
         .append('text')
@@ -165,7 +159,7 @@ const renderDependencyGraph = ({
             .selectAll('marker')
             .data(types)
             .join('marker')
-            .attr('id', d => `arrow-${d}`)
+            .attr('id', (d) => `arrow-${d}`)
             .attr('viewBox', '0 -5 10 10')
             .attr('refX', 15)
             .attr('refY', -0.5)
@@ -183,10 +177,10 @@ const renderDependencyGraph = ({
             .selectAll('path')
             .data(groups)
             .join('path')
-            .attr('fill', d => nodeColor(d))
-            .attr('stroke', d => nodeColor(d))
+            .attr('fill', (d) => nodeColor(d))
+            .attr('stroke', (d) => nodeColor(d))
             .attr('class', 'hull')
-            .attr('id', d => `hull-${d}`);
+            .attr('id', (d) => `hull-${d}`);
 
         const link = g
             .append('g')
@@ -195,8 +189,8 @@ const renderDependencyGraph = ({
             .selectAll('path')
             .data(links)
             .join('path')
-            .attr('stroke', d => nodeColor(d.group))
-            .attr('marker-end', d => `url(${new URL(`#arrow-${d.type}`, location.toString())})`);
+            .attr('stroke', (d) => nodeColor(d.group))
+            .attr('marker-end', (d) => `url(${new URL(`#arrow-${d.type}`, location.toString())})`);
 
         const node = g
             .append('g')
@@ -225,7 +219,7 @@ const renderDependencyGraph = ({
 
         simulation.on('tick', () => {
             link.attr('d', linkArc);
-            node.attr('transform', d => `translate(${d.x},${d.y})`);
+            node.attr('transform', (d) => `translate(${d.x},${d.y})`);
             hull.datum((d, i, g) => {
                 const groupName = g[i]['id'].replace('hull-', '');
                 const points: [number, number][] = simulation
@@ -233,7 +227,7 @@ const renderDependencyGraph = ({
                     .filter(({ data }) => data['group'] === groupName)
                     .map(({ x, y }) => [x, y]);
                 return d3.polygonHull(points);
-            }).attr('d', d => (d ? 'M' + d.join('L') + 'Z' : ''));
+            }).attr('d', (d) => (d ? 'M' + d.join('L') + 'Z' : ''));
         });
 
         enableZoom({ svg, layer: g, width, height });

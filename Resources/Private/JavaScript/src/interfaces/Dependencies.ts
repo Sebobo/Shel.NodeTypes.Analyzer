@@ -1,7 +1,7 @@
 import { DataSegment } from './index';
 
 export enum LinkType {
-    INHERITS = 'inherits'
+    INHERITS = 'inherits',
 }
 
 export interface Dependencies {

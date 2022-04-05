@@ -38,21 +38,21 @@ export default ({ data, width = 975, height = 800 }: SunburstProps): SVGSVGEleme
     g.append('g')
         .attr('fill-opacity', 0.6)
         .selectAll('path')
-        .data(root.descendants().filter(d => d.depth))
+        .data(root.descendants().filter((d) => d.depth))
         .join('path')
-        .attr('fill', d => {
+        .attr('fill', (d) => {
             while (d.depth > 1) d = d.parent;
             // @ts-ignore
             return color(d.data.name);
         })
-        .attr('d', (arc as unknown) as string)
+        .attr('d', arc as unknown as string)
         .attr('class', 'segment')
         .append('title')
         .text(
-            d =>
+            (d) =>
                 `${d
                     .ancestors()
-                    .map(d => {
+                    .map((d) => {
                         // @ts-ignore
                         return d.data.name;
                     })
@@ -65,20 +65,20 @@ export default ({ data, width = 975, height = 800 }: SunburstProps): SVGSVGEleme
         .attr('font-size', 11)
         .attr('font-family', 'Noto Sans')
         .selectAll('text')
-        .data(root.descendants().filter(d => d.depth && ((d.y0 + d.y1) / 2) * (d.x1 - d.x0) > 10))
+        .data(root.descendants().filter((d) => d.depth && ((d.y0 + d.y1) / 2) * (d.x1 - d.x0) > 10))
         .join('text')
-        .attr('transform', function(d) {
+        .attr('transform', function (d) {
             const x = (((d.x0 + d.x1) / 2) * 180) / Math.PI;
             const y = (d.y0 + d.y1) / 2;
             return `rotate(${x - 90}) translate(${y},0) rotate(${x < 180 ? 0 : 180})`;
         })
         .attr('dy', '0.35em')
         .attr('class', 'node')
-        .attr('path', d => {
+        .attr('path', (d) => {
             // @ts-ignore
             return d.data.path;
         })
-        .text(d => {
+        .text((d) => {
             // @ts-ignore
             return d.data.name;
         });

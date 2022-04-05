@@ -26,7 +26,7 @@ const NodeChildNodes = () => {
             <ToggablePanel.Contents>
                 {allowedChildNodeTypes?.length > 0 && showAllowedChildNodes ? (
                     <PropertyList>
-                        {allowedChildNodeTypes.map(nodeTypeName => (
+                        {allowedChildNodeTypes.map((nodeTypeName) => (
                             <PropertyListItem
                                 key={nodeTypeName}
                                 label={nodePathHelper.resolveNameWithoutVendor(nodeTypeName)}

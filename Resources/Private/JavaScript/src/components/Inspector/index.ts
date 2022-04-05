@@ -22,5 +22,5 @@ export {
     NodeUsage,
     CurrentSelection,
     PropertyListItem,
-    PropertyList
+    PropertyList,
 };

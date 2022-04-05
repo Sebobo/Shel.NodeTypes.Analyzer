@@ -13,7 +13,7 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
             backgroundColor: theme.colors.contrastDark,
             border: `1px solid ${theme.colors.contrastBright}`,
             flex: 1,
-            position: 'relative'
+            position: 'relative',
         },
         '& svg': {
             width: '100%',
@@ -24,16 +24,16 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
                     cursor: 'pointer',
                     stroke: 'black',
                     strokeWidth: '0.2px',
-                    textShadow: '0 2pt 1pt rgba(255, 255, 255, .2)'
+                    textShadow: '0 2pt 1pt rgba(255, 255, 255, .2)',
                 },
                 '& .hull': {
                     strokeWidth: '32px',
                     strokeLinejoin: 'round',
-                    opacity: 0.2
-                }
-            }
-        }
-    }
+                    opacity: 0.2,
+                },
+            },
+        },
+    },
 }));
 
 const MAX_SUB_SEGMENTS = 10;
@@ -71,7 +71,7 @@ const Graph = (): ReactElement => {
     ): DataSegment => {
         if (data.children) {
             if (depth < maxDepth || data.children.length < maxChildren) {
-                data.children = data.children.map(childData =>
+                data.children = data.children.map((childData) =>
                     reduceHierarchyComplexity(childData, maxDepth, maxChildren, depth + 1)
                 );
             } else {
@@ -79,8 +79,8 @@ const Graph = (): ReactElement => {
                     {
                         name: `>${MAX_SUB_SEGMENTS} types`,
                         path: data.path,
-                        value: MAX_SUB_SEGMENTS
-                    }
+                        value: MAX_SUB_SEGMENTS,
+                    },
                 ];
             }
         }
@@ -103,7 +103,7 @@ const Graph = (): ReactElement => {
                 case 'sunburst':
                     if (selectedPath) {
                         data = selectedPath.split('.').reduce<DataSegment>((data, segment) => {
-                            return data.children.find(child => child.name === segment);
+                            return data.children.find((child) => child.name === segment);
                         }, graphData);
                     } else {
                         data = graphData;
@@ -122,7 +122,7 @@ const Graph = (): ReactElement => {
                         data: dependencyData,
                         types: [LinkType.INHERITS],
                         width,
-                        height
+                        height,
                     });
                     break;
             }

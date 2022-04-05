@@ -22,5 +22,5 @@ export {
     Dependencies,
     LinkType,
     Constraint,
-    TreeDataPoint
+    TreeDataPoint,
 };

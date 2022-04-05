@@ -11,7 +11,7 @@ import IconButton from '@neos-project/react-ui-components/lib-esm/IconButton';
 
 const useStyles = createUseAppStyles((theme: AppTheme) => ({
     usageTable: {
-        '.neos &': {}
+        '.neos &': {},
     },
     modal: {
         position: 'absolute',
@@ -24,8 +24,8 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
         overflow: 'auto',
         backgroundColor: theme.colors.contrastDarker,
         '.neos &': {
-            padding: theme.spacing.goldenUnit
-        }
+            padding: theme.spacing.goldenUnit,
+        },
     },
     overlay: {
         position: 'fixed',
@@ -34,20 +34,20 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
         right: 0,
         bottom: 0,
         backgroundColor: 'rgba(0, 0, 0, .85)',
-        zIndex: 10300
+        zIndex: 10300,
     },
     closeButton: {
         top: theme.spacing.half,
         right: theme.spacing.half,
         '.neos &': {
-            position: 'absolute'
-        }
+            position: 'absolute',
+        },
     },
     usageHeader: {
         '.neos &': {
             fontSize: '1rem',
-            marginBottom: theme.spacing.goldenUnit
-        }
+            marginBottom: theme.spacing.goldenUnit,
+        },
     },
     usageCountByInheritance: {
         '.neos &': {
@@ -58,13 +58,13 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
                 '& td': {
                     color: theme.colors.contrastBright,
                     padding: '4px 0',
-                    borderBottom: `1px solid ${theme.colors.contrastDark}`
+                    borderBottom: `1px solid ${theme.colors.contrastDark}`,
                 },
                 '& td:last-child': {
-                    textAlign: 'right'
+                    textAlign: 'right',
                 },
                 '& tr:last-child td': {
-                    border: 'none'
+                    border: 'none',
                 },
                 '& span': {
                     textOverflow: 'ellipsis',
@@ -72,18 +72,18 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
                     display: 'block',
                     lineHeight: 1.2,
                     width: '230px',
-                    overflow: 'hidden'
-                }
-            }
-        }
-    }
+                    overflow: 'hidden',
+                },
+            },
+        },
+    },
 }));
 
 const NodeSelection = () => {
     const classes = useStyles();
     const { selectedNodeTypeName, nodeTypes, getNodeTypeUsageLinks } = useGraph();
     const { translate } = useIntl();
-    const { usageCount, usageCountByInheritance, abstract, final, configuration } = nodeTypes[selectedNodeTypeName];
+    const { usageCount, usageCountByInheritance, abstract, final } = nodeTypes[selectedNodeTypeName];
     const [nodeTypeUsageLinks, setNodeTypeUsageLinks] = useState<NodeTypeUsageLink[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [showUsageLinks, setShowUsageLinks] = useState(false);
@@ -92,7 +92,7 @@ const NodeSelection = () => {
     const afterOpenModal = () => {
         setIsLoading(true);
         getNodeTypeUsageLinks(selectedNodeTypeName)
-            .then(usageLinks => usageLinks && setNodeTypeUsageLinks(usageLinks))
+            .then((usageLinks) => usageLinks && setNodeTypeUsageLinks(usageLinks))
             .finally(() => setIsLoading(false));
     };
 
@@ -126,7 +126,7 @@ const NodeSelection = () => {
                                 <tbody>
                                     {Object.keys(usageCountByInheritance)
                                         .sort()
-                                        .map(subTypeName => (
+                                        .map((subTypeName) => (
                                             <tr key={subTypeName}>
                                                 <td>
                                                     <span title={subTypeName}>{subTypeName}</span>
@@ -193,7 +193,7 @@ const NodeSelection = () => {
                                         <td>{link.workspace}</td>
                                         <td>
                                             {Object.keys(link.dimensions).map(
-                                                dimensionName =>
+                                                (dimensionName) =>
                                                     dimensionName + ': ' + link.dimensions[dimensionName].join(', ')
                                             )}
                                         </td>

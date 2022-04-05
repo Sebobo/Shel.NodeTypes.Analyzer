@@ -6,16 +6,16 @@ import Icon from '@neos-project/react-ui-components/lib-esm/Icon';
 
 const useStyles = createUseAppStyles((theme: AppTheme) => ({
     propertyList: {
-        overflow: 'auto'
+        overflow: 'auto',
     },
     propertyListItem: {
         whiteSpace: 'nowrap',
         overflow: 'hidden',
-        textOverflow: 'ellipsis'
+        textOverflow: 'ellipsis',
     },
     term: {
         extend: 'propertyListItem',
-        backgroundColor: props => (props?.highlighted ? theme.colors.primaryViolet : theme.colors.contrastNeutral),
+        backgroundColor: (props) => (props?.highlighted ? theme.colors.primaryViolet : theme.colors.contrastNeutral),
         fontWeight: 'bold',
         color: 'white',
         display: 'flex',
@@ -23,20 +23,20 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
         '.neos &': {
             padding: `${theme.spacing.half} ${theme.spacing.half} 0`,
             '& svg': {
-                color: theme.colors.warn
-            }
-        }
+                color: theme.colors.warn,
+            },
+        },
     },
     description: {
         extend: 'propertyListItem',
-        backgroundColor: props => (props?.highlighted ? theme.colors.primaryViolet : theme.colors.contrastNeutral),
+        backgroundColor: (props) => (props?.highlighted ? theme.colors.primaryViolet : theme.colors.contrastNeutral),
         lineHeight: '1.3',
         color: theme.colors.contrastBright,
         '.neos &': {
             marginBottom: '1px',
-            padding: theme.spacing.half
-        }
-    }
+            padding: theme.spacing.half,
+        },
+    },
 }));
 
 interface PropertyListProps {
@@ -62,7 +62,7 @@ export const PropertyListItem = ({
     value,
     icon = null,
     title = null,
-    highlighted = false
+    highlighted = false,
 }: PropertyListItemProps): ReactElement => {
     const classes = useStyles({ highlighted });
 

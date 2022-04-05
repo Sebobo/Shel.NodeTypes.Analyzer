@@ -5,8 +5,8 @@ import { NodeTypeProfile, NodePathProfile, CurrentSelection } from './index';
 
 const useStyles = createUseAppStyles((theme: AppTheme) => ({
     inspector: {
-        flex: `0 1 ${theme.size.sidebarWidth}`
-    }
+        flex: `0 1 ${theme.size.sidebarWidth}`,
+    },
 }));
 
 const Inspector = () => {

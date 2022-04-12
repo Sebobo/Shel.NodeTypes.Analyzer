@@ -10,6 +10,10 @@
                 <source>Analyze your nodetype structure</source>
                 <target>Analyse für NodeType Strukturen</target>
             </trans-unit>
+            <trans-unit id="nodeTypeCounter.label" xml:space="preserve">
+                <source>{count} nodetypes</source>
+                <target>{count} Nodetypes</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

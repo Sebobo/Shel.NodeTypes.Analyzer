@@ -63,23 +63,25 @@ const VendorSegmentTreeNode = ({ path, segment, subNodes, level = 1, icon = 'fol
                 hasChildren={hasChildren}
             />
             {showChildNodes &&
-                Object.keys(subNodes).map((segment, index) =>
-                    subNodes[segment]['nodeType'] ? (
-                        <NodeTypeTreeNode
-                            key={index}
-                            level={level + 1}
-                            nodeType={nodeTypes[subNodes[segment]['nodeType']]}
-                        />
-                    ) : (
-                        <VendorSegmentTreeNode
-                            key={index}
-                            level={level + 1}
-                            path={path + '.' + segment}
-                            segment={segment}
-                            subNodes={subNodes[segment]}
-                        />
-                    )
-                )}
+                Object.keys(subNodes)
+                    .sort()
+                    .map((segment, index) =>
+                        subNodes[segment]['nodeType'] ? (
+                            <NodeTypeTreeNode
+                                key={index}
+                                level={level + 1}
+                                nodeType={nodeTypes[subNodes[segment]['nodeType']]}
+                            />
+                        ) : (
+                            <VendorSegmentTreeNode
+                                key={index}
+                                level={level + 1}
+                                path={path + '.' + segment}
+                                segment={segment}
+                                subNodes={subNodes[segment]}
+                            />
+                        )
+                    )}
         </Tree.Node>
     );
 };

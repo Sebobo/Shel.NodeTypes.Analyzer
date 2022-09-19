@@ -3,6 +3,14 @@ declare(strict_types=1);
 
 namespace Shel\NodeTypes\Analyzer\Service;
 
+/*
+ * This file is part of the Shel.NodeTypes.Analyzer package.
+ *
+ * This package is Open Source Software. For the full copyright and license
+ * information, please view the LICENSE file which was distributed with this
+ * source code.
+ */
+
 use Doctrine\ORM\EntityManagerInterface;
 use Neos\Cache\Exception as CacheException;
 use Neos\Cache\Frontend\StringFrontend;

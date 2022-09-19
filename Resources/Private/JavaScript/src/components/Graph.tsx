@@ -5,7 +5,6 @@ import cloneDeep from 'lodash.clonedeep';
 
 import { Action, AppTheme, createUseAppStyles, useGraph } from '../core';
 import { renderSunburstChart, renderDependencyGraph } from '../charts';
-import { LinkType, DataSegment } from '../interfaces';
 
 const useStyles = createUseAppStyles((theme: AppTheme) => ({
     nodeTypesGraph: {
@@ -118,7 +117,7 @@ const Graph = (): ReactElement => {
                     }
                     chart = renderDependencyGraph({
                         data: dependencyData,
-                        types: [LinkType.INHERITS],
+                        types: ['inherits'],
                         width,
                         height,
                     });

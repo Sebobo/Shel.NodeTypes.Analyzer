@@ -961,3 +961,61 @@
     width: 280px;
     background-color: #323232;
     border: 1px solid #3f3f3f; }
+  .neos ._tabs_ad466 {
+    height: 100%; }
+  .neos ._tabs__content_ad466 {
+    height: calc(100% - 141px);
+    overflow-y: auto; }
+  .neos ._tabNavigation_ad466 {
+    display: block;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    background: #141414;
+    border-bottom: 1px solid #3f3f3f; }
+  .neos ._tabNavigation_ad466:after, .neos ._tabNavigation_ad466:before {
+    content: "";
+    display: table; }
+  .neos ._tabNavigation_ad466:after {
+    clear: both; }
+  .neos ._tabNavigation__item_ad466 {
+    position: relative;
+    float: left;
+    border-top: 1px solid #3f3f3f;
+    border-right: 1px solid #3f3f3f;
+    color: #fff; }
+  .neos ._tabNavigation__item--isActive_ad466 {
+    background-color: #222;
+    cursor: default;
+    border-bottom: 1px solid #222;
+    margin-bottom: -1px; }
+  .neos ._tabNavigation__item--isActive_ad466:after {
+    display: block;
+    content: " ";
+    position: absolute;
+    top: -1px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    width: 100%;
+    background: #00adee; }
+  .neos ._tabNavigation__item--isActive_ad466 > ._tabNavigation__itemBtn_ad466 {
+    color: #00adee; }
+  .neos ._tabNavigation__itemBtn_ad466 {
+    display: inline-block;
+    height: 40px;
+    padding: 0 16px;
+    line-height: 40px;
+    cursor: pointer;
+    border: 0;
+    background: 0; }
+  .neos ._tabNavigation__itemBtn_ad466:hover {
+    color: #00adee; }
+  .neos ._tabNavigation__itemBtn_ad466:focus {
+    outline: 0; }
+  .neos ._tabNavigation__itemBtnIcon_ad466 {
+    color: currentColor; }
+  .neos ._tabNavigation__itemBtnIcon--hasLabel_ad466 {
+    margin-right: 8px; }
+  .neos ._panel_ad466 {
+    overflow-y: auto; }

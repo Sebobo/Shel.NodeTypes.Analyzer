@@ -8,7 +8,6 @@ import NodeChildNodes from './NodeChildNodes';
 import NodeGrandChildNodes from './NodeGrandChildNodes';
 import CurrentSelection from './CurrentSelection';
 import NodeUsage from './NodeUsage';
-import { PropertyList, PropertyListItem } from './PropertyList';
 
 export {
     NodeAnnotations,
@@ -21,6 +20,4 @@ export {
     NodeGrandChildNodes,
     NodeUsage,
     CurrentSelection,
-    PropertyListItem,
-    PropertyList,
 };

@@ -7,7 +7,6 @@ import { dndTypes } from '../../constants';
 import { NodeTypeTreeNode } from './index';
 import { Action, useGraph } from '../../core';
 import nodePathHelper from '../../helpers/nodePathHelper';
-import { TreeDataPoint } from '../../interfaces';
 
 interface VendorSegmentTreeNodeProps {
     isActive?: boolean;

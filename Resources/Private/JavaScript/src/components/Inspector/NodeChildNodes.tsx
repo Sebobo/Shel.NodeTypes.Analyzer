@@ -4,8 +4,8 @@ import { useState } from 'react';
 import ToggablePanel from '@neos-project/react-ui-components/lib-esm/ToggablePanel';
 
 import { useGraph, useIntl } from '../../core';
-import { PropertyList, PropertyListItem } from './index';
 import nodePathHelper from '../../helpers/nodePathHelper';
+import { PropertyList, PropertyListItem } from '../Presentationals';
 
 const NodeChildNodes = () => {
     const { selectedNodeTypeName, nodeTypes } = useGraph();

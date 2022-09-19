@@ -1,20 +1,9 @@
 import * as React from 'react';
-import { createContext, ReactElement, useCallback, useContext, useEffect, useState } from 'react';
+import { createContext, ReactElement, useCallback, useContext, useEffect, useState, Dispatch } from 'react';
 import { $set } from 'plow-js';
 import { useRecoilValue } from 'recoil';
 import memoize from 'lodash.memoize';
 
-import {
-    Actions,
-    DataSegment,
-    Dependencies,
-    NodeTypeConfiguration,
-    NodeTypeGroup,
-    LinkType,
-    NodeTypeConfigurations,
-    NodeTypeUsageLink,
-    TreeDataPoint,
-} from '../interfaces';
 import fetchData from '../helpers/fetchData';
 import nodePathHelper from '../helpers/nodePathHelper';
 import { useNotify } from './Notify';
@@ -39,10 +28,12 @@ interface GraphProviderValues extends AppState {
     graphData: DataSegment;
     dependencyData: Dependencies;
     treeData: TreeDataPoint;
+    nodes: CRNodeList;
     invalidNodeTypes: NodeTypeConfigurations;
     setInvalidNodeTypes: (nodeTypes: NodeTypeConfigurations) => void;
-    fetchGraphData: () => void;
-    dispatch: React.Dispatch<AppAction>;
+    fetchGraphData: () => Promise<void>;
+    fetchNodes: (path: string) => Promise<CRNodeList>;
+    dispatch: Dispatch<AppAction>;
     getNodeTypeUsageLinks: (nodeTypeName: NodeTypeName) => Promise<void | NodeTypeUsageLink[]>;
 }
 
@@ -56,6 +47,7 @@ const GraphProvider = ({ children, endpoints }: GraphProviderProps): ReactElemen
     const [isLoading, setIsLoading] = useState(true);
     const [nodeTypeGroups, setNodeTypeGroups] = useState<NodeTypeGroup[]>([]);
     const [nodeTypes, setNodeTypes] = useState<NodeTypeConfigurations>({});
+    const [nodes, setNodes] = useState<CRNodeList>({});
     const [invalidNodeTypes, setInvalidNodeTypes] = useState<NodeTypeConfigurations>({});
     const [superTypeFilter, setSuperTypeFilter] = useState('');
     const selectedFilter = useRecoilValue(filterTypeState);
@@ -100,11 +92,9 @@ const GraphProvider = ({ children, endpoints }: GraphProviderProps): ReactElemen
             .finally(() => setIsLoading(false));
     });
 
-    const fetchGraphData = useCallback(() => {
-        fetchData(endpoints.getNodeTypeDefinitions, null, 'GET')
-            .then((data: any) => {
-                const { nodeTypes } = data;
-
+    const fetchGraphData = useCallback((): Promise<void> => {
+        return fetchData<NodeTypeConfigurations>(endpoints.getNodeTypeDefinitions, null, 'GET')
+            .then(({ nodeTypes }) => {
                 // Separate nodetypes that have invalid names and cannot be rendered properly
                 const { validNodeTypes, invalidNodeTypes } = Object.keys(nodeTypes).reduce(
                     (carry, nodeTypeName) => {
@@ -128,10 +118,35 @@ const GraphProvider = ({ children, endpoints }: GraphProviderProps): ReactElemen
             .finally(() => setIsLoading(false));
     }, []);
 
+    const fetchNodes = useCallback((path: string): Promise<CRNodeList> => {
+        return fetchData(
+            endpoints.getNodes,
+            {
+                path,
+            },
+            'GET'
+        )
+            .then(({ nodes: newNodes }) => {
+                setNodes((storedNodes) => {
+                    return {
+                        ...storedNodes,
+                        ...newNodes,
+                    };
+                });
+                return newNodes;
+            })
+            .catch((error) => Notify.error(error));
+    }, []);
+
+    console.debug('Stored nodes', nodes);
+
     /**
      * Runs initial request to fetch all nodetype definitions
      */
-    useEffect(fetchGraphData, []);
+    useEffect(() => {
+        fetchGraphData();
+        fetchNodes('/');
+    }, []);
 
     /**
      * Converts flat nodetypes structure into tree
@@ -220,7 +235,7 @@ const GraphProvider = ({ children, endpoints }: GraphProviderProps): ReactElemen
                             carry.links.push({
                                 source: nodeType.name,
                                 target: superType,
-                                type: LinkType.INHERITS,
+                                type: 'inherits',
                                 group: nodePathHelper.resolveGroup(superType),
                             });
                             linkedTypes[superType] = true;
@@ -277,10 +292,12 @@ const GraphProvider = ({ children, endpoints }: GraphProviderProps): ReactElemen
                 graphData,
                 dependencyData,
                 treeData,
+                nodes,
                 invalidNodeTypes,
                 setInvalidNodeTypes,
                 getNodeTypeUsageLinks,
                 fetchGraphData,
+                fetchNodes,
                 ...appState,
                 dispatch,
             }}

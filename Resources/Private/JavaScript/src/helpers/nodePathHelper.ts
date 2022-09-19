@@ -1,5 +1,3 @@
-import { NodeTypeConfiguration } from '../interfaces';
-
 function resolveFromName(nodeTypeName: NodeTypeName): string {
     return nodeTypeName.replace(':', '.');
 }

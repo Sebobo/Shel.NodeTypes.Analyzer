@@ -6,7 +6,6 @@ import ToggablePanel from '@neos-project/react-ui-components/lib-esm/ToggablePan
 import Button from '@neos-project/react-ui-components/lib-esm/Button';
 
 import { AppTheme, createUseAppStyles, useGraph, useIntl } from '../../core';
-import { NodeTypeUsageLink } from '../../interfaces';
 import IconButton from '@neos-project/react-ui-components/lib-esm/IconButton';
 
 const useStyles = createUseAppStyles((theme: AppTheme) => ({

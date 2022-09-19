@@ -10,6 +10,11 @@ prototype(Shel.NodeTypes.Analyzer:Component.App) < prototype(Neos.Fusion:Compone
                 format = 'json'
                 arguments.nodeTypeName = '${nodeTypeName}'
             }
+            getNodes = Neos.Fusion:UriBuilder {
+                action = 'getNodes'
+                format = 'json'
+                arguments.path = '${path}'
+            }
             exportNodeTypes = Neos.Fusion:UriBuilder {
                 action = 'exportNodeTypes'
                 format = 'json'

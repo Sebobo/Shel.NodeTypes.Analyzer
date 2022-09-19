@@ -5,7 +5,6 @@ import Tree from '@neos-project/react-ui-components/lib-esm/Tree';
 import Icon from '@neos-project/react-ui-components/lib-esm/Icon';
 
 import { dndTypes } from '../../constants';
-import { NodeTypeConfiguration } from '../../interfaces';
 import { NodeTypeChildTreeNode } from './index';
 import { Action, useGraph } from '../../core';
 import nodePathHelper from '../../helpers/nodePathHelper';

@@ -4,7 +4,6 @@ import { useRecoilState } from 'recoil';
 import SelectBox from '@neos-project/react-ui-components/lib-esm/SelectBox';
 
 import { Action, AppTheme, createUseAppStyles, useGraph, useIntl } from '../core';
-import { NodeTypeConfigurations } from '../interfaces';
 import nodePathHelper from '../helpers/nodePathHelper';
 import { searchTermState } from '../atoms';
 import { ReactElement } from 'react';

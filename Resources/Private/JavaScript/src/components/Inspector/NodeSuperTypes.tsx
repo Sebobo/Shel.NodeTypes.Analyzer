@@ -4,7 +4,7 @@ import { useState } from 'react';
 import ToggablePanel from '@neos-project/react-ui-components/lib-esm/ToggablePanel';
 
 import { useGraph, useIntl } from '../../core';
-import { PropertyList, PropertyListItem } from './index';
+import { PropertyList, PropertyListItem } from '../Presentationals';
 import nodePathHelper from '../../helpers/nodePathHelper';
 
 const NodeSuperTypes = () => {

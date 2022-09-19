@@ -6,7 +6,6 @@ import Button from '@neos-project/react-ui-components/lib-esm/Button';
 
 import { Action, AppTheme, createUseAppStyles, useGraph } from '../core';
 import nodePathHelper from '../helpers/nodePathHelper';
-import { NodeTypeConfiguration } from '../interfaces';
 
 const useStyles = createUseAppStyles((theme: AppTheme) => ({
     breadcrumb: {

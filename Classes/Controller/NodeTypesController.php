@@ -1,17 +1,27 @@
 <?php
-
 declare(strict_types=1);
 
 namespace Shel\NodeTypes\Analyzer\Controller;
 
+/*
+ * This file is part of the Shel.NodeTypes.Analyzer package.
+ *
+ * This package is Open Source Software. For the full copyright and license
+ * information, please view the LICENSE file which was distributed with this
+ * source code.
+ */
+
 use League\Csv\Writer;
 use Neos\Cache\Exception as CacheException;
+use Neos\ContentRepository\Domain\Model\NodeInterface;
+use Neos\Flow\Annotations as Flow;
 use Neos\Flow\I18n\EelHelper\TranslationParameterToken;
 use Neos\Flow\I18n\Translator;
 use Neos\Flow\Mvc\View\JsonView;
 use Neos\Fusion\View\FusionView;
+use Neos\Media\Domain\Model\AssetInterface;
+use Neos\Neos\Controller\CreateContentContextTrait;
 use Neos\Neos\Controller\Module\AbstractModuleController;
-use Neos\Flow\Annotations as Flow;
 use Shel\NodeTypes\Analyzer\Service\NodeTypeGraphService;
 use Shel\NodeTypes\Analyzer\Service\NodeTypeUsageService;
 
@@ -20,6 +30,7 @@ use Shel\NodeTypes\Analyzer\Service\NodeTypeUsageService;
  */
 class NodeTypesController extends AbstractModuleController
 {
+    use CreateContentContextTrait;
 
     /**
      * @var string
@@ -77,9 +88,65 @@ class NodeTypesController extends AbstractModuleController
         ]);
     }
 
+    public function getNodesAction(string $path, array $dimensions = []): void
+    {
+        $contentContext = $this->createContentContext('live', $dimensions);
+        $nodeAtPath = $contentContext->getNode($path);
+
+        $nodes = [$nodeAtPath->getPath() => self::nodeToArray($nodeAtPath)];
+
+        foreach($nodeAtPath->getChildNodes() as $childNode) {
+            $nodes[$childNode->getPath()] = self::nodeToArray($childNode);
+        }
+
+        $this->view->assign('value', [
+            'success' => true,
+            'nodes' => $nodes,
+        ]);
+    }
+
+    protected static function nodeToArray(NodeInterface $node): array
+    {
+        $nodeTypeName = $node->getNodeType()->getName();
+        $isUnstructured = $node->getNodeType()->isOfType('unstructured');
+        $label = $isUnstructured ? $node->getName() : $node->getLabel();
+
+        return [
+            'label' => $label,
+            'name' => $node->getName(),
+            'index' => $node->getIndex(),
+            'identifier' => $node->getIdentifier(),
+            'nodeType' => $nodeTypeName,
+            'path' => $node->getPath(),
+            'parentPath' => $node->getParentPath(),
+            'properties' => self::serializeProperties($node),
+            'hidden' => $node->isHidden(),
+            'removed' => $node->isRemoved(),
+            'hasChildNodes' => $node->hasChildNodes(),
+            'childNodePaths' => array_map(static function ($node) { return $node->getPath(); }, $node->getChildNodes()),
+        ];
+    }
+
+    protected static function serializeProperties(NodeInterface $node): array
+    {
+        $properties = [];
+        foreach ($node->getProperties() as $propertyName => $propertyValue) {
+            if ($propertyValue instanceof AssetInterface) {
+                $propertyValue = $propertyValue->getTitle();
+            }
+            elseif ($propertyValue instanceof \DateTime) {
+                $propertyValue = $propertyValue->format('Y-m-d H:i:s');
+            }
+            elseif (is_array($propertyValue)) {
+                $propertyValue = json_encode($propertyValue);
+            }
+            $properties[$propertyName] = (string)$propertyValue;
+        }
+        return $properties;
+    }
+
     /**
      * Returns a usage list for a specified nodetype
-     * @param string|null $nodeTypeName
      * @throws CacheException
      */
     public function getNodeTypeUsageAction(?string $nodeTypeName): void

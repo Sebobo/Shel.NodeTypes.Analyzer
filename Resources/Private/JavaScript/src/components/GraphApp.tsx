@@ -1,4 +1,7 @@
 import * as React from 'react';
+import { ReactElement } from 'react';
+
+import Tabs from '@neos-project/react-ui-components/lib-esm/Tabs';
 
 import {
     Toolbar,
@@ -13,20 +16,23 @@ import {
 } from './index';
 import { AppTheme, createUseAppStyles } from '../core';
 import { NodeTypeTree } from './NodeTypeTree';
-import { ReactElement } from 'react';
+import { NodeRenderer, NodeTree } from './NodeTree';
 
 const useStyles = createUseAppStyles((theme: AppTheme) => ({
     app: {
-        display: 'grid',
-        height: 'inherit',
-        gridGap: theme.spacing.full,
-        gridTemplateAreas: `"left main right"`,
-        gridTemplateColumns: `${theme.size.sidebarWidth} 1fr ${theme.size.sidebarWidth}`,
+        height: '100%',
         '& svg.neos-svg-inline--fa': {
             width: '14px',
             height: '14px',
             alignSelf: 'center',
         },
+    },
+    tabContentInner: {
+        display: 'grid',
+        height: 'inherit',
+        gridGap: theme.spacing.full,
+        gridTemplateAreas: `"left main right"`,
+        gridTemplateColumns: `${theme.size.sidebarWidth} 1fr ${theme.size.sidebarWidth}`,
     },
     left: {
         gridArea: 'left',
@@ -37,11 +43,21 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
         gridArea: 'main',
         display: 'flex',
         flexDirection: 'column',
+        overflowY: 'auto',
     },
     right: {
         gridArea: 'right',
         maxHeight: 'inherit',
         overflow: 'auto',
+    },
+    tabPanel: {
+        height: '100%',
+        '& > div': {
+            height: 'inherit',
+        },
+    },
+    tabContent: {
+        height: 'calc(100% - 42px)',
     },
 }));
 
@@ -50,22 +66,42 @@ const GraphApp: React.FC = (): ReactElement => {
 
     return (
         <div className={classes.app}>
-            <LoadingIndicator />
-            <div className={classes.left}>
-                <TreeFilter />
-                <SearchBox />
-                <NodeTypeTree />
-                <InvalidNodeTypes />
-                <NodeTypeCounter />
-                <NodeTypeExportButton />
-            </div>
-            <div className={classes.main}>
-                <Toolbar />
-                <Graph />
-            </div>
-            <div className={classes.right}>
-                <Inspector />
-            </div>
+            <Tabs theme={{ tabs__content: classes.tabContent, tabs__panel: classes.tabPanel }}>
+                <Tabs.Panel icon="sitemap">
+                    <div className={classes.tabContentInner}>
+                        <LoadingIndicator />
+                        <div className={classes.left}>
+                            <TreeFilter />
+                            <SearchBox />
+                            <NodeTypeTree />
+                            <InvalidNodeTypes />
+                            <NodeTypeCounter />
+                            <NodeTypeExportButton />
+                        </div>
+                        <div className={classes.main}>
+                            <Toolbar />
+                            <Graph />
+                        </div>
+                        <div className={classes.right}>
+                            <Inspector />
+                        </div>
+                    </div>
+                </Tabs.Panel>
+                <Tabs.Panel icon="tree">
+                    <div className={classes.tabContentInner}>
+                        <LoadingIndicator />
+                        <div className={classes.left}>
+                            <NodeTree />
+                        </div>
+                        <div className={classes.main}>
+                            <NodeRenderer />
+                        </div>
+                        <div className={classes.right}>
+                            <Inspector />
+                        </div>
+                    </div>
+                </Tabs.Panel>
+            </Tabs>
         </div>
     );
 };

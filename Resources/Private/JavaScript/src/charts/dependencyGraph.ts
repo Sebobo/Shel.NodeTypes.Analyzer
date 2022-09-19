@@ -1,7 +1,6 @@
 import * as d3 from 'd3';
 import { rollup, group } from 'd3-array';
 
-import { DataSegment, Dependencies } from '../interfaces';
 import { centroid, linkArc, drag, enableZoom } from './helpers';
 
 interface DependencyChartProps {

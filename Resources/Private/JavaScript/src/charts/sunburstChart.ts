@@ -1,7 +1,6 @@
 import * as d3 from 'd3';
 import { DefaultArcObject } from 'd3';
 
-import { DataSegment } from '../interfaces';
 import { partition, autoBox, enableZoom } from './helpers';
 
 interface SunburstProps {

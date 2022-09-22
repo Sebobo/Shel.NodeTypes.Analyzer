@@ -7,7 +7,7 @@ import IconButton from '@neos-project/react-ui-components/lib-esm/IconButton';
 
 import { Action, AppTheme, createUseAppStyles, useGraph, useIntl } from '../core';
 import { chartType } from '../constants';
-import { Breadcrumb } from './index';
+import { SelectedNodeBreadcrumb } from './NodeTypeTree';
 
 const useStyles = createUseAppStyles((theme: AppTheme) => ({
     toolbar: {
@@ -61,7 +61,7 @@ const Toolbar = () => {
             </div>
 
             <div className={classes.group}>
-                <Breadcrumb />
+                <SelectedNodeBreadcrumb />
             </div>
 
             <div className={classes.group}>

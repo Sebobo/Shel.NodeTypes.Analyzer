@@ -21,7 +21,7 @@ const NodeRenderer: React.FC = () => {
 
     const selectedNode = nodes[selectedNodePath];
 
-    return (
+    return selectedNode ? (
         <div>
             <SelectedNodeBreadcrumb />
             <div className={classes.Section}>
@@ -30,6 +30,7 @@ const NodeRenderer: React.FC = () => {
                 <PropertyList>
                     <PropertyListItem label="Label" value={selectedNode.label} />
                     <PropertyListItem label="Path" value={selectedNode.path} />
+                    <PropertyListItem label="Identifier" value={selectedNode.identifier} />
                     {selectedNode.removed && <PropertyListItem label="Removed" />}
                     {selectedNode.hidden && <PropertyListItem label="Hidden" />}
                 </PropertyList>
@@ -52,6 +53,8 @@ const NodeRenderer: React.FC = () => {
                 </div>
             )}
         </div>
+    ) : (
+        <div>Please select a valid node</div>
     );
 };
 

@@ -22,10 +22,12 @@ const NodeTreeNode = ({ node, level = 1 }: NodeTreeNodeProps) => {
     const [isLoading, setIsLoading] = useState(false);
     const [childNodesLoaded, setChildNodesLoaded] = useState(!node.hasChildNodes);
 
+    const nodeTypeConfiguration = nodeTypes[node.nodeType].configuration;
+
     const icon = (
         <Icon
-            icon={nodeTypes[node.nodeType].configuration.ui.icon || 'question'}
-            // color={configuration.options['Shel.NodeTypes.Analyzer']?.deprecated ? 'warn' : 'default'}
+            icon={nodeTypeConfiguration.ui.icon || 'question'}
+            color={node.nodeType === 'Neos.Neos:FallbackNode' ? 'warn' : 'default'}
         />
     );
 
@@ -33,10 +35,9 @@ const NodeTreeNode = ({ node, level = 1 }: NodeTreeNodeProps) => {
         if (collapsed || childNodesLoaded) return;
         const childNodesMissing = node.childNodePaths.some((path) => !nodes[path]);
         if (childNodesMissing) {
-            console.debug('Fetching child nodes for', node.path);
             setIsLoading(true);
             fetchNodes(node.path).then((nodes) => {
-                console.debug('Fetched child nodes for', node.path, nodes);
+                console.debug(`Fetched ${Object.keys(nodes).length} child nodes for`, node.path, nodes);
                 setChildNodesLoaded(true);
                 setIsLoading(false);
             });
@@ -52,7 +53,7 @@ const NodeTreeNode = ({ node, level = 1 }: NodeTreeNodeProps) => {
                 isCollapsed={collapsed}
                 isFocused={selectedPath === node.path}
                 isLoading={isLoading}
-                label={node.label}
+                label={`${node.label} (${node.childNodePaths.length})`}
                 title={node.label}
                 customIconComponent={icon}
                 nodeDndType={dndTypes.NODE_TYPE}

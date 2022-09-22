@@ -27,7 +27,7 @@ const SelectedNodeBreadcrumb: React.FC = () => {
     }, []);
     const handleSegmentClick = useCallback(
         (index: number) => {
-            setSelectedNodePath(parts.slice(0, index).join('/'));
+            setSelectedNodePath(parts.slice(0, index + 1).join('/'));
         },
         [parts]
     );

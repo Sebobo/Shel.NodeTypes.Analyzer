@@ -126,6 +126,7 @@ type CRNode = {
     name: string;
     index: integer;
     nodeType: NodeTypeName;
+    identifier: string;
     hidden: boolean;
     removed: boolean;
     properties: Record<string, any>;

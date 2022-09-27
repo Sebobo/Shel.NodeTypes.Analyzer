@@ -22,11 +22,11 @@ const NodeTreeNode = ({ node, level = 1 }: NodeTreeNodeProps) => {
     const [isLoading, setIsLoading] = useState(false);
     const [childNodesLoaded, setChildNodesLoaded] = useState(!node.hasChildNodes);
 
-    const nodeTypeConfiguration = nodeTypes[node.nodeType].configuration;
+    const nodeTypeConfiguration = nodeTypes[node.nodeType]?.configuration;
 
     const icon = (
         <Icon
-            icon={nodeTypeConfiguration.ui.icon || 'question'}
+            icon={nodeTypeConfiguration?.ui.icon || 'question'}
             color={node.nodeType === 'Neos.Neos:FallbackNode' ? 'warn' : 'default'}
         />
     );

@@ -34,6 +34,10 @@ A second graph layout allows your to inspect all direct and indirect dependencie
 
 ![Dependency inspection](Documentation/Images/NodeTypeDependencies.png "Dependency inspection")
 
+You can also explore your complete Content Repository for debugging purposes:
+
+![Content Repository explorer](Documentation/Images/CRExplorer.png "Content Repository explorer")
+
 ## Additional nodetype annotations
 
 You can set the following options on each nodetype for additional output in the module:

@@ -9,6 +9,8 @@ privilegeTargets:
 
 roles:
   'Shel.NodeTypes.Analyzer:NodeTypesAnalyzer':
+    label: 'Nodetypes analyzer'
+    description: 'Grants access to the nodetypes analyzer backend module'
     privileges:
       # Grant access to the administration tab (not all its modules) so the module can be accessed
       - privilegeTarget: 'Neos.Neos:Backend.Module.Administration'

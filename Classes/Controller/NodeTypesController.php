@@ -22,6 +22,7 @@ use Neos\Fusion\View\FusionView;
 use Neos\Media\Domain\Model\AssetInterface;
 use Neos\Neos\Controller\CreateContentContextTrait;
 use Neos\Neos\Controller\Module\AbstractModuleController;
+use Shel\NodeTypes\Analyzer\Domain\Dto\NodeTreeLeaf;
 use Shel\NodeTypes\Analyzer\Service\NodeTypeGraphService;
 use Shel\NodeTypes\Analyzer\Service\NodeTypeUsageService;
 
@@ -93,56 +94,16 @@ class NodeTypesController extends AbstractModuleController
         $contentContext = $this->createContentContext('live', $dimensions);
         $nodeAtPath = $contentContext->getNode($path);
 
-        $nodes = [$nodeAtPath->getPath() => self::nodeToArray($nodeAtPath)];
+        $nodes = [$nodeAtPath->getPath() => NodeTreeLeaf::fromNode($nodeAtPath)];
 
         foreach($nodeAtPath->getChildNodes() as $childNode) {
-            $nodes[$childNode->getPath()] = self::nodeToArray($childNode);
+            $nodes[$childNode->getPath()] = NodeTreeLeaf::fromNode($childNode);
         }
 
         $this->view->assign('value', [
             'success' => true,
             'nodes' => $nodes,
         ]);
-    }
-
-    protected static function nodeToArray(NodeInterface $node): array
-    {
-        $nodeTypeName = $node->getNodeType()->getName();
-        $isUnstructured = $node->getNodeType()->isOfType('unstructured');
-        $label = $isUnstructured ? $node->getName() : $node->getLabel();
-
-        return [
-            'label' => $label,
-            'name' => $node->getName(),
-            'index' => $node->getIndex(),
-            'identifier' => $node->getIdentifier(),
-            'nodeType' => $nodeTypeName,
-            'path' => $node->getPath(),
-            'parentPath' => $node->getParentPath(),
-            'properties' => self::serializeProperties($node),
-            'hidden' => $node->isHidden(),
-            'removed' => $node->isRemoved(),
-            'hasChildNodes' => $node->hasChildNodes(),
-            'childNodePaths' => array_map(static function ($node) { return $node->getPath(); }, $node->getChildNodes()),
-        ];
-    }
-
-    protected static function serializeProperties(NodeInterface $node): array
-    {
-        $properties = [];
-        foreach ($node->getProperties() as $propertyName => $propertyValue) {
-            if ($propertyValue instanceof AssetInterface) {
-                $propertyValue = $propertyValue->getTitle();
-            }
-            elseif ($propertyValue instanceof \DateTime) {
-                $propertyValue = $propertyValue->format('Y-m-d H:i:s');
-            }
-            elseif (is_array($propertyValue)) {
-                $propertyValue = json_encode($propertyValue);
-            }
-            $properties[$propertyName] = (string)$propertyValue;
-        }
-        return $properties;
     }
 
     /**
@@ -166,14 +127,16 @@ class NodeTypesController extends AbstractModuleController
         $nodeTypesDataForExport = array_map(function ($nodeType) {
             $label = $nodeType['configuration']['ui']['label'] ?? null;
             $label = $label ? $this->translateByShortHandString($label) : 'n/a';
+            $properties = is_array($nodeType['configuration']['properties']) ? array_keys($nodeType['configuration']['properties']) : [];
+            $childNodes = is_array($nodeType['configuration']['childNodes']) ? array_keys($nodeType['configuration']['childNodes']) : [];
 
             return [
                 'name' => $nodeType['name'],
                 'label' => $label,
                 'abstract' => $nodeType['abstract'] ? 'true' : 'false',
                 'final' => $nodeType['final'] ? 'true' : 'false',
-                'properties' => implode(', ', array_keys($nodeType['configuration']['properties'] ?? [])),
-                'childNodes' => implode(', ', array_keys($nodeType['configuration']['childNodes'] ?? [])),
+                'properties' => implode(', ', $properties),
+                'childNodes' => implode(', ', $childNodes),
                 'usageCount' => $nodeType['usageCount'],
                 'usageCountByInheritance' => array_sum($nodeType['usageCountByInheritance']),
             ];

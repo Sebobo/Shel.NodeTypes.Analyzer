@@ -138,8 +138,6 @@ const GraphProvider = ({ children, endpoints }: GraphProviderProps): ReactElemen
             .catch((error) => Notify.error(error));
     }, []);
 
-    console.debug('Stored nodes', nodes);
-
     /**
      * Runs initial request to fetch all nodetype definitions
      */

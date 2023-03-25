@@ -122,8 +122,9 @@ class NodeTypeGraphService
                 $carry[$nodeTypeName]['allowedChildNodeTypes'] = $this->generateAllowedChildNodeTypes($nodeType,
                     $instantiableNodeTypes);
 
+                $childNodes = array_keys($carry[$nodeTypeName]['configuration']['childNodes'] ?? []);
                 if (array_key_exists('childNodes', $carry[$nodeTypeName]['configuration'])) {
-                    foreach (array_keys($carry[$nodeTypeName]['configuration']['childNodes']) as $childNodeName) {
+                    foreach ($childNodes as $childNodeName) {
                         if (is_array($carry[$nodeTypeName]['configuration']['childNodes'][$childNodeName]) && array_key_exists('allowedChildNodeTypes', $carry[$nodeTypeName]['configuration']['childNodes'][$childNodeName])) {
                             $carry[$nodeTypeName]['configuration']['childNodes'][$childNodeName]['allowedChildNodeTypes'] = $this->generateAllowedGrandChildNodeTypes($childNodeName,
                                 $nodeType, $instantiableNodeTypes);

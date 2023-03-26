@@ -21,8 +21,8 @@
     }
   ],
   "require": {
-    "php": ">= 7.3",
-    "neos/neos": "^4.3 || ^5.0 || ^7.0 || ^8.0 || dev-master"
+    "php": ">= 7.4",
+    "neos/neos": "^7.3 || ^8.0"
   },
   "replace": {
     "shel/contentrepository-debugger": "*"

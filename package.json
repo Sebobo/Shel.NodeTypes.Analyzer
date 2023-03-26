@@ -81,5 +81,6 @@
     "> 1%",
     "Last 2 versions",
     "not dead"
-  ]
+  ],
+  "packageManager": "yarn@3.5.0"
 }

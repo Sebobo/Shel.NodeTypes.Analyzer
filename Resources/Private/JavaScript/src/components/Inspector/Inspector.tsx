@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 
 import { AppTheme, createUseAppStyles, useGraph } from '../../core';
 import { NodeTypeProfile, NodePathProfile, CurrentSelection } from './index';
@@ -9,7 +9,7 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
     },
 }));
 
-const Inspector = () => {
+const Inspector: React.FC = () => {
     const classes = useStyles();
     const { selectedNodeTypeName, selectedPath } = useGraph();
 

@@ -1,15 +1,20 @@
-import * as React from 'react';
-import { createContext, ReactElement, useCallback, useContext, useEffect, useState, Dispatch } from 'react';
-import { $set } from 'plow-js';
-import { useRecoilValue } from 'recoil';
+import React, { createContext, ReactElement, useCallback, useContext, useEffect, useState, Dispatch } from 'react';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import memoize from 'lodash.memoize';
 
 import fetchData from '../helpers/fetchData';
 import nodePathHelper from '../helpers/nodePathHelper';
 import { useNotify } from './Notify';
-import { chartType, FilterType } from '../constants';
+import { chartType } from '../constants';
 import { useAppState, AppAction, AppState } from './index';
-import { filterTypeState } from '../atoms';
+import {
+    appInitializationState,
+    loadingState,
+    nodesState,
+    nodeTypesState,
+    invalidNodeTypesState,
+    workspaceFilterState,
+} from '../state';
 
 export interface GraphProviderProps {
     children: React.ReactElement;
@@ -18,19 +23,7 @@ export interface GraphProviderProps {
 
 interface GraphProviderValues extends AppState {
     endpoints: Actions;
-    isLoading: boolean;
-    nodeTypeGroups: NodeTypeGroup[];
-    setNodeTypeGroups: (nodeTypeGroups: NodeTypeGroup[]) => void;
-    nodeTypes: NodeTypeConfigurations;
-    setNodeTypes: (nodeTypes: NodeTypeConfigurations) => void;
-    superTypeFilter: string;
-    setSuperTypeFilter: (filter: string) => void;
-    graphData: DataSegment;
     dependencyData: Dependencies;
-    treeData: TreeDataPoint;
-    nodes: CRNodeList;
-    invalidNodeTypes: NodeTypeConfigurations;
-    setInvalidNodeTypes: (nodeTypes: NodeTypeConfigurations) => void;
     fetchGraphData: () => Promise<void>;
     fetchNodes: (path: string) => Promise<CRNodeList>;
     dispatch: Dispatch<AppAction>;
@@ -44,43 +37,18 @@ const GraphProvider = ({ children, endpoints }: GraphProviderProps): ReactElemen
     const Notify = useNotify();
     const [appState, dispatch] = useAppState();
 
-    const [isLoading, setIsLoading] = useState(true);
-    const [nodeTypeGroups, setNodeTypeGroups] = useState<NodeTypeGroup[]>([]);
-    const [nodeTypes, setNodeTypes] = useState<NodeTypeConfigurations>({});
-    const [nodes, setNodes] = useState<CRNodeList>({});
-    const [invalidNodeTypes, setInvalidNodeTypes] = useState<NodeTypeConfigurations>({});
-    const [superTypeFilter, setSuperTypeFilter] = useState('');
-    const selectedFilter = useRecoilValue(filterTypeState);
+    const setIsLoading = useSetRecoilState(loadingState);
+    const [nodeTypes, setNodeTypes] = useRecoilState(nodeTypesState);
+    const setNodes = useSetRecoilState(nodesState);
+    const setInvalidNodeTypes = useSetRecoilState(invalidNodeTypesState);
+    const setAppInitializationState = useSetRecoilState(appInitializationState);
+    const workspaceFilter = useRecoilValue(workspaceFilterState);
 
     const { selectedNodeTypeName, selectedPath, selectedLayout } = appState;
 
-    // Data structure for rendering the nodetype tree
-    const [treeData, setTreeData] = useState({});
     // Data structure for rendering graphical charts
     // TODO: Use same structure for tree and charts
-    const [graphData, setGraphData] = useState({} as DataSegment);
     const [dependencyData, setDependencyData] = useState({ nodes: { children: [] }, links: [] } as Dependencies);
-
-    /**
-     * Recursive function to convert tree data to chart data
-     *
-     * @param data
-     * @param path
-     */
-    const processTreeData = (data, path = '') => {
-        return Object.keys(data).map((segment) => {
-            const currentData = data[segment];
-            const segmentPath = path ? path + '.' + segment : segment;
-            const node: DataSegment = { name: segment, path: segmentPath };
-            if (currentData.nodeType) {
-                node['value'] = 1;
-                node['data'] = currentData;
-            } else {
-                node['children'] = processTreeData(currentData, segmentPath);
-            }
-            return node;
-        });
-    };
 
     /**
      * Retrieves a link list of the usages of one nodetype
@@ -118,62 +86,39 @@ const GraphProvider = ({ children, endpoints }: GraphProviderProps): ReactElemen
             .finally(() => setIsLoading(false));
     }, []);
 
-    const fetchNodes = useCallback((path: string): Promise<CRNodeList> => {
-        return fetchData(
-            endpoints.getNodes,
-            {
-                path,
-            },
-            'GET'
-        )
-            .then(({ nodes: newNodes }) => {
-                setNodes((storedNodes) => {
-                    return {
-                        ...storedNodes,
-                        ...newNodes,
-                    };
-                });
-                return newNodes;
-            })
-            .catch((error) => Notify.error(error));
-    }, []);
+    const fetchNodes = useCallback(
+        (path: string): Promise<CRNodeList> => {
+            return fetchData(
+                endpoints.getNodes,
+                {
+                    path,
+                    workspace: workspaceFilter,
+                },
+                'GET'
+            )
+                .then(({ nodes: newNodes }) => {
+                    setNodes((storedNodes) => {
+                        return {
+                            ...storedNodes,
+                            ...newNodes,
+                        };
+                    });
+                    return newNodes;
+                })
+                .catch((error) => Notify.error(error));
+        },
+        [workspaceFilter]
+    );
 
     /**
      * Runs initial request to fetch all nodetype definitions
      */
     useEffect(() => {
-        fetchGraphData();
-        fetchNodes('/');
+        Promise.all([fetchGraphData(), fetchNodes('/')]).then(() => setAppInitializationState(true));
     }, []);
 
     /**
-     * Converts flat nodetypes structure into tree
-     */
-    useEffect(() => {
-        if (Object.keys(nodeTypes).length === 0) return;
-
-        const treeData = Object.values(nodeTypes).reduce((carry: Record<string, { nodeType: string }>, nodeType) => {
-            // TODO: Extract filter methods
-            if (selectedFilter === FilterType.UNUSED_CONTENT || selectedFilter === FilterType.UNUSED_DOCUMENTS) {
-                if (
-                    nodeType.usageCount > 0 ||
-                    nodeType.abstract ||
-                    (nodeType.configuration.superTypes &&
-                        Object.keys(nodeType.configuration.superTypes).indexOf(
-                            `Neos.Neos:${selectedFilter === FilterType.UNUSED_CONTENT ? 'Content' : 'Document'}`
-                        ) == -1)
-                ) {
-                    return carry;
-                }
-            }
-            return $set(nodePathHelper.resolveFromType(nodeType), { nodeType: nodeType.name }, carry);
-        }, {});
-
-        setTreeData(treeData);
-    }, [nodeTypes, selectedFilter]);
-
-    /**
-     * Converts nodetypes list into a structure for dependency graphs
+     * Converts node types list into a structure for dependency graphs
      */
     useEffect(() => {
         if (Object.keys(nodeTypes).length === 0 || selectedLayout !== chartType.DEPENDENCIES) return;
@@ -268,31 +213,11 @@ const GraphProvider = ({ children, endpoints }: GraphProviderProps): ReactElemen
         setDependencyData(data);
     }, [nodeTypes, selectedPath, selectedNodeTypeName, selectedLayout]);
 
-    /**
-     * Converts tree based nodetypes structure into a form that can be used for graphical charts
-     */
-    useEffect(() => {
-        if (Object.keys(treeData).length === 0) return;
-        setGraphData({ name: 'nodetypes', path: '', children: processTreeData(treeData) });
-    }, [treeData]);
-
     return (
         <GraphContext.Provider
             value={{
                 endpoints,
-                isLoading,
-                nodeTypeGroups,
-                setNodeTypeGroups,
-                nodeTypes,
-                setNodeTypes,
-                superTypeFilter,
-                setSuperTypeFilter,
-                graphData,
                 dependencyData,
-                treeData,
-                nodes,
-                invalidNodeTypes,
-                setInvalidNodeTypes,
                 getNodeTypeUsageLinks,
                 fetchGraphData,
                 fetchNodes,

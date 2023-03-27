@@ -1,8 +1,6 @@
-import * as React from 'react';
+import React from 'react';
 
-import IconButton from '@neos-project/react-ui-components/lib-esm/IconButton';
-import Icon from '@neos-project/react-ui-components/lib-esm/Icon';
-import Button from '@neos-project/react-ui-components/lib-esm/Button';
+import { Icon, IconButton, Button } from '@neos-project/react-ui-components';
 
 import { AppTheme, createUseAppStyles } from '../../core';
 

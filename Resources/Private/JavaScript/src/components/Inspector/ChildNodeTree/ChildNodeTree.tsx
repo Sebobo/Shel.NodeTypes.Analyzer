@@ -1,10 +1,11 @@
-import * as React from 'react';
+import React from 'react';
+import { useRecoilValue } from 'recoil';
 
-import Tree from '@neos-project/react-ui-components/lib-esm/Tree';
+import { Tree } from '@neos-project/react-ui-components';
 
 import { createUseAppStyles, useGraph } from '../../../core';
-import { NodeTypeChildTreeNode } from '../../NodeTypeTree';
-import { ReactElement } from 'react';
+import { NodeTypeChildTreeNode } from '../../NodeTypeAnalysis';
+import { nodeTypesState } from '../../../state';
 
 const useStyles = createUseAppStyles({
     tree: {
@@ -12,9 +13,10 @@ const useStyles = createUseAppStyles({
     },
 });
 
-const ChildNodeTree = (): ReactElement => {
+const ChildNodeTree: React.FC = () => {
     const classes = useStyles();
-    const { selectedNodeTypeName, nodeTypes } = useGraph();
+    const { selectedNodeTypeName } = useGraph();
+    const nodeTypes = useRecoilValue(nodeTypesState);
 
     const currentNodeType = selectedNodeTypeName ? nodeTypes[selectedNodeTypeName] : null;
 

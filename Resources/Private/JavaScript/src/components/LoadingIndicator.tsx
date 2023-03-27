@@ -1,6 +1,8 @@
-import * as React from 'react';
+import React from 'react';
 
 import { AppTheme, createUseAppStyles, useGraph } from '../core';
+import { useRecoilValue } from 'recoil';
+import { loadingState } from '../state';
 
 const useStyles = createUseAppStyles((theme: AppTheme) => ({
     '@keyframes cssloadWidth': {
@@ -37,7 +39,7 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
 
 const LoadingIndicator = () => {
     const classes = useStyles();
-    const { isLoading } = useGraph();
+    const isLoading = useRecoilValue(loadingState);
 
     return (
         <>

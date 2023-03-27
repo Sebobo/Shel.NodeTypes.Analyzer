@@ -1,8 +1,8 @@
-import * as React from 'react';
+import React from 'react';
+
+import { Icon } from '@neos-project/react-ui-components';
 
 import { AppTheme, createUseAppStyles } from '../../core';
-import { ReactElement } from 'react';
-import Icon from '@neos-project/react-ui-components/lib-esm/Icon';
 
 const useStyles = createUseAppStyles((theme: AppTheme) => ({
     propertyList: {
@@ -43,7 +43,7 @@ interface PropertyListProps {
     children: React.ReactElement[];
 }
 
-export const PropertyList = ({ children }: PropertyListProps): ReactElement => {
+export const PropertyList: React.FC<PropertyListProps> = ({ children }) => {
     const classes = useStyles();
 
     return <dl className={classes.propertyList}>{children}</dl>;
@@ -57,13 +57,13 @@ interface PropertyListItemProps {
     title?: string;
 }
 
-export const PropertyListItem = ({
+export const PropertyListItem: React.FC<PropertyListItemProps> = ({
     label,
     value = null,
     icon = null,
     title = null,
     highlighted = false,
-}: PropertyListItemProps): ReactElement => {
+}) => {
     const classes = useStyles({ highlighted });
 
     return (

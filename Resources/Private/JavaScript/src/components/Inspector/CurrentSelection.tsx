@@ -1,11 +1,11 @@
-import * as React from 'react';
+import React, { useCallback } from 'react';
+import { useRecoilValue } from 'recoil';
 
-import Headline from '@neos-project/react-ui-components/lib-esm/Headline';
-import SelectBox from '@neos-project/react-ui-components/lib-esm/SelectBox';
+import { Headline, SelectBox } from '@neos-project/react-ui-components';
 
 import { Action, AppTheme, createUseAppStyles, useGraph, useIntl } from '../../core';
 import nodePathHelper from '../../helpers/nodePathHelper';
-import { useCallback } from 'react';
+import { nodeTypesState } from '../../state';
 
 const useStyles = createUseAppStyles((theme: AppTheme) => ({
     currentSelection: {
@@ -21,9 +21,10 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
     },
 }));
 
-const CurrentSelection = () => {
+const CurrentSelection: React.FC = () => {
     const classes = useStyles();
-    const { selectedNodeTypeName, selectedPath, nodeTypes, dispatch } = useGraph();
+    const { selectedNodeTypeName, selectedPath, dispatch } = useGraph();
+    const nodeTypes = useRecoilValue(nodeTypesState);
     const { translate } = useIntl();
 
     const selectedPathSegments = (

@@ -1,13 +1,14 @@
-import * as React from 'react';
+import React, { useState } from 'react';
+import { useRecoilValue } from 'recoil';
 
-import ToggablePanel from '@neos-project/react-ui-components/lib-esm/ToggablePanel';
-import Icon from '@neos-project/react-ui-components/lib-esm/Icon';
+import { ToggablePanel, Icon } from '@neos-project/react-ui-components';
 
 import { useGraph, useIntl } from '../../core';
-import { useState } from 'react';
+import { nodeTypesState } from '../../state';
 
 const NodeAnnotations: React.FC = () => {
-    const { selectedNodeTypeName, nodeTypes } = useGraph();
+    const { selectedNodeTypeName } = useGraph();
+    const nodeTypes = useRecoilValue(nodeTypesState);
     const { translate } = useIntl();
     const { configuration } = nodeTypes[selectedNodeTypeName];
     const [open, setOpen] = useState(true);

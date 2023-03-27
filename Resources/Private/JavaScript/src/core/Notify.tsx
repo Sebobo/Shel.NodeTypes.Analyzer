@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { createContext, ReactElement, useContext } from 'react';
 
 import { Notify } from '../interfaces';

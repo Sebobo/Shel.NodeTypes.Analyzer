@@ -1,8 +1,12 @@
 {
   "compilerOptions": {
-    "experimentalDecorators": true,
-    "lib": ["es5", "es2015", "ES2017", "dom", "es2018.promise"],
     "skipLibCheck": true,
+    "target": "ES2019",
+    "module": "ES2020",
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "esModuleInterop": true,
     "jsx": "react",
     "typeRoots": ["./Resources/Private/JavaScript/typings"]
   },

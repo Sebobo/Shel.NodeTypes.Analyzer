@@ -1,23 +1,10 @@
-import Inspector from './Inspector';
-import NodeAnnotations from './NodeAnnotations';
-import NodeProperties from './NodeProperties';
-import NodeTypeProfile from './NodeTypeProfile';
-import NodePathProfile from './NodePathProfile';
-import NodeSuperTypes from './NodeSuperTypes';
-import NodeChildNodes from './NodeChildNodes';
-import NodeGrandChildNodes from './NodeGrandChildNodes';
-import CurrentSelection from './CurrentSelection';
-import NodeUsage from './NodeUsage';
-
-export {
-    NodeAnnotations,
-    NodeTypeProfile,
-    NodePathProfile,
-    NodeProperties,
-    Inspector,
-    NodeSuperTypes,
-    NodeChildNodes,
-    NodeGrandChildNodes,
-    NodeUsage,
-    CurrentSelection,
-};
+export { default as Inspector } from './Inspector';
+export { default as NodeAnnotations } from './NodeAnnotations';
+export { default as NodeProperties } from './NodeProperties';
+export { default as NodeTypeProfile } from './NodeTypeProfile';
+export { default as NodePathProfile } from './NodePathProfile';
+export { default as NodeSuperTypes } from './NodeSuperTypes';
+export { default as NodeChildNodes } from './NodeChildNodes';
+export { default as NodeGrandChildNodes } from './NodeGrandChildNodes';
+export { default as CurrentSelection } from './CurrentSelection';
+export { default as NodeSelection } from './NodeSelection';

@@ -9,11 +9,12 @@ Neos:
             description: 'Shel.NodeTypes.Analyzer:Main:module.description'
             icon: 'fas fa-sitemap'
             privilegeTarget: 'Shel.NodeTypes.Analyzer:Backend.Module.Administration.NodeTypes'
+            mainStylesheet: 'Lite'
             additionalResources:
               javaScripts:
                 - 'resource://Shel.NodeTypes.Analyzer/Public/Assets/main.bundle.js'
               styleSheets:
-                - 'resource://Shel.NodeTypes.Analyzer/Public/Assets/extra-neos-wrapper.css'
+                - 'resource://Shel.NodeTypes.Analyzer/Public/Assets/main.bundle.css'
 
     userInterface:
       translation:

@@ -89,9 +89,9 @@ class NodeTypesController extends AbstractModuleController
         ]);
     }
 
-    public function getNodesAction(string $path, array $dimensions = []): void
+    public function getNodesAction(string $path, array $dimensions = [], string $workspace = 'live'): void
     {
-        $contentContext = $this->createContentContext('live', $dimensions);
+        $contentContext = $this->createContentContext($workspace, $dimensions);
         $nodeAtPath = $contentContext->getNode($path);
 
         $nodes = [$nodeAtPath->getPath() => NodeTreeLeaf::fromNode($nodeAtPath)];

@@ -1,15 +1,16 @@
-import * as React from 'react';
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
+import { useRecoilValue } from 'recoil';
 
-import { useGraph, useIntl } from '../../core';
+import { useIntl } from '../../core';
 import nodePathHelper from '../../helpers/nodePathHelper';
+import { nodeTypesState } from '../../state';
 
 interface NodePathProfileProps {
     nodePath: string;
 }
 
-const NodePathProfile = ({ nodePath }: NodePathProfileProps) => {
-    const { nodeTypes } = useGraph();
+const NodePathProfile: React.FC<NodePathProfileProps> = ({ nodePath }) => {
+    const nodeTypes = useRecoilValue(nodeTypesState);
     const { translate } = useIntl();
 
     const nodeTypeCount = useMemo(() => {

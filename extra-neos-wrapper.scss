@@ -1,5 +1,0 @@
-// This is a hack to wrap the react component styles so they are not reset by the Neos backend styles.
-// This & related scripts and files can be removed with https://github.com/neos/neos-development-collection/pull/2874
-.neos {
-    @import "Resources/Public/Assets/main.bundle";
-}

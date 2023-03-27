@@ -1,21 +1,16 @@
 module.exports = {
     root: true,
-    parser: '@typescript-eslint/parser',
+    parser: "@typescript-eslint/parser",
     extends: [
-        'eslint:recommended',
-        'plugin:@typescript-eslint/recommended',
-        'prettier/@typescript-eslint',
-        'plugin:prettier/recommended',
-        'plugin:react/recommended',
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:react/recommended",
+        "plugin:prettier/recommended",
     ],
-    plugins: ['@typescript-eslint', 'prettier', 'react'],
-    /*parserOptions: {
-      jsx: true,
-      useJSXTextNode: true
-    },*/
+    plugins: ["@typescript-eslint", "prettier", "react", "react-hooks"],
     settings: {
         react: {
-            version: 'detect',
+            version: "detect",
         },
     },
     env: {
@@ -23,22 +18,15 @@ module.exports = {
         es6: true,
         node: true,
     },
-    ignorePatterns: ['.cache', 'dist', 'node_modules/'],
     rules: {
-        '@typescript-eslint/indent': ['error', 4],
-        '@typescript-eslint/explicit-function-return-type': 'off',
-        '@typescript-eslint/no-explicit-any': 'off',
-        '@typescript-eslint/no-var-requires': 'off',
-        '@typescript-eslint/ban-ts-ignore': 'off',
-        '@typescript-eslint/ban-ts-comment': 'off',
-        'prettier/prettier': [
-            'error',
-            {
-                semi: true,
-                singleQuote: true,
-                tabWidth: 4,
-                printWidth: 120,
-            },
-        ],
+        "@typescript-eslint/explicit-function-return-type": "off",
+        "@typescript-eslint/explicit-module-boundary-types": "off",
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/no-var-requires": "off",
+        "@typescript-eslint/ban-ts-ignore": "off",
+        "@typescript-eslint/ban-ts-comment": "off",
+        "react/prop-types": "off",
+        "prettier/prettier": ["error"],
+        "react-hooks/rules-of-hooks": "error",
     },
 };

@@ -1,3 +1,12 @@
 *.bundle.css binary
 *.bundle.js binary
 *.map binary
+
+/.editorConfig export-ignore
+/.eslintrc.js export-ignore
+/.nvmrc export-ignore
+/.github export-ignore
+/.yarnrc.yml export-ignore
+/.yarn export-ignore
+/tsconfig.json export-ignore
+/package.json export-ignore

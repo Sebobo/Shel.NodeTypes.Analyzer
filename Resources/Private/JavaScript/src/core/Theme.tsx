@@ -1,7 +1,15 @@
-import * as React from 'react';
+import React from 'react';
 import { createTheming, createUseStyles } from 'react-jss';
-import { config } from '@neos-project/build-essentials/src/styles/styleConstants';
-import { ReactElement } from 'react';
+import { config, library } from '@fortawesome/fontawesome-svg-core';
+import { fas } from '@fortawesome/free-solid-svg-icons';
+import { far } from '@fortawesome/free-regular-svg-icons';
+import { fab } from '@fortawesome/free-brands-svg-icons';
+
+import { config as neosConfig } from '@neos-project/build-essentials/src/styles/styleConstants';
+
+// Import all fontawesome icons as the node-types config allow using all of them
+library.add(fas, far, fab);
+config.autoAddCss = false; // Dont insert the supporting CSS into the <head> of the HTML document
 
 const ThemeContext = React.createContext({} as AppTheme);
 const theming = createTheming(ThemeContext);
@@ -64,6 +72,6 @@ export interface AppTheme {
 export const createUseAppStyles = (styles) =>
     createUseStyles<any, any, AppTheme>(styles, { theming } as Record<string, unknown>);
 
-export const AppThemeProvider = ({ children }: { children: React.ReactElement }): ReactElement => (
-    <ThemeProvider theme={config}>{children}</ThemeProvider>
+export const AppThemeProvider: React.FC<{ children: React.ReactElement }> = ({ children }) => (
+    <ThemeProvider theme={neosConfig}>{children}</ThemeProvider>
 );

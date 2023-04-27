@@ -1,6 +1,6 @@
 import React from 'react';
 import * as ReactDOMClient from 'react-dom/client';
-import { DndProvider } from 'react-dnd';
+import { DndProvider, DndProviderProps } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import Modal from 'react-modal';
 import { RecoilRoot } from 'recoil';
@@ -42,15 +42,17 @@ function initializeApp() {
         return I18n.translate(id, value, packageKey, source, args);
     };
 
+    const ModifiedDndProvider = DndProvider as React.FC<{ children: React.ReactElement } & DndProviderProps<any, any>>;
+
     const root = ReactDOMClient.createRoot(graphAppContainer);
     root.render(
         <IntlProvider translate={translate}>
             <NotifyProvider notificationApi={Notification}>
                 <RecoilRoot>
                     <GraphProvider endpoints={endpoints}>
-                        <DndProvider backend={HTML5Backend}>
+                        <ModifiedDndProvider backend={HTML5Backend}>
                             <GraphApp />
-                        </DndProvider>
+                        </ModifiedDndProvider>
                     </GraphProvider>
                 </RecoilRoot>
             </NotifyProvider>

@@ -1,17 +1,12 @@
 import React from 'react';
 import * as ReactDOMClient from 'react-dom/client';
 import { DndProvider } from 'react-dnd';
-import Modal from 'react-modal';
 import HTML5Backend from 'react-dnd-html5-backend';
-import { setConfig } from 'react-hot-loader';
+import Modal from 'react-modal';
 import { RecoilRoot } from 'recoil';
 
 import GraphApp from './components/GraphApp';
 import { GraphProvider, IntlProvider, AppThemeProvider, NotifyProvider } from './core';
-
-setConfig({
-    showReactDomPatchNotification: false,
-});
 
 // const withDragDropContext = DragDropContext(HTML5Backend);
 // declare const module: any;

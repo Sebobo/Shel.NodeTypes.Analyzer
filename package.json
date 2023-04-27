@@ -80,7 +80,6 @@
     "postcss-custom-properties": "^9.2.0",
     "postcss-modules": "^1.5.0",
     "prettier": "^2.8.7",
-    "react-hot-loader": "^4.13.1",
     "typescript": "^5.0.2"
   },
   "prettier": {

@@ -1,10 +1,9 @@
 import React from 'react';
+import { createUseStyles } from 'react-jss';
 
 import { Icon, IconButton, Button } from '@neos-project/react-ui-components';
 
-import { AppTheme, createUseAppStyles } from '../../core';
-
-const useStyles = createUseAppStyles((theme: AppTheme) => ({
+const useStyles = createUseStyles({
     breadcrumb: {
         listStyleType: 'none',
         display: 'inline-flex',
@@ -18,14 +17,14 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
     },
     text: {
         '.neos &': {
-            padding: `0 ${theme.spacing.half}`,
+            padding: '0 var(--spacing-Half)',
             '& svg': {
                 verticalAlign: 'bottom',
-                marginRight: theme.spacing.quarter,
+                marginRight: 'var(--spacing-Quarter)',
             },
         },
     },
-}));
+});
 
 type BreadcrumbProps = {
     handleHomeClick: () => void;

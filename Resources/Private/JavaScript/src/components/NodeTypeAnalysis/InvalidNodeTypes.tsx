@@ -1,16 +1,16 @@
 import React from 'react';
 import { useRecoilValue } from 'recoil';
+import { createUseStyles } from 'react-jss';
 
 import { Headline } from '@neos-project/react-ui-components';
 
-import { AppTheme, createUseAppStyles } from '../../core';
 import { invalidNodeTypesState } from '../../state';
 
-const useStyles = createUseAppStyles((theme: AppTheme) => ({
+const useStyles = createUseStyles({
     invalidNodeTypesList: {
         '.neos &': {
             '& ul': {
-                paddingLeft: theme.spacing.full,
+                paddingLeft: 'var(--spacing-Full)',
             },
             '& li': {
                 listStyleType: 'disc',
@@ -20,10 +20,10 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
     headline: {
         '.neos &': {
             fontWeight: 'bold',
-            lineHeight: theme.spacing.goldenUnit,
+            lineHeight: 'var(--spacing-GoldenUnit)',
         },
     },
-}));
+});
 
 const InvalidNodeTypes: React.FC = () => {
     const classes = useStyles();

@@ -1,13 +1,14 @@
 import React from 'react';
+import { createUseStyles } from 'react-jss';
 
-import { AppTheme, createUseAppStyles, useGraph } from '../../core';
+import { useGraph } from '../../core';
 import { NodeTypeProfile, NodePathProfile, CurrentSelection } from './index';
 
-const useStyles = createUseAppStyles((theme: AppTheme) => ({
+const useStyles = createUseStyles({
     inspector: {
-        flex: `0 1 ${theme.size.sidebarWidth}`,
+        flex: '0 1 var(--size-SidebarWidth)',
     },
-}));
+});
 
 const Inspector: React.FC = () => {
     const classes = useStyles();

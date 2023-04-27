@@ -1,12 +1,12 @@
 import React from 'react';
+import { createUseStyles } from 'react-jss';
 
 import { Tabs } from '@neos-project/react-ui-components';
 
-import { createUseAppStyles } from '../core';
 import NodeTypeAnalysisTab from './NodeTypeAnalysis/NodeTypeAnalysisTab';
 import NodeAnalysisTab from './NodeAnalysis/NodeAnalysisTab';
 
-const useStyles = createUseAppStyles({
+const useStyles = createUseStyles({
     app: {
         height: '100%',
         '& svg.neos-svg-inline--fa': {

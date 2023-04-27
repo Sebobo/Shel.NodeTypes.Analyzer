@@ -5,8 +5,15 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import Modal from 'react-modal';
 import { RecoilRoot } from 'recoil';
 
+// Import all fontawesome icons for the icon component and nodetypes can use any of them
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { fas } from '@fortawesome/free-solid-svg-icons';
+import { fab } from '@fortawesome/free-brands-svg-icons';
+import { far } from '@fortawesome/free-regular-svg-icons';
+library.add(fas, fab, far);
+
 import GraphApp from './components/GraphApp';
-import { GraphProvider, IntlProvider, AppThemeProvider, NotifyProvider } from './core';
+import { GraphProvider, IntlProvider, NotifyProvider } from './core';
 
 // const withDragDropContext = DragDropContext(HTML5Backend);
 // declare const module: any;
@@ -17,8 +24,7 @@ function initializeApp() {
     const graphAppContainer: HTMLElement = document.getElementById('graphAppContainer');
 
     if (!graphAppContainer) {
-        console.error('[NodeTypes.Analyzer] No app container found');
-        return;
+        throw new Error('[NodeTypes.Analyzer] No app container found');
     }
 
     Modal.setAppElement(graphAppContainer);
@@ -40,22 +46,19 @@ function initializeApp() {
     root.render(
         <IntlProvider translate={translate}>
             <NotifyProvider notificationApi={Notification}>
-                <AppThemeProvider>
-                    <RecoilRoot>
-                        <GraphProvider endpoints={endpoints}>
-                            <DndProvider backend={HTML5Backend}>
-                                <GraphApp />
-                            </DndProvider>
-                        </GraphProvider>
-                    </RecoilRoot>
-                </AppThemeProvider>
+                <RecoilRoot>
+                    <GraphProvider endpoints={endpoints}>
+                        <DndProvider backend={HTML5Backend}>
+                            <GraphApp />
+                        </DndProvider>
+                    </GraphProvider>
+                </RecoilRoot>
             </NotifyProvider>
         </IntlProvider>
     );
     console.info('[NodeTypes.Analyzer] Initialized');
 }
 
-console.info('API', window.NeosCMS?.I18n);
 if (window.NeosCMS?.I18n) {
     initializeApp();
 } else {

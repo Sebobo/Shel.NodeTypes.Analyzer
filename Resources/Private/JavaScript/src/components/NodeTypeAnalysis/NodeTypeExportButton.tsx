@@ -1,14 +1,15 @@
 import React from 'react';
+import { createUseStyles } from 'react-jss';
 
-import { AppTheme, createUseAppStyles, useGraph, useIntl } from '../../core';
+import { useGraph, useIntl } from '../../core';
 
-const useStyles = createUseAppStyles((theme: AppTheme) => ({
+const useStyles = createUseStyles({
     nodeTypeExportButton: {
         '.neos &': {
-            marginTop: theme.spacing.full,
+            marginTop: 'var(--spacing-Full)',
         },
     },
-}));
+});
 
 const NodeTypeExportButton: React.FC = () => {
     const classes = useStyles();

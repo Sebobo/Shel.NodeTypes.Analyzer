@@ -1,10 +1,9 @@
 import React from 'react';
+import { createUseStyles } from 'react-jss';
 
 import { Icon } from '@neos-project/react-ui-components';
 
-import { AppTheme, createUseAppStyles } from '../../core';
-
-const useStyles = createUseAppStyles((theme: AppTheme) => ({
+const useStyles = createUseStyles({
     propertyList: {
         overflow: 'auto',
     },
@@ -15,29 +14,32 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
     },
     term: {
         extend: 'propertyListItem',
-        backgroundColor: (props) => (props?.highlighted ? theme.colors.primaryViolet : theme.colors.contrastNeutral),
+        backgroundColor: 'var(--grayMedium)',
         fontWeight: 'bold',
         color: 'white',
         display: 'flex',
         justifyContent: 'space-between',
         '.neos &': {
-            padding: `${theme.spacing.half} ${theme.spacing.half} 0`,
+            padding: `var(--spacing-Half) var(--spacing-Half) 0`,
             '& svg': {
-                color: theme.colors.warn,
+                color: 'var(--warning)',
             },
         },
     },
     description: {
         extend: 'propertyListItem',
-        backgroundColor: (props) => (props?.highlighted ? theme.colors.primaryViolet : theme.colors.contrastNeutral),
+        backgroundColor: 'var(--grayMedium)',
         lineHeight: '1.3',
-        color: theme.colors.contrastBright,
+        color: '#999',
         '.neos &': {
             marginBottom: '1px',
-            padding: theme.spacing.half,
+            padding: 'var(--spacing-Half)',
         },
     },
-}));
+    highlighted: {
+        backgroundColor: '#26224c',
+    },
+});
 
 interface PropertyListProps {
     children: React.ReactElement[];
@@ -64,14 +66,14 @@ export const PropertyListItem: React.FC<PropertyListItemProps> = ({
     title = null,
     highlighted = false,
 }) => {
-    const classes = useStyles({ highlighted });
+    const classes = useStyles();
 
     return (
         <>
-            <dt className={classes.term} title={title}>
+            <dt className={[classes.term, highlighted ? classes.highlighted : ''].join(' ')} title={title}>
                 {label} {icon && <Icon icon={icon} />}
             </dt>
-            <dd className={classes.description}>{value}</dd>
+            <dd className={[classes.description, highlighted ? classes.highlighted : ''].join(' ')}>{value}</dd>
         </>
     );
 };

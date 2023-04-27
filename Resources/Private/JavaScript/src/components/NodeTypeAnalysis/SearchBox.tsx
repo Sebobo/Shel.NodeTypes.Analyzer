@@ -1,27 +1,31 @@
 import React from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
+import { createUseStyles } from 'react-jss';
 
 import { SelectBox } from '@neos-project/react-ui-components';
 
-import { Action, AppTheme, createUseAppStyles, useGraph, useIntl } from '../../core';
+import { Action, useGraph, useIntl } from '../../core';
 import nodePathHelper from '../../helpers/nodePathHelper';
 import { nodeTypesState, searchTermState } from '../../state';
 
-const useStyles = createUseAppStyles((theme: AppTheme) => ({
+const useStyles = createUseStyles({
     searchBox: {
         borderTop: 0,
         display: 'flex',
+        '& svg': {
+            alignSelf: 'center',
+        },
     },
     dropdown: {
         '.neos & input[type="search"]': {
-            backgroundColor: theme.colors.contrastNeutral,
+            backgroundColor: 'var(--grayMedium)',
             border: 0,
             '&:focus': {
                 border: 0,
             },
         },
     },
-}));
+});
 
 function getOptionsForTerm(nodeTypes: NodeTypeConfigurations, searchTerm: string) {
     return Object.keys(nodeTypes)

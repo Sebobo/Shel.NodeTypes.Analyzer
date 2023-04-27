@@ -1,12 +1,12 @@
 import React from 'react';
 import { useRecoilValue } from 'recoil';
+import { createUseStyles } from 'react-jss';
 
 import { nodesState, selectedNodeTreePath } from '../../../state';
-import { createUseAppStyles } from '../../../core';
 import { PropertyList, PropertyListItem } from '../../Presentationals';
 import SelectedNodeBreadcrumb from './SelectedNodeBreadcrumb';
 
-const useStyles = createUseAppStyles({
+const useStyles = createUseStyles({
     Section: {
         '.neos &': {
             marginTop: '1rem',

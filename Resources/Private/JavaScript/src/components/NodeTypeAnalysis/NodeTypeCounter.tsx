@@ -1,19 +1,20 @@
 import React, { useMemo } from 'react';
 import { useRecoilValue } from 'recoil';
+import { createUseStyles } from 'react-jss';
 
-import { AppTheme, createUseAppStyles, useIntl } from '../../core';
+import { useIntl } from '../../core';
 import { nodeTypesState } from '../../state';
 
-const useStyles = createUseAppStyles((theme: AppTheme) => ({
+const useStyles = createUseStyles({
     nodeTypeCount: {
         userSelect: 'none',
-        borderTop: `1px solid ${theme.colors.contrastDark}`,
+        borderTop: '1px solid var(--grayLight)',
         '.neos &': {
-            marginTop: theme.spacing.full,
-            paddingTop: theme.spacing.full,
+            marginTop: 'var(--spacing-Full)',
+            paddingTop: 'var(--spacing-Full)',
         },
     },
-}));
+});
 
 const NodeTypeCounter: React.FC = () => {
     const classes = useStyles();

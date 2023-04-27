@@ -1,10 +1,10 @@
 import React from 'react';
-
-import { AppTheme, createUseAppStyles, useGraph } from '../core';
+import { createUseStyles } from 'react-jss';
 import { useRecoilValue } from 'recoil';
+
 import { loadingState } from '../state';
 
-const useStyles = createUseAppStyles((theme: AppTheme) => ({
+const useStyles = createUseStyles({
     '@keyframes cssloadWidth': {
         '0%, 100%': {
             transitionTimingFunction: 'cubic-bezier(1, 0, .65, .85)',
@@ -32,10 +32,10 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
     bar: {
         height: '100%',
         position: 'relative',
-        backgroundColor: theme.colors.warn,
+        backgroundColor: 'var(--warning)',
         animation: '$cssloadWidth 2s cubic-bezier(.45, 0, 1, 1) infinite',
     },
-}));
+});
 
 const LoadingIndicator = () => {
     const classes = useStyles();

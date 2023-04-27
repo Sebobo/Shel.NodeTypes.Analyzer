@@ -1,18 +1,19 @@
 import React, { useCallback } from 'react';
+import { createUseStyles } from 'react-jss';
 
 import { Headline, SelectBox, IconButton } from '@neos-project/react-ui-components';
 
-import { Action, AppTheme, createUseAppStyles, useGraph, useIntl } from '../../core';
+import { Action, useGraph, useIntl } from '../../core';
 import { chartType } from '../../constants';
 import { NodeTypeBreadcrumb } from './NodeTypeTree';
 
-const useStyles = createUseAppStyles((theme: AppTheme) => ({
+const useStyles = createUseStyles({
     toolbar: {
         width: '100%',
         display: 'flex',
         justifyContent: 'space-between',
         '.neos &': {
-            marginBottom: theme.spacing.half,
+            marginBottom: 'var(--spacing-Half)',
         },
     },
     group: {
@@ -20,14 +21,14 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
         display: 'flex',
         alignItems: 'center',
         alignSelf: 'center',
-        border: `1px solid ${theme.colors.contrastDark}`,
+        border: '1px solid var(--grayLight)',
     },
     headline: {
         '.neos &': {
-            padding: `0 ${theme.spacing.half}`,
+            padding: '0 var(--spacing-Half)',
         },
     },
-}));
+});
 
 const Toolbar: React.FC = () => {
     const classes = useStyles();

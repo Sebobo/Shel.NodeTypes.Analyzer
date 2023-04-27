@@ -1,28 +1,29 @@
 import React, { useState } from 'react';
 import Modal from 'react-modal';
+import { createUseStyles } from 'react-jss';
 
 import { ToggablePanel, Button, IconButton } from '@neos-project/react-ui-components';
 
-import { AppTheme, createUseAppStyles, useGraph, useIntl } from '../../core';
+import { useGraph, useIntl } from '../../core';
 import { useRecoilValue } from 'recoil';
 import { nodeTypesState } from '../../state';
 
-const useStyles = createUseAppStyles((theme: AppTheme) => ({
+const useStyles = createUseStyles({
     usageTable: {
         '.neos &': {},
     },
     modal: {
         position: 'absolute',
-        top: `calc(2 * ${theme.spacing.goldenUnit})`,
-        left: theme.spacing.goldenUnit,
-        right: theme.spacing.goldenUnit,
-        bottom: theme.spacing.goldenUnit,
+        top: 'calc(2 * var(--spacing-GoldenUnit))',
+        left: 'var(--spacing-GoldenUnit)',
+        right: 'var(--spacing-GoldenUnit)',
+        bottom: 'var(--spacing-GoldenUnit)',
         color: 'white',
         outline: 'none',
         overflow: 'auto',
-        backgroundColor: theme.colors.contrastDarker,
+        backgroundColor: 'var(--grayDark)',
         '.neos &': {
-            padding: theme.spacing.goldenUnit,
+            padding: 'var(--spacing-GoldenUnit)',
         },
     },
     overlay: {
@@ -35,8 +36,8 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
         zIndex: 10300,
     },
     closeButton: {
-        top: theme.spacing.half,
-        right: theme.spacing.half,
+        top: 'var(--spacing-Half)',
+        right: 'var(--spacing-Half)',
         '.neos &': {
             position: 'absolute',
         },
@@ -44,19 +45,19 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
     usageHeader: {
         '.neos &': {
             fontSize: '1rem',
-            marginBottom: theme.spacing.goldenUnit,
+            marginBottom: 'var(--spacing-GoldenUnit)',
         },
     },
     usageCountByInheritance: {
         '.neos &': {
-            marginTop: theme.spacing.full,
+            marginTop: 'var(--spacing-Full)',
             '& table': {
-                marginTop: theme.spacing.half,
+                marginTop: 'var(--spacing-Half)',
                 width: '100%',
                 '& td': {
-                    color: theme.colors.contrastBright,
+                    color: 'var(--textOnGray)',
                     padding: '4px 0',
-                    borderBottom: `1px solid ${theme.colors.contrastDark}`,
+                    borderBottom: '1px solid var(--grayLight)',
                 },
                 '& td:last-child': {
                     textAlign: 'right',
@@ -75,7 +76,7 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
             },
         },
     },
-}));
+});
 
 const NodeSelection: React.FC = () => {
     const classes = useStyles();

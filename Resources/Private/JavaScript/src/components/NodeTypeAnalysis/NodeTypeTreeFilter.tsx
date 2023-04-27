@@ -1,25 +1,26 @@
 import React from 'react';
 import { useRecoilState } from 'recoil';
+import { createUseStyles } from 'react-jss';
 
 import { Headline, SelectBox } from '@neos-project/react-ui-components';
 
 import { FilterType } from '../../constants';
-import { AppTheme, createUseAppStyles, useIntl } from '../../core';
+import { useIntl } from '../../core';
 import { nodeTypeFilterState } from '../../state';
 
-const useStyles = createUseAppStyles((theme: AppTheme) => ({
+const useStyles = createUseStyles({
     group: {
         flex: '0 1 auto',
         display: 'flex',
         alignItems: 'center',
-        border: `1px solid ${theme.colors.contrastDark}`,
+        border: '1px solid var(--grayLight)',
     },
     headline: {
         '.neos &': {
-            padding: `0 ${theme.spacing.half}`,
+            padding: '0 var(--spacing-Half)',
         },
     },
-}));
+});
 
 const NodeTypeTreeFilter: React.FC = () => {
     const classes = useStyles();

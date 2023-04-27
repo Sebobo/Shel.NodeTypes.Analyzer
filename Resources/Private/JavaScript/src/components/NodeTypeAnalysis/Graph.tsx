@@ -1,17 +1,18 @@
 import React, { useEffect, useRef } from 'react';
 import { useRecoilValue } from 'recoil';
+import { createUseStyles } from 'react-jss';
 import { $get } from 'plow-js';
 import cloneDeep from 'lodash.clonedeep';
 
-import { Action, AppTheme, createUseAppStyles, useGraph } from '../../core';
+import { Action, useGraph } from '../../core';
 import { renderSunburstChart, renderDependencyGraph } from '../../charts';
 import { graphDataState, treeDataState } from '../../state';
 
-const useStyles = createUseAppStyles((theme: AppTheme) => ({
+const useStyles = createUseStyles({
     nodeTypesGraph: {
         '.neos &': {
-            backgroundColor: theme.colors.contrastDark,
-            border: `1px solid ${theme.colors.contrastBright}`,
+            backgroundColor: 'var(--grayLight)',
+            border: `1px solid #999`,
             flex: 1,
             position: 'relative',
         },
@@ -34,7 +35,7 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
             },
         },
     },
-}));
+});
 
 const MAX_SUB_SEGMENTS = 10;
 

@@ -1,25 +1,26 @@
 import React, { useCallback } from 'react';
 import { useRecoilValue } from 'recoil';
+import { createUseStyles } from 'react-jss';
 
 import { Headline, SelectBox } from '@neos-project/react-ui-components';
 
-import { Action, AppTheme, createUseAppStyles, useGraph, useIntl } from '../../core';
+import { Action, useGraph, useIntl } from '../../core';
 import nodePathHelper from '../../helpers/nodePathHelper';
 import { nodeTypesState } from '../../state';
 
-const useStyles = createUseAppStyles((theme: AppTheme) => ({
+const useStyles = createUseStyles({
     currentSelection: {
         '.neos &': {
-            marginBottom: theme.spacing.full,
+            marginBottom: 'var(--spacing-Full)',
         },
     },
     headline: {
         '.neos &': {
             fontWeight: 'bold',
-            lineHeight: theme.spacing.goldenUnit,
+            lineHeight: 'var(--spacing-GoldenUnit)',
         },
     },
-}));
+});
 
 const CurrentSelection: React.FC = () => {
     const classes = useStyles();

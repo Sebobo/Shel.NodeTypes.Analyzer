@@ -1,13 +1,14 @@
 import React, { useEffect } from 'react';
 import { useRecoilValue } from 'recoil';
+import { createUseStyles } from 'react-jss';
 
 import { Tree } from '@neos-project/react-ui-components';
 
-import { Action, createUseAppStyles, useGraph } from '../../../core';
+import { Action, useGraph } from '../../../core';
 import { appInitializationState, nodesState, selectedNodeTreePath } from '../../../state';
 import NodeTreeNode from './NodeTreeNode';
 
-const useStyles = createUseAppStyles({
+const useStyles = createUseStyles({
     tree: {
         overflow: 'auto',
     },

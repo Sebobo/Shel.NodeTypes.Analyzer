@@ -1,19 +1,26 @@
 import React from 'react';
+import { createUseStyles } from 'react-jss';
 
 import LoadingIndicator from '../LoadingIndicator';
 import { NodeTypeTree } from './NodeTypeTree';
-import { AppTheme, createUseAppStyles } from '../../core';
-import { InvalidNodeTypes, NodeTypeCounter, NodeTypeExportButton, SearchBox, NodeTypeTreeFilter, Toolbar } from './index';
+import {
+    InvalidNodeTypes,
+    NodeTypeCounter,
+    NodeTypeExportButton,
+    SearchBox,
+    NodeTypeTreeFilter,
+    Toolbar,
+} from './index';
 import Graph from './Graph';
 import { Inspector } from '../Inspector';
 
-const useStyles = createUseAppStyles((theme: AppTheme) => ({
+const useStyles = createUseStyles({
     tabContentInner: {
         display: 'grid',
         height: 'inherit',
-        gridGap: theme.spacing.full,
+        gridGap: 'var(--spacing-Full)',
         gridTemplateAreas: `"left main right"`,
-        gridTemplateColumns: `${theme.size.sidebarWidth} 1fr ${theme.size.sidebarWidth}`,
+        gridTemplateColumns: 'var(--size-SidebarWidth) 1fr var(--size-SidebarWidth)',
     },
     left: {
         gridArea: 'left',
@@ -31,7 +38,7 @@ const useStyles = createUseAppStyles((theme: AppTheme) => ({
         maxHeight: 'inherit',
         overflow: 'auto',
     },
-}));
+});
 
 const NodeTypeAnalysisTab: React.FC = () => {
     const classes = useStyles();

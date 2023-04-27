@@ -10,3 +10,6 @@
 /.yarn export-ignore
 /tsconfig.json export-ignore
 /package.json export-ignore
+/.pnp.cjs export-ignore
+/.pnp.loader.mjs export-ignore
+/esbuild.mjs export-ignore

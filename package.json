@@ -9,18 +9,11 @@
   "bugs": {
     "url": "https://github.com/Sebobo/Shel.NodeTypes.Analyzer/issues"
   },
-  "source": "Resources/Private/JavaScript/src/index.tsx",
-  "app": "Resources/Assets/main.bundle.js",
-  "targets": {
-    "app": {
-      "distDir": "Resources/Public/Assets"
-    }
-  },
   "scripts": {
     "lint": "tsc --noEmit && eslint 'Resources/Private/JavaScript/**/*.{ts,tsx}'",
     "test": "exit 0",
-    "watch": "parcel watch",
-    "build": "parcel build"
+    "build": "node esbuild.mjs",
+    "watch": "node esbuild.mjs --watch"
   },
   "husky": {
     "hooks": {
@@ -35,9 +28,7 @@
     "@fortawesome/free-solid-svg-icons": "^5.15.4",
     "@fortawesome/react-fontawesome": "^0.1.19",
     "@friendsofreactjs/react-css-themr": "^4.3.3",
-    "@neos-project/build-essentials": "^8.2.7",
-    "@neos-project/neos-ui-extensibility": "^8.3.0-beta3",
-    "@neos-project/react-ui-components": "^8.3.0-beta3",
+    "@neos-project/react-ui-components": "^8.3.0",
     "classnames": "^2.3.2",
     "d3": "^5.16.0",
     "d3-array": "2.12.1",
@@ -62,25 +53,21 @@
     "recoil": "^0.7.7"
   },
   "devDependencies": {
-    "@babel/core": "^7.21.3",
     "@types/d3": "^5.16.4",
-    "@types/react": "^18.0.29",
-    "@types/react-dom": "^18.0.11",
-    "@typescript-eslint/eslint-plugin": "^5.56.0",
-    "@typescript-eslint/parser": "^5.56.0",
-    "eslint": "^8.36.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.1",
+    "@typescript-eslint/eslint-plugin": "^5.59.1",
+    "@typescript-eslint/parser": "^5.59.1",
+    "esbuild": "^0.17.18",
+    "eslint": "^8.39.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-react": "^7.32.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "husky": "^8.0.3",
-    "node-gyp": "^9.3.1",
-    "node-sass": "^8.0.0",
-    "parcel": "^2.8.3",
-    "postcss-custom-properties": "^9.2.0",
-    "postcss-modules": "^1.5.0",
-    "prettier": "^2.8.7",
-    "typescript": "^5.0.2"
+    "prettier": "^2.8.8",
+    "process": "^0.11.10",
+    "typescript": "^5.0.4"
   },
   "prettier": {
     "printWidth": 120,
@@ -91,8 +78,12 @@
   "browserslist": [
     "> 0.5%",
     "last 2 versions",
-    "not dead",
-    "supports async-functions"
+    "not dead"
   ],
-  "packageManager": "yarn@3.5.0"
+  "packageManager": "yarn@3.5.0",
+  "dependenciesMeta": {
+    "eslint@8.39.0": {
+      "unplugged": true
+    }
+  }
 }

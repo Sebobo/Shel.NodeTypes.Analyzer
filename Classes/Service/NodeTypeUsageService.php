@@ -23,6 +23,7 @@ use Neos\Flow\Annotations as Flow;
 use Neos\Flow\Mvc\Controller\ControllerContext;
 use Neos\Neos\Controller\CreateContentContextTrait;
 use Neos\Neos\Service\LinkingService;
+use Shel\NodeTypes\Analyzer\Domain\Dto\NodeTypeUsage;
 
 /**
  * @Flow\Scope("singleton")
@@ -62,14 +63,13 @@ class NodeTypeUsageService
     protected $configurationCache;
 
     /**
-     * @param ControllerContext $controllerContext
-     * @param string $nodeTypeName
-     * @return array containing a link, document title and other information for each instance of the node type
+     * @return NodeTypeUsage[]
      * @throws CacheException
      */
     public function getBackendUrlsForNodeType(ControllerContext $controllerContext, string $nodeTypeName): array
     {
         $nodeTypesCacheKey = 'NodeTypes_Usage_' . md5($nodeTypeName) . '_' . $this->configurationCache->get('ConfigurationVersion');
+        /** @var NodeTypeUsage[] $nodeTypeUsages */
         $nodeTypeUsages = $this->nodeTypesCache->get($nodeTypesCacheKey);
         if ($nodeTypeUsages) {
             return $nodeTypeUsages;
@@ -118,28 +118,17 @@ class NodeTypeUsageService
                 $title = $documentNode->getLabel();
             }
 
-            $nodeTypeUsages[] = [
-                'url' => $url,
-                'documentTitle' => $title,
-                'nodeIdentifier' => $node->getIdentifier(),
-                'workspace' => $contentContext->getWorkspaceName(),
-                'dimensions' => $node->getDimensions(),
-            ];
+            $nodeTypeUsages[] = new NodeTypeUsage($node, $title, $url);
         }
 
-        usort($nodeTypeUsages, static function ($a, $b) {
-            return $a['workspace'] < $b['workspace'] ? -1 : 1;
+        usort($nodeTypeUsages, static function (NodeTypeUsage $a, NodeTypeUsage $b) {
+            return $a->getWorkspaceName() < $b->getWorkspaceName() ? -1 : 1;
         });
 
         $this->nodeTypesCache->set($nodeTypesCacheKey, $nodeTypeUsages);
         return $nodeTypeUsages;
     }
 
-    /**
-     * @param ControllerContext $controllerContext
-     * @param NodeInterface $node
-     * @return string
-     */
     protected function getNodeUri(ControllerContext $controllerContext, NodeInterface $node): string
     {
         try {

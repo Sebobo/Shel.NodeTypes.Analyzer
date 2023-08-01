@@ -189,10 +189,12 @@ const NodeSelection: React.FC = () => {
                     <table className={'neos-table ' + classes.usageTable}>
                         <thead>
                             <tr>
+                                <th>{translate('inspector.usage.modal.table.title', 'Title')}</th>
                                 <th>{translate('inspector.usage.modal.table.page', 'Page')}</th>
                                 <th>{translate('inspector.usage.modal.table.workspace', 'Workspace')}</th>
                                 <th>{translate('inspector.usage.modal.table.dimensions', 'Dimensions')}</th>
                                 <th>{translate('inspector.usage.modal.table.identifier', 'Node Identifier')}</th>
+                                <th>{translate('inspector.usage.modal.table.hidden', 'Hidden')}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -200,6 +202,7 @@ const NodeSelection: React.FC = () => {
                                 .sort((a, b) => a.documentTitle.localeCompare(b.documentTitle))
                                 .map((link, index) => (
                                     <tr key={index}>
+                                        <td>{link.title}</td>
                                         <td>
                                             {link.url ? (
                                                 <a href={link.url} target="_blank" rel="noopener noreferrer">
@@ -217,6 +220,7 @@ const NodeSelection: React.FC = () => {
                                             )}
                                         </td>
                                         <td>{link.nodeIdentifier}</td>
+                                        <td>{link.hidden ? 'Yes' : 'No'}</td>
                                     </tr>
                                 ))}
                         </tbody>

@@ -50,11 +50,13 @@ final class NodeTypeUsage implements \JsonSerializable
     public function toArray(): array
     {
         return [
+            'title' => $this->node->getLabel(),
             'documentTitle' => $this->documentTitle,
             'workspace' => $this->node->getWorkspace()->getName(),
             'url' => $this->url,
             'dimensions' => $this->node->getDimensions(),
             'nodeIdentifier' => $this->node->getIdentifier(),
+            'hidden' => !$this->node->isVisible(),
         ];
     }
 

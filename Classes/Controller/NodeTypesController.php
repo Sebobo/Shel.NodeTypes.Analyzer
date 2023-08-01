@@ -183,16 +183,19 @@ class NodeTypesController extends AbstractModuleController
 
         $csvWriter = Writer::createFromFileObject(new \SplTempFileObject());
         $csvWriter->insertOne([
+            'Title',
             'Page',
             'Workspace',
             'Url',
             'Dimensions',
             'Node identifier',
+            'Hidden',
         ]);
 
         foreach ($usage as $usageItem) {
             $usageData = $usageItem->toArray();
             $usageData['dimensions'] = json_encode($usageData['dimensions']);
+            $usageData['hidden'] = $usageData['hidden'] ? 'true' : 'false';
             $csvWriter->insertOne($usageData);
         }
 
@@ -206,6 +209,7 @@ class NodeTypesController extends AbstractModuleController
         header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
 
         echo $content;
+        die('hgard');
 
         exit;
     }

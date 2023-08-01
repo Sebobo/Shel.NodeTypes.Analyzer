@@ -68,6 +68,7 @@ type NodeTypeGroup = {
     color: string;
 };
 type NodeTypeUsageLink = {
+    title: string;
     documentTitle: string;
     url: string;
     nodeIdentifier: string;
@@ -75,6 +76,7 @@ type NodeTypeUsageLink = {
     dimensions: {
         [dimensionName: string]: string[];
     };
+    hidden: boolean;
 };
 
 type Constraint = Record<string, boolean>;

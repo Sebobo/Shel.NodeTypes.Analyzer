@@ -2,6 +2,7 @@ type FETCH_METHOD = 'POST' | 'GET';
 
 function fetchData<T = any>(path: string, body?: Record<string, string>, method: FETCH_METHOD = 'POST'): Promise<T> {
     if (method === 'GET' && body) {
+        // TODO: Use Url object here
         Object.keys(body).forEach((key) => (path = path.replace(escape('${' + key + '}'), body[key])));
     }
 

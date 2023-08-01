@@ -76,11 +76,20 @@ const useStyles = createUseStyles({
             },
         },
     },
+    usageActions: {
+        display: 'flex',
+        gap: 'var(--spacing-Half)',
+    },
+    details: {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 'var(--spacing-Half)',
+    },
 });
 
 const NodeSelection: React.FC = () => {
     const classes = useStyles();
-    const { selectedNodeTypeName, getNodeTypeUsageLinks } = useGraph();
+    const { selectedNodeTypeName, getNodeTypeUsageLinks, endpoints } = useGraph();
     const nodeTypes = useRecoilValue(nodeTypesState);
     const { translate } = useIntl();
     const { usageCount, usageCountByInheritance, abstract, final } = nodeTypes[selectedNodeTypeName];
@@ -96,24 +105,34 @@ const NodeSelection: React.FC = () => {
             .finally(() => setIsLoading(false));
     };
 
+    const exportUsageLink = new URL(endpoints.exportNodeTypeUsage);
+    exportUsageLink.searchParams.set('moduleArguments[nodeTypeName]', selectedNodeTypeName);
+
     return (
         <>
             <ToggablePanel onPanelToggle={() => setShowDetails(!showDetails)} isOpen={showDetails} style="condensed">
                 <ToggablePanel.Header>{translate('inspector.usage.label', 'Details')}</ToggablePanel.Header>
                 <ToggablePanel.Contents>
-                    {abstract && <p>{translate('inspector.usage.isAbstract', 'This is an abstract nodetype.')}</p>}
-                    {final && <p>{translate('inspector.usage.isFinal', 'This is an final nodetype.')}</p>}
-                    {usageCount > 0 && (
-                        <p>
-                            {translate('inspector.usage.prefix', 'This nodetype is being used')}{' '}
-                            <Button onClick={() => setShowUsageLinks(true)} style="lighter" hoverStyle="brand">
-                                {usageCount} {translate('inspector.usage.button', 'times')}
-                            </Button>
-                        </p>
-                    )}
-                    {usageCount == 0 && Object.keys(usageCountByInheritance).length == 0 && (
-                        <p>{translate('inspector.usage.unused', 'Not directly used.')}</p>
-                    )}
+                    <div className={classes.details}>
+                        {abstract && <p>{translate('inspector.usage.isAbstract', 'This is an abstract nodetype.')}</p>}
+                        {final && <p>{translate('inspector.usage.isFinal', 'This is an final nodetype.')}</p>}
+                        {usageCount > 0 && (
+                            <>
+                                <p>{translate('inspector.usage', `This nodetype is being used ${usageCount} times`)}</p>
+                                <div className={classes.usageActions}>
+                                    <Button onClick={() => setShowUsageLinks(true)} style="lighter" hoverStyle="brand">
+                                        {translate('inspector.usage.show', 'Show usages')}
+                                    </Button>
+                                    <a href={exportUsageLink.toString()} download className="neos-button">
+                                        {translate('inspector.usage.export', 'Export usages')}
+                                    </a>
+                                </div>
+                            </>
+                        )}
+                        {usageCount == 0 && Object.keys(usageCountByInheritance).length == 0 && (
+                            <p>{translate('inspector.usage.unused', 'Not directly used.')}</p>
+                        )}
+                    </div>
                     {Object.keys(usageCountByInheritance).length > 0 && (
                         <div className={classes.usageCountByInheritance}>
                             <p>

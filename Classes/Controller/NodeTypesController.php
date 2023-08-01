@@ -23,6 +23,7 @@ use Neos\Media\Domain\Model\AssetInterface;
 use Neos\Neos\Controller\CreateContentContextTrait;
 use Neos\Neos\Controller\Module\AbstractModuleController;
 use Shel\NodeTypes\Analyzer\Domain\Dto\NodeTreeLeaf;
+use Shel\NodeTypes\Analyzer\Domain\Dto\NodeTypeUsage;
 use Shel\NodeTypes\Analyzer\Service\NodeTypeGraphService;
 use Shel\NodeTypes\Analyzer\Service\NodeTypeUsageService;
 
@@ -163,6 +164,39 @@ class NodeTypesController extends AbstractModuleController
         }
 
         $filename = 'neos-nodetypes-data-' . (new \DateTime())->format('Y-m-d-H-i-s') . '.csv';
+        $content = $csvWriter->getContent();
+        header('Pragma: no-cache');
+        header('Content-type: application/text');
+        header('Content-Length: ' . strlen($content));
+        header('Content-Disposition: attachment; filename=' . $filename);
+        header('Content-Transfer-Encoding: binary');
+        header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+
+        echo $content;
+
+        exit;
+    }
+
+    public function exportNodeTypeUsageAction(?string $nodeTypeName): void
+    {
+        $usage = $this->nodeTypeUsageService->getBackendUrlsForNodeType($this->controllerContext, $nodeTypeName);
+
+        $csvWriter = Writer::createFromFileObject(new \SplTempFileObject());
+        $csvWriter->insertOne([
+            'Page',
+            'Workspace',
+            'Url',
+            'Dimensions',
+            'Node identifier',
+        ]);
+
+        foreach ($usage as $usageItem) {
+            $usageData = $usageItem->toArray();
+            $usageData['dimensions'] = json_encode($usageData['dimensions']);
+            $csvWriter->insertOne($usageData);
+        }
+
+        $filename = sprintf('nodetype-usage-%s-%s.csv', $nodeTypeName, (new \DateTime())->format('Y-m-d-H-i-s'));
         $content = $csvWriter->getContent();
         header('Pragma: no-cache');
         header('Content-type: application/text');

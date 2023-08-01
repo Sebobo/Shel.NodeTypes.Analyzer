@@ -5,8 +5,12 @@ declare(strict_types=1);
 namespace Shel\NodeTypes\Analyzer\Domain\Dto;
 
 use Neos\ContentRepository\Domain\Model\NodeInterface;
+use Neos\Flow\Annotations as Flow;
 use Neos\Media\Domain\Model\AssetInterface;
 
+/**
+ * @Flow\Proxy(false)
+ */
 final class NodeTreeLeaf implements \JsonSerializable
 {
 

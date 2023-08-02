@@ -66,7 +66,7 @@ class NodeTypeUsageService
      * @return NodeTypeUsage[]
      * @throws CacheException
      */
-    public function getBackendUrlsForNodeType(ControllerContext $controllerContext, string $nodeTypeName): array
+    public function getNodeTypeUsages(ControllerContext $controllerContext, string $nodeTypeName): array
     {
         $nodeTypesCacheKey = 'NodeTypes_Usage_' . md5($nodeTypeName) . '_' . $this->configurationCache->get('ConfigurationVersion');
         /** @var NodeTypeUsage[] $nodeTypeUsages */

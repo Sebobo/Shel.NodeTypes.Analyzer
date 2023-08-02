@@ -33,3 +33,6 @@ Shel\NodeTypes\Analyzer\Service\NodeTypeUsageService:
         arguments:
           1:
             value: Neos_Neos_Configuration_Version
+
+Shel\NodeTypes\Analyzer\Service\NodeTypeUsageProcessorInterface:
+  className: Shel\NodeTypes\Analyzer\Service\NodeTypeUsageProcessor

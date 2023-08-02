@@ -28,6 +28,7 @@ use Neos\Neos\Controller\Module\AbstractModuleController;
 use Shel\NodeTypes\Analyzer\Domain\Dto\NodeTreeLeaf;
 use Shel\NodeTypes\Analyzer\Domain\Dto\NodeTypeUsage;
 use Shel\NodeTypes\Analyzer\Service\NodeTypeGraphService;
+use Shel\NodeTypes\Analyzer\Service\NodeTypeUsageProcessorInterface;
 use Shel\NodeTypes\Analyzer\Service\NodeTypeUsageService;
 
 /**
@@ -78,6 +79,18 @@ class NodeTypesController extends AbstractModuleController
      * @var WorkspaceRepository
      */
     protected $workspaceRepository;
+
+    /**
+     * @Flow\Inject
+     * @var NodeTypeUsageProcessorInterface
+     */
+    protected $nodeTypeUsageProcessor;
+
+    /**
+     * @Flow\InjectConfiguration(path="contentDimensions", package="Neos.ContentRepository")
+     * @var array
+     */
+    protected $dimensionConfiguration;
 
     /**
      * Renders the app to interact with the nodetype graph
@@ -151,11 +164,15 @@ class NodeTypesController extends AbstractModuleController
      */
     public function getNodeTypeUsageAction(?string $nodeTypeName): void
     {
-        $usageLinks = $this->nodeTypeUsageService->getBackendUrlsForNodeType($this->controllerContext, $nodeTypeName);
+        $usages = $this->nodeTypeUsageService->getNodeTypeUsages($this->controllerContext, $nodeTypeName);
+
+        foreach ($usages as $usage) {
+            $this->nodeTypeUsageProcessor->processForAnalysis($usage, $this->controllerContext);
+        }
 
         $this->view->assign('value', [
             'success' => true,
-            'usageLinks' => $usageLinks,
+            'usageLinks' => $usages,
         ]);
     }
 
@@ -221,23 +238,33 @@ class NodeTypesController extends AbstractModuleController
 
     public function exportNodeTypeUsageAction(?string $nodeTypeName): void
     {
-        $usage = $this->nodeTypeUsageService->getBackendUrlsForNodeType($this->controllerContext, $nodeTypeName);
+        $usages = $this->nodeTypeUsageService->getNodeTypeUsages($this->controllerContext, $nodeTypeName);
+        $hasDimensions = !empty($this->dimensionConfiguration);
 
-        $csvWriter = Writer::createFromFileObject(new \SplTempFileObject());
-        $csvWriter->insertOne([
+        $headers = [
             'Title',
             'Page',
             'Workspace',
             'Url',
-            'Dimensions',
             'Node identifier',
             'Hidden',
-        ]);
+        ];
 
-        foreach ($usage as $usageItem) {
+        if ($hasDimensions) {
+            $headers[] = 'Dimensions';
+        }
+
+        $csvWriter = Writer::createFromFileObject(new \SplTempFileObject());
+        $csvWriter->insertOne($headers);
+
+        foreach ($usages as $usageItem) {
+            $this->nodeTypeUsageProcessor->processForExport($usageItem, $this->controllerContext);
             $usageData = $usageItem->toArray();
             $usageData['dimensions'] = json_encode($usageData['dimensions']);
             $usageData['hidden'] = $usageData['hidden'] ? 'true' : 'false';
+            if (!$hasDimensions) {
+                unset ($usageData['dimensions']);
+            }
             $csvWriter->insertOne($usageData);
         }
 
@@ -251,7 +278,6 @@ class NodeTypesController extends AbstractModuleController
         header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
 
         echo $content;
-        die('hgard');
 
         exit;
     }

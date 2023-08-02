@@ -12,7 +12,6 @@ use Neos\Flow\Annotations as Flow;
  */
 final class NodeTypeUsage implements \JsonSerializable
 {
-
     private string $url;
     private string $documentTitle;
     private NodeInterface $node;
@@ -47,6 +46,11 @@ final class NodeTypeUsage implements \JsonSerializable
         return $this->node->getWorkspace()->getName();
     }
 
+    public function setUrl(string $url): void
+    {
+        $this->url = $url;
+    }
+
     public function toArray(): array
     {
         return [
@@ -54,9 +58,9 @@ final class NodeTypeUsage implements \JsonSerializable
             'documentTitle' => $this->documentTitle,
             'workspace' => $this->node->getWorkspace()->getName(),
             'url' => $this->url,
-            'dimensions' => $this->node->getDimensions(),
             'nodeIdentifier' => $this->node->getIdentifier(),
             'hidden' => !$this->node->isVisible(),
+            'dimensions' => $this->node->getDimensions(),
         ];
     }
 

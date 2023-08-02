@@ -10,7 +10,11 @@ import { nodeTypesState } from '../../state';
 
 const useStyles = createUseStyles({
     usageTable: {
-        '.neos &': {},
+        '.neos &': {
+            '& a': {
+                color: 'var(--blue)',
+            },
+        },
     },
     modal: {
         position: 'absolute',

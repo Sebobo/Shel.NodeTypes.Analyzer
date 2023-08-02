@@ -5,7 +5,7 @@ import { Tree, Icon } from '@neos-project/react-ui-components';
 
 import { dndTypes } from '../../../constants';
 import { useGraph } from '../../../core';
-import { nodesState, nodeTypesState, selectedNodeTreePath } from '../../../state';
+import { nodesState, nodeTypesState, selectedNodeTreePath, workspaceFilterState } from '../../../state';
 
 interface NodeTreeNodeProps {
     node: CRNode;
@@ -21,6 +21,7 @@ const NodeTreeNode = ({ node, level = 1 }: NodeTreeNodeProps) => {
     const [selectedPath, setSelectedPath] = useRecoilState(selectedNodeTreePath);
     const [isLoading, setIsLoading] = useState(false);
     const [childNodesLoaded, setChildNodesLoaded] = useState(!node.hasChildNodes);
+    const workspaceFilter = useRecoilValue(workspaceFilterState);
 
     const nodeTypeConfiguration = nodeTypes[node.nodeType]?.configuration;
 
@@ -36,7 +37,7 @@ const NodeTreeNode = ({ node, level = 1 }: NodeTreeNodeProps) => {
         const childNodesMissing = node.childNodePaths.some((path) => !nodes[path]);
         if (childNodesMissing) {
             setIsLoading(true);
-            fetchNodes(node.path).then((nodes) => {
+            fetchNodes(node.path, workspaceFilter).then((nodes) => {
                 console.debug(`Fetched ${Object.keys(nodes).length} child nodes for`, node.path, nodes);
                 setChildNodesLoaded(true);
                 setIsLoading(false);

@@ -11,3 +11,4 @@ export { invalidNodeTypesState } from './invalidNodeTypesState';
 export { treeDataState } from './treeDataState';
 export { graphDataState } from './graphDataState';
 export { workspaceFilterState } from './workspaceFilterState';
+export { workspacesState } from './workspacesState';

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Shel\NodeTypes\Analyzer\Controller;
@@ -14,6 +15,8 @@ namespace Shel\NodeTypes\Analyzer\Controller;
 use League\Csv\Writer;
 use Neos\Cache\Exception as CacheException;
 use Neos\ContentRepository\Domain\Model\NodeInterface;
+use Neos\ContentRepository\Domain\Model\Workspace;
+use Neos\ContentRepository\Domain\Repository\WorkspaceRepository;
 use Neos\Flow\Annotations as Flow;
 use Neos\Flow\I18n\EelHelper\TranslationParameterToken;
 use Neos\Flow\I18n\Translator;
@@ -71,6 +74,12 @@ class NodeTypesController extends AbstractModuleController
     protected $translator;
 
     /**
+     * @Flow\Inject
+     * @var WorkspaceRepository
+     */
+    protected $workspaceRepository;
+
+    /**
      * Renders the app to interact with the nodetype graph
      */
     public function indexAction(): void
@@ -95,16 +104,45 @@ class NodeTypesController extends AbstractModuleController
         $contentContext = $this->createContentContext($workspace, $dimensions);
         $nodeAtPath = $contentContext->getNode($path);
 
+        // Only include workspaces in the root request
+        $workspaces = $path === '/' ? array_map(static function (Workspace $workspace) {
+            return [
+                'label' => $workspace->getTitle(),
+                'value' => $workspace->getName(),
+            ];
+        }, $this->getAccessibleWorkspaces()) : null;
+        if ($workspaces) {
+            usort($workspaces, static function ($a, $b) {
+                return strtolower($a['label']) <=> strtolower($b['label']);
+            });
+        }
+
         $nodes = [$nodeAtPath->getPath() => NodeTreeLeaf::fromNode($nodeAtPath)];
 
-        foreach($nodeAtPath->getChildNodes() as $childNode) {
+        foreach ($nodeAtPath->getChildNodes() as $childNode) {
             $nodes[$childNode->getPath()] = NodeTreeLeaf::fromNode($childNode);
         }
 
         $this->view->assign('value', [
             'success' => true,
             'nodes' => $nodes,
+            'workspaces' => $workspaces,
         ]);
+    }
+
+    /**
+     * @return Workspace[]
+     */
+    protected function getAccessibleWorkspaces(): array
+    {
+        $workspaces = [];
+        /** @var Workspace $workspace */
+        foreach ($this->workspaceRepository->findByOwner(null) as $workspace) {
+            if (!$workspace->isPersonalWorkspace()) {
+                $workspaces[] = $workspace;
+            }
+        }
+        return $workspaces;
     }
 
     /**
@@ -128,8 +166,12 @@ class NodeTypesController extends AbstractModuleController
         $nodeTypesDataForExport = array_map(function ($nodeType) {
             $label = $nodeType['configuration']['ui']['label'] ?? null;
             $label = $label ? $this->translateByShortHandString($label) : 'n/a';
-            $properties = is_array($nodeType['configuration']['properties']) ? array_keys($nodeType['configuration']['properties']) : [];
-            $childNodes = is_array($nodeType['configuration']['childNodes']) ? array_keys($nodeType['configuration']['childNodes']) : [];
+            $properties = is_array($nodeType['configuration']['properties']) ? array_keys(
+                $nodeType['configuration']['properties']
+            ) : [];
+            $childNodes = is_array($nodeType['configuration']['childNodes']) ? array_keys(
+                $nodeType['configuration']['childNodes']
+            ) : [];
 
             return [
                 'name' => $nodeType['name'],

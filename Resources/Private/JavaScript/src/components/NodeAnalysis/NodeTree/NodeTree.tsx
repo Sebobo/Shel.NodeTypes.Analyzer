@@ -24,7 +24,7 @@ const NodeTree = () => {
     const selectedNode = nodes[selectedNodePath];
 
     useEffect(() => {
-        dispatch({ type: Action.SelectNodeType, payload: selectedNode.nodeType });
+        dispatch({ type: Action.SelectNodeType, payload: selectedNode?.nodeType });
     }, [selectedNode?.nodeType]);
 
     return initialized ? (

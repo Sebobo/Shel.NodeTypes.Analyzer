@@ -1,11 +1,17 @@
-import React from 'react';
-import { useRecoilState } from 'recoil';
+import React, { useCallback } from 'react';
+import { useRecoilState, useRecoilValue, useResetRecoilState, useSetRecoilState } from 'recoil';
 import { createUseStyles } from 'react-jss';
 
 import { Headline, SelectBox } from '@neos-project/react-ui-components';
 
-import { useIntl } from '../../core';
-import { workspaceFilterState } from '../../state';
+import { useGraph, useIntl } from '../../core';
+import {
+    appInitializationState,
+    nodesState,
+    selectedNodeTreePath,
+    workspaceFilterState,
+    workspacesState
+} from '../../state';
 
 const useStyles = createUseStyles({
     group: {
@@ -24,21 +30,27 @@ const useStyles = createUseStyles({
 const NodeTreeFilter: React.FC = () => {
     const classes = useStyles();
     const { translate } = useIntl();
-    const [selectedFilter, setSelectedFilter] = useRecoilState(workspaceFilterState);
+    const { fetchNodes } = useGraph();
+    const resetNodes = useResetRecoilState(nodesState);
+    const resetNodeTreePath = useResetRecoilState(selectedNodeTreePath);
+    const [selectedWorkspace, setSelectedWorkspace] = useRecoilState(workspaceFilterState);
+    const workspaces = useRecoilValue(workspacesState);
+    const setInitialized = useSetRecoilState(appInitializationState);
 
-    // TODO: Retrieve workspace list
-    const workspaceOptions = [{ label: 'Live', value: 'live' }];
+    const onChangeWorkspace = useCallback(async (workspaceName: string) => {
+        setInitialized(false);
+        resetNodeTreePath();
+        resetNodes();
+        setSelectedWorkspace(workspaceName);
+        await fetchNodes('/', workspaceName).then(() => setInitialized(true));
+    }, []);
 
     return (
         <div className={classes.group}>
             <Headline type="h2" className={classes.headline}>
                 {translate('field.filter.label', 'Workspace')}
             </Headline>
-            <SelectBox
-                options={workspaceOptions}
-                onValueChange={(filter) => setSelectedFilter(filter)}
-                value={selectedFilter}
-            />
+            <SelectBox options={workspaces} onValueChange={onChangeWorkspace} value={selectedWorkspace} />
         </div>
     );
 };

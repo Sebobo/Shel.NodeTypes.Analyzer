@@ -79,6 +79,11 @@ type NodeTypeUsageLink = {
     hidden: boolean;
 };
 
+type Workspace = {
+    value: string;
+    label: string;
+};
+
 type Constraint = Record<string, boolean>;
 type PropertyConfiguration = {
     [key: string]: any;

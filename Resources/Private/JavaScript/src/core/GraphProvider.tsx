@@ -14,6 +14,7 @@ import {
     nodeTypesState,
     invalidNodeTypesState,
     workspaceFilterState,
+    workspacesState,
 } from '../state';
 
 export interface GraphProviderProps {
@@ -25,7 +26,7 @@ interface GraphProviderValues extends AppState {
     endpoints: Actions;
     dependencyData: Dependencies;
     fetchGraphData: () => Promise<void>;
-    fetchNodes: (path: string) => Promise<CRNodeList>;
+    fetchNodes: (path: string, workspace: string) => Promise<CRNodeList>;
     dispatch: Dispatch<AppAction>;
     getNodeTypeUsageLinks: (nodeTypeName: NodeTypeName) => Promise<void | NodeTypeUsageLink[]>;
 }
@@ -43,6 +44,7 @@ const GraphProvider = ({ children, endpoints }: GraphProviderProps): ReactElemen
     const setInvalidNodeTypes = useSetRecoilState(invalidNodeTypesState);
     const setAppInitializationState = useSetRecoilState(appInitializationState);
     const workspaceFilter = useRecoilValue(workspaceFilterState);
+    const setWorkspaces = useSetRecoilState(workspacesState);
 
     const { selectedNodeTypeName, selectedPath, selectedLayout } = appState;
 
@@ -86,35 +88,35 @@ const GraphProvider = ({ children, endpoints }: GraphProviderProps): ReactElemen
             .finally(() => setIsLoading(false));
     }, []);
 
-    const fetchNodes = useCallback(
-        (path: string): Promise<CRNodeList> => {
-            return fetchData(
-                endpoints.getNodes,
-                {
-                    path,
-                    workspace: workspaceFilter,
-                },
-                'GET'
-            )
-                .then(({ nodes: newNodes }) => {
-                    setNodes((storedNodes) => {
-                        return {
-                            ...storedNodes,
-                            ...newNodes,
-                        };
-                    });
-                    return newNodes;
-                })
-                .catch((error) => Notify.error(error));
-        },
-        [workspaceFilter]
-    );
+    const fetchNodes = useCallback((path: string, workspace: string): Promise<CRNodeList> => {
+        return fetchData(
+            endpoints.getNodes,
+            {
+                path,
+                workspace,
+            },
+            'GET'
+        )
+            .then(({ nodes: newNodes, workspaces }) => {
+                setNodes((storedNodes) => {
+                    return {
+                        ...storedNodes,
+                        ...newNodes,
+                    };
+                });
+                if (Array.isArray(workspaces) && workspaces.length > 0) {
+                    setWorkspaces(workspaces);
+                }
+                return newNodes;
+            })
+            .catch((error) => Notify.error(error));
+    }, []);
 
     /**
      * Runs initial request to fetch all nodetype definitions
      */
     useEffect(() => {
-        Promise.all([fetchGraphData(), fetchNodes('/')]).then(() => setAppInitializationState(true));
+        Promise.all([fetchGraphData(), fetchNodes('/', workspaceFilter)]).then(() => setAppInitializationState(true));
     }, []);
 
     /**

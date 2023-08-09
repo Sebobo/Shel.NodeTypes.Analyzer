@@ -15,6 +15,7 @@ final class NodeTypeUsage implements \JsonSerializable
     private string $url;
     private string $documentTitle;
     private NodeInterface $node;
+    private bool $hidden;
 
     public function __construct(
         NodeInterface $node,
@@ -24,6 +25,7 @@ final class NodeTypeUsage implements \JsonSerializable
         $this->node = $node;
         $this->documentTitle = $documentTitle;
         $this->url = $url;
+        $this->hidden = !$node->isVisible();
     }
 
     public function getUrl(): string
@@ -34,6 +36,11 @@ final class NodeTypeUsage implements \JsonSerializable
     public function getDocumentTitle(): string
     {
         return $this->documentTitle;
+    }
+
+    public function setDocumentTitle(string $documentTitle): void
+    {
+        $this->documentTitle = $documentTitle;
     }
 
     public function getNode(): NodeInterface
@@ -51,6 +58,16 @@ final class NodeTypeUsage implements \JsonSerializable
         $this->url = $url;
     }
 
+    public function isHidden(): bool
+    {
+        return $this->hidden;
+    }
+
+    public function setHidden(bool $hidden): void
+    {
+        $this->hidden = $hidden;
+    }
+
     public function toArray(): array
     {
         return [
@@ -59,7 +76,7 @@ final class NodeTypeUsage implements \JsonSerializable
             'workspace' => $this->node->getWorkspace()->getName(),
             'url' => $this->url,
             'nodeIdentifier' => $this->node->getIdentifier(),
-            'hidden' => !$this->node->isVisible(),
+            'hidden' => $this->hidden,
             'dimensions' => $this->node->getDimensions(),
         ];
     }

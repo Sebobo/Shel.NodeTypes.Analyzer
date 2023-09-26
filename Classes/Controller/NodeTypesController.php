@@ -199,6 +199,7 @@ class NodeTypesController extends AbstractModuleController
                 'childNodes' => implode(', ', $childNodes),
                 'usageCount' => $nodeType['usageCount'],
                 'usageCountByInheritance' => array_sum($nodeType['usageCountByInheritance']),
+                'warnings' => $nodeType['warnings'] ? implode(', ', $nodeType['warnings']) : '',
             ];
         }, $nodeTypes);
 
@@ -215,7 +216,8 @@ class NodeTypesController extends AbstractModuleController
             'Properties',
             'Child Nodes',
             'Usage Count',
-            'Usage Count By Inheritance'
+            'Usage Count By Inheritance',
+            'Warnings',
         ]);
 
         foreach ($nodeTypesDataForExport as $nodeTypeData) {

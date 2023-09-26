@@ -15,7 +15,7 @@ interface NodeTypeTreeNodeProps {
 }
 
 const NodeTypeTreeNode: React.FC<NodeTypeTreeNodeProps> = ({ nodeType, level = 1 }) => {
-    const { name, configuration, usageCount, usageCountByInheritance } = nodeType;
+    const { name, configuration, usageCount, usageCountByInheritance, warnings } = nodeType;
     const [collapsed, setCollapsed] = useState(true);
     const { selectedNodeTypeName, dispatch } = useGraph();
 
@@ -32,9 +32,11 @@ const NodeTypeTreeNode: React.FC<NodeTypeTreeNodeProps> = ({ nodeType, level = 1
     const icon = (
         <Icon
             icon={configuration.ui.icon || 'question'}
-            color={configuration.options['Shel.NodeTypes.Analyzer']?.deprecated ? 'warn' : 'default'}
+            color={(warnings.length > 0 || configuration.options['Shel.NodeTypes.Analyzer']?.deprecated) ? 'warn' : 'default'}
         />
     );
+
+    const tooltip = configuration.ui.label || name + (warnings.length > 0 ? ` (${warnings.length} warnings)` : '');
 
     return (
         <Tree.Node>
@@ -45,7 +47,7 @@ const NodeTypeTreeNode: React.FC<NodeTypeTreeNodeProps> = ({ nodeType, level = 1
                 isLoading={false}
                 hasError={hasError}
                 label={`${nodePath.split('.').pop()} (${usageCount + usageCountSum})`}
-                title={configuration.ui.label || name}
+                title={tooltip}
                 customIconComponent={icon}
                 nodeDndType={dndTypes.NODE_TYPE}
                 level={level}

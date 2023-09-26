@@ -64,6 +64,7 @@ class NodeTypeGraphService
         $nodeTypes = $this->nodeTypeManager->getNodeTypes();
         $nodeTypeUsage = $this->getNodeTypeUsageQuery();
 
+        // TODO: Introduce DTO
         $defaultConfiguration = [
             'superTypes' => [],
             'properties' => [],
@@ -72,7 +73,7 @@ class NodeTypeGraphService
             'final' => false,
             'constraints' => [],
             'childNodes' => [],
-            'options' => []
+            'options' => [],
         ];
         $defaultConfigurationKeys = array_keys($defaultConfiguration);
 
@@ -104,6 +105,12 @@ class NodeTypeGraphService
                     return in_array($key, $defaultConfigurationKeys, true);
                 }, ARRAY_FILTER_USE_KEY);
 
+                $warnings = [];
+
+                if (!$nodeType->getDeclaredSuperTypes() && !$nodeType->isAbstract()) {
+                    $warnings[]= 'No supertypes and not abstract - please define either!';
+                }
+
                 $carry[$nodeTypeName] = [
                     'name' => $nodeTypeName,
                     'abstract' => $nodeType->isAbstract(),
@@ -113,7 +120,8 @@ class NodeTypeGraphService
                     'declaredSuperTypes' => $declaredSuperTypes,
                     'usageCount' => array_key_exists($nodeTypeName,
                         $nodeTypeUsage) ? (int)$nodeTypeUsage[$nodeTypeName] : 0,
-                    'usageCountByInheritance' => []
+                    'usageCountByInheritance' => [],
+                    'warnings' => $warnings,
                 ];
 
                 $instantiableNodeTypes = array_filter($nodeTypes, static function (NodeType $nodeType) {

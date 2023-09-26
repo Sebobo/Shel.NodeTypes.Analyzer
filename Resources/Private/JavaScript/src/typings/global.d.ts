@@ -44,6 +44,7 @@ type NodeTypeConfiguration = {
     usageCountByInheritance: Record<NodeTypeName, number>;
     declaredProperties: string[];
     declaredSuperTypes: NodeTypeName[];
+    warnings: string[];
     configuration: {
         properties: PropertyList;
         ui: {

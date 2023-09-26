@@ -10,12 +10,12 @@ const NodeAnnotations: React.FC = () => {
     const { selectedNodeTypeName } = useGraph();
     const nodeTypes = useRecoilValue(nodeTypesState);
     const { translate } = useIntl();
-    const { configuration } = nodeTypes[selectedNodeTypeName];
+    const { configuration, warnings } = nodeTypes[selectedNodeTypeName];
     const [open, setOpen] = useState(true);
 
     const annotations = configuration.options ? configuration.options['Shel.NodeTypes.Analyzer'] || {} : {};
 
-    if (!Object.keys(annotations).length) {
+    if (!Object.keys(annotations).length && !warnings.length) {
         return null;
     }
 
@@ -34,6 +34,11 @@ const NodeAnnotations: React.FC = () => {
                         <Icon color="primaryBlue" icon="info-circle" /> {annotations.note}
                     </p>
                 )}
+                {warnings.map((warning, index) => (
+                    <p key={index}>
+                        <Icon color="warn" icon="exclamation-triangle" /> {warning}
+                    </p>
+                ))}
             </ToggablePanel.Contents>
         </ToggablePanel>
     );

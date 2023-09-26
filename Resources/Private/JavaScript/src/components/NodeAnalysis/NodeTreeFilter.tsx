@@ -10,7 +10,7 @@ import {
     nodesState,
     selectedNodeTreePath,
     workspaceFilterState,
-    workspacesState
+    workspacesState,
 } from '../../state';
 
 const useStyles = createUseStyles({

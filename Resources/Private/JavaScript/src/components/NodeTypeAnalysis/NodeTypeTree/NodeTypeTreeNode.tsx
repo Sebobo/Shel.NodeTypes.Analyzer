@@ -32,7 +32,9 @@ const NodeTypeTreeNode: React.FC<NodeTypeTreeNodeProps> = ({ nodeType, level = 1
     const icon = (
         <Icon
             icon={configuration.ui.icon || 'question'}
-            color={(warnings.length > 0 || configuration.options['Shel.NodeTypes.Analyzer']?.deprecated) ? 'warn' : 'default'}
+            color={
+                warnings.length > 0 || configuration.options['Shel.NodeTypes.Analyzer']?.deprecated ? 'warn' : 'default'
+            }
         />
     );
 

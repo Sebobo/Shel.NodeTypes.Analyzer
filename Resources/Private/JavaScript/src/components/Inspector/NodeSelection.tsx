@@ -218,10 +218,14 @@ const NodeSelection: React.FC = () => {
                                         </td>
                                         <td>{link.workspace}</td>
                                         <td>
-                                            {Object.keys(link.dimensions).map(
-                                                (dimensionName) =>
-                                                    dimensionName + ': ' + link.dimensions[dimensionName].join(', ')
-                                            )}
+                                            {Object.keys(link.dimensions).map((dimensionName, index) => {
+                                                let dimensionItem =
+                                                    dimensionName + ': ' + link.dimensions[dimensionName].join(', ');
+                                                if (index < Object.keys(link.dimensions).length - 1) {
+                                                    dimensionItem += ' | ';
+                                                }
+                                                return dimensionItem;
+                                            })}
                                         </td>
                                         <td>{link.nodeIdentifier}</td>
                                         <td>{link.hidden ? 'Yes' : 'No'}</td>

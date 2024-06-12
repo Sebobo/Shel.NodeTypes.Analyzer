@@ -52,8 +52,8 @@ type NodeTypeConfiguration = {
             label?: string;
             icon?: string;
         };
-        superTypes: Constraint[];
-        constraints: NodeTypeName[];
+        superTypes: Inheritance[];
+        constraints: Constraint[];
         childNodes: Record<string, ChildNodeConfiguration>;
         options?: {
             'Shel.NodeTypes.Analyzer': {
@@ -86,6 +86,7 @@ type Workspace = {
     label: string;
 };
 
+type Inheritance = Record<string, boolean>;
 type Constraint = Record<string, boolean>;
 type PropertyConfiguration = {
     [key: string]: any;

@@ -10,9 +10,8 @@ use Shel\NodeTypes\Analyzer\Domain\Dto\NodeTypeUsage;
 
 /**
  * This class is meant to be replaced via the `Objects.yaml` by other packages to provide custom NodeTypeUsage processors
- *
- * @Flow\Scope("singleton")
  */
+#[Flow\Scope('singleton')]
 class NodeTypeUsageProcessor implements NodeTypeUsageProcessorInterface
 {
 

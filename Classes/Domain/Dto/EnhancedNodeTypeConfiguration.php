@@ -10,7 +10,9 @@ use Neos\Flow\Annotations as Flow;
 #[Flow\Proxy(false)]
 final class EnhancedNodeTypeConfiguration implements \JsonSerializable
 {
-
+    /**
+     * TODO: Add array typing
+     */
     public function __construct(
         public readonly string $name,
         public readonly string $label,
@@ -66,6 +68,11 @@ final class EnhancedNodeTypeConfiguration implements \JsonSerializable
     {
         $this->usageCountByInheritance[$nodeTypeName] = $usageCount;
         return $this;
+    }
+
+    public function getUsageCountByInheritance(): array
+    {
+        return $this->usageCountByInheritance;
     }
 
     public function isInUse(): bool

@@ -12,20 +12,21 @@ use Neos\Flow\Annotations as Flow;
  */
 final class NodeTypeUsage implements \JsonSerializable
 {
-    private string $url;
-    private string $documentTitle;
-    private NodeInterface $node;
     private bool $hidden;
+    private bool $onHiddenPage;
 
     public function __construct(
-        NodeInterface $node,
-        string $documentTitle,
-        string $url
+        private NodeInterface $node,
+        private string $documentTitle,
+        private string $url
     ) {
-        $this->node = $node;
-        $this->documentTitle = $documentTitle;
-        $this->url = $url;
         $this->hidden = !$node->isVisible();
+
+        $closestDocumentNode = $node;
+        while ($closestDocumentNode && !$closestDocumentNode->getNodeType()->isOfType('Neos.Neos:Document')) {
+            $closestDocumentNode = $closestDocumentNode->getParent();
+        }
+        $this->onHiddenPage = !$closestDocumentNode->isVisible();
     }
 
     public function getUrl(): string
@@ -68,6 +69,16 @@ final class NodeTypeUsage implements \JsonSerializable
         $this->hidden = $hidden;
     }
 
+    public function isHiddenOnPage(): bool
+    {
+        return $this->onHiddenPage;
+    }
+
+    public function setOnHiddenPage(bool $onHiddenPage): void
+    {
+        $this->onHiddenPage = $onHiddenPage;
+    }
+
     public function toArray(): array
     {
         return [
@@ -77,8 +88,21 @@ final class NodeTypeUsage implements \JsonSerializable
             'url' => $this->url,
             'nodeIdentifier' => $this->node->getIdentifier(),
             'hidden' => $this->hidden,
+            'onHiddenPage' => $this->onHiddenPage,
             'dimensions' => $this->node->getDimensions(),
         ];
+    }
+
+    public function toCSVExportableArray(): array
+    {
+        $usageData = $this->toArray();
+        $usageData['dimensions'] = json_encode($usageData['dimensions']);
+        $usageData['hidden'] = $usageData['hidden'] ? 'true' : 'false';
+        $usageData['onHiddenPage'] = $usageData['onHiddenPage'] ? 'true' : 'false';
+        if (!$usageData['dimensions']) {
+            unset ($usageData['dimensions']);
+        }
+        return $usageData;
     }
 
     public function jsonSerialize(): array

@@ -25,6 +25,7 @@ use Neos\Fusion\View\FusionView;
 use Neos\Media\Domain\Model\AssetInterface;
 use Neos\Neos\Controller\CreateContentContextTrait;
 use Neos\Neos\Controller\Module\AbstractModuleController;
+use Shel\NodeTypes\Analyzer\Domain\Dto\EnhancedNodeTypeConfiguration;
 use Shel\NodeTypes\Analyzer\Domain\Dto\NodeTreeLeaf;
 use Shel\NodeTypes\Analyzer\Domain\Dto\NodeTypeUsage;
 use Shel\NodeTypes\Analyzer\Service\NodeTypeGraphService;
@@ -180,26 +181,22 @@ class NodeTypesController extends AbstractModuleController
     {
         $nodeTypes = $this->nodeTypeGraphService->generateNodeTypesData();
 
-        $nodeTypesDataForExport = array_map(function ($nodeType) {
-            $label = $nodeType['configuration']['ui']['label'] ?? null;
+        $nodeTypesDataForExport = array_map(function (EnhancedNodeTypeConfiguration $nodeType) {
+            $label = $nodeType->getConfiguration()->ui['label'] ?? null;
             $label = $label ? $this->translateByShortHandString($label) : 'n/a';
-            $properties = is_array($nodeType['configuration']['properties']) ? array_keys(
-                $nodeType['configuration']['properties']
-            ) : [];
-            $childNodes = is_array($nodeType['configuration']['childNodes']) ? array_keys(
-                $nodeType['configuration']['childNodes']
-            ) : [];
+            $properties = array_keys($nodeType->getConfiguration()->properties);
+            $childNodes = array_keys($nodeType->getConfiguration()->childNodes);
 
             return [
-                'name' => $nodeType['name'],
+                'name' => $nodeType->name,
                 'label' => $label,
-                'abstract' => $nodeType['abstract'] ? 'true' : 'false',
-                'final' => $nodeType['final'] ? 'true' : 'false',
+                'abstract' => $nodeType->abstract ? 'true' : 'false',
+                'final' => $nodeType->final ? 'true' : 'false',
                 'properties' => implode(', ', $properties),
                 'childNodes' => implode(', ', $childNodes),
-                'usageCount' => $nodeType['usageCount'],
-                'usageCountByInheritance' => array_sum($nodeType['usageCountByInheritance']),
-                'warnings' => $nodeType['warnings'] ? implode(', ', $nodeType['warnings']) : '',
+                'usageCount' => $nodeType->getUsageCount(),
+                'usageCountByInheritance' => array_sum($nodeType->getUsageCountByInheritance()),
+                'warnings' => implode(', ', $nodeType->warnings),
             ];
         }, $nodeTypes);
 
@@ -249,7 +246,8 @@ class NodeTypesController extends AbstractModuleController
             'Workspace',
             'Url',
             'Node identifier',
-            'Hidden',
+            'Hidden node',
+            'Hidden page',
         ];
 
         if ($hasDimensions) {
@@ -261,13 +259,7 @@ class NodeTypesController extends AbstractModuleController
 
         foreach ($usages as $usageItem) {
             $this->nodeTypeUsageProcessor->processForExport($usageItem, $this->controllerContext);
-            $usageData = $usageItem->toArray();
-            $usageData['dimensions'] = json_encode($usageData['dimensions']);
-            $usageData['hidden'] = $usageData['hidden'] ? 'true' : 'false';
-            if (!$hasDimensions) {
-                unset ($usageData['dimensions']);
-            }
-            $csvWriter->insertOne($usageData);
+            $csvWriter->insertOne($usageItem->toCSVExportableArray());
         }
 
         $filename = sprintf('nodetype-usage-%s-%s.csv', $nodeTypeName, (new \DateTime())->format('Y-m-d-H-i-s'));

@@ -1,57 +1,14 @@
 import React, { useState } from 'react';
-import Modal from 'react-modal';
 import { createUseStyles } from 'react-jss';
+import { useRecoilValue } from 'recoil';
 
-import { ToggablePanel, Button, IconButton } from '@neos-project/react-ui-components';
+import { ToggablePanel, Button } from '@neos-project/react-ui-components';
 
 import { useGraph, useIntl } from '../../core';
-import { useRecoilValue } from 'recoil';
 import { nodeTypesState } from '../../state';
+import NodeUsageModal from './NodeUsageModal';
 
 const useStyles = createUseStyles({
-    usageTable: {
-        '.neos &': {
-            '& a': {
-                color: 'var(--blue)',
-            },
-        },
-    },
-    modal: {
-        position: 'absolute',
-        top: 'calc(2 * var(--spacing-GoldenUnit))',
-        left: 'var(--spacing-GoldenUnit)',
-        right: 'var(--spacing-GoldenUnit)',
-        bottom: 'var(--spacing-GoldenUnit)',
-        color: 'white',
-        outline: 'none',
-        overflow: 'auto',
-        backgroundColor: 'var(--grayDark)',
-        '.neos &': {
-            padding: 'var(--spacing-GoldenUnit)',
-        },
-    },
-    overlay: {
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, .85)',
-        zIndex: 10300,
-    },
-    closeButton: {
-        top: 'var(--spacing-Half)',
-        right: 'var(--spacing-Half)',
-        '.neos &': {
-            position: 'absolute',
-        },
-    },
-    usageHeader: {
-        '.neos &': {
-            fontSize: '1rem',
-            marginBottom: 'var(--spacing-GoldenUnit)',
-        },
-    },
     usageCountByInheritance: {
         '.neos &': {
             marginTop: 'var(--spacing-Full)',
@@ -97,17 +54,8 @@ const NodeSelection: React.FC = () => {
     const nodeTypes = useRecoilValue(nodeTypesState);
     const { translate } = useIntl();
     const { usageCount, usageCountByInheritance, abstract, final } = nodeTypes[selectedNodeTypeName];
-    const [nodeTypeUsageLinks, setNodeTypeUsageLinks] = useState<NodeTypeUsageLink[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
-    const [showUsageLinks, setShowUsageLinks] = useState(false);
     const [showDetails, setShowDetails] = useState(true);
-
-    const afterOpenModal = () => {
-        setIsLoading(true);
-        getNodeTypeUsageLinks(selectedNodeTypeName)
-            .then((usageLinks) => usageLinks && setNodeTypeUsageLinks(usageLinks))
-            .finally(() => setIsLoading(false));
-    };
+    const [showUsageLinks, setShowUsageLinks] = useState(false);
 
     const exportUsageLink = new URL(endpoints.exportNodeTypeUsage);
     exportUsageLink.searchParams.set('moduleArguments[nodeTypeName]', selectedNodeTypeName);
@@ -164,73 +112,7 @@ const NodeSelection: React.FC = () => {
                 </ToggablePanel.Contents>
             </ToggablePanel>
 
-            <Modal
-                isOpen={showUsageLinks}
-                onAfterOpen={afterOpenModal}
-                onRequestClose={() => setShowUsageLinks(false)}
-                contentLabel={selectedNodeTypeName + ' Usage'}
-                className={classes.modal}
-                overlayClassName={classes.overlay}
-            >
-                <h2 className={classes.usageHeader}>
-                    {translate('inspector.usage.modal.header', 'Usage for')} {selectedNodeTypeName}
-                </h2>
-                <IconButton
-                    className={classes.closeButton}
-                    size="small"
-                    style="transparent"
-                    hoverStyle="brand"
-                    icon="times-circle"
-                    onClick={() => setShowUsageLinks(false)}
-                    title={translate('inspector.usage.modal.close', 'Close')}
-                >
-                    {translate('inspector.usage.modal.close', 'Close')}
-                </IconButton>
-
-                {isLoading ? (
-                    <p>{translate('inspector.usage.modal.loading', 'Loading usage links...')}</p>
-                ) : (
-                    <table className={'neos-table ' + classes.usageTable}>
-                        <thead>
-                            <tr>
-                                <th>{translate('inspector.usage.modal.table.title', 'Title')}</th>
-                                <th>{translate('inspector.usage.modal.table.page', 'Page')}</th>
-                                <th>{translate('inspector.usage.modal.table.workspace', 'Workspace')}</th>
-                                <th>{translate('inspector.usage.modal.table.dimensions', 'Dimensions')}</th>
-                                <th>{translate('inspector.usage.modal.table.identifier', 'Node Identifier')}</th>
-                                <th>{translate('inspector.usage.modal.table.hidden', 'Hidden')}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {nodeTypeUsageLinks
-                                .sort((a, b) => a.documentTitle.localeCompare(b.documentTitle))
-                                .map((link, index) => (
-                                    <tr key={index}>
-                                        <td>{link.title}</td>
-                                        <td>
-                                            {link.url ? (
-                                                <a href={link.url} target="_blank" rel="noopener noreferrer">
-                                                    {link.documentTitle}
-                                                </a>
-                                            ) : (
-                                                link.documentTitle
-                                            )}
-                                        </td>
-                                        <td>{link.workspace}</td>
-                                        <td>
-                                            {Object.keys(link.dimensions).map(
-                                                (dimensionName) =>
-                                                    dimensionName + ': ' + link.dimensions[dimensionName].join(', ')
-                                            )}
-                                        </td>
-                                        <td>{link.nodeIdentifier}</td>
-                                        <td>{link.hidden ? 'Yes' : 'No'}</td>
-                                    </tr>
-                                ))}
-                        </tbody>
-                    </table>
-                )}
-            </Modal>
+            {showUsageLinks && <NodeUsageModal onClose={() => setShowUsageLinks(false)} />}
         </>
     );
 };

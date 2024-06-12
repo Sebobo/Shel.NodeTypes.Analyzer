@@ -78,6 +78,7 @@ type NodeTypeUsageLink = {
         [dimensionName: string]: string[];
     };
     hidden: boolean;
+    onHiddenPage: boolean;
 };
 
 type Workspace = {

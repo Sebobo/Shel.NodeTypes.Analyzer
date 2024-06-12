@@ -104,7 +104,7 @@ final class EnhancedNodeTypeConfiguration implements \JsonSerializable
             'final' => $this->final,
             'allowedChildNodeTypes' => $this->allowedChildNodeTypes,
             'usageCount' => $this->usageCount,
-            'usageCountByInheritance' => $this->usageCountByInheritance,
+            'usageCountByInheritance' => $this->usageCountByInheritance ?: new \stdClass(),
             'declaredProperties' => $this->declaredProperties,
             'declaredSuperTypes' => $this->declaredSuperTypes,
             'warnings' => $this->warnings,

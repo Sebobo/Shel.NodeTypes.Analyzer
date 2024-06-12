@@ -21,7 +21,6 @@ final class ReducedNodeTypeConfiguration implements \JsonSerializable
         public readonly array $properties,
         public readonly array $ui,
         public readonly array $superTypes,
-        public readonly array $constraints,
         public array $childNodes,
         public readonly array $options,
     ) {
@@ -38,6 +37,19 @@ final class ReducedNodeTypeConfiguration implements \JsonSerializable
             ];
         }, $fullConfiguration['properties'] ?? []);
 
+        $childNodesConfiguration = [];
+        $fullChildNodesConfiguration = $fullConfiguration['childNodes'] ?? [];
+        foreach ($fullChildNodesConfiguration as $childNodeName => $childNodeConfiguration) {
+            if (!$childNodeConfiguration) {
+                continue;
+            }
+            $childNodesConfiguration[$childNodeName] = [
+                'type' => $childNodeConfiguration['type'] ?? null,
+                'constraints' => $childNodeConfiguration['constraints'] ?? [],
+                'allowedChildNodeTypes' => [],
+            ];
+        }
+
         return new self(
             $properties,
             [
@@ -45,22 +57,9 @@ final class ReducedNodeTypeConfiguration implements \JsonSerializable
                 'icon' => $fullConfiguration['ui']['icon'] ?? null,
             ],
             $fullConfiguration['superTypes'] ?? [],
-            $fullConfiguration['constraints'] ?? [],
-            $fullConfiguration['childNodes'] ?? [],
+            $childNodesConfiguration,
             $fullConfiguration['options'] ?? [],
         );
-    }
-
-    public function jsonSerialize(): array
-    {
-        return [
-            'properties' => $this->properties,
-            'ui' => $this->ui,
-            'superTypes' => $this->superTypes,
-            'constraints' => $this->constraints,
-            'childNodes' => $this->childNodes,
-            'options' => $this->options,
-        ];
     }
 
     public function updateGrandChildNodeConstraints(array $childNodesConstraints): self
@@ -69,5 +68,16 @@ final class ReducedNodeTypeConfiguration implements \JsonSerializable
             $this->childNodes[$childNodeName]['constraints']['nodeTypes'] = $childNodeConstraints;
         }
         return $this;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'properties' => $this->properties ?: new \stdClass(),
+            'ui' => $this->ui,
+            'superTypes' => $this->superTypes ?: new \stdClass(),
+            'childNodes' => $this->childNodes ?: new \stdClass(),
+            'options' => $this->options ?: new \stdClass(),
+        ];
     }
 }

@@ -27,6 +27,9 @@
   "replace": {
     "shel/contentrepository-debugger": "*"
   },
+  "suggest": {
+    "justinrainbow/json-schema": "Allows validating of the generated nodetypes schema"
+  },
   "autoload": {
     "psr-4": {
       "Shel\\NodeTypes\\Analyzer\\": "Classes"

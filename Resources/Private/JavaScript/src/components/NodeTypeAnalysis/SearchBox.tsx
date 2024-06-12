@@ -31,10 +31,13 @@ function getOptionsForTerm(nodeTypes: NodeTypeConfigurations, searchTerm: string
     return Object.keys(nodeTypes)
         .filter((nodeTypeName) => nodeTypeName.toLowerCase().indexOf(searchTerm.toLowerCase()) >= 0)
         .map((nodeTypeName) => {
+            const groupName = nodePathHelper.resolveGroup(nodeTypeName);
+            const nodeTypeLabel = nodeTypes[nodeTypeName].label;
+            const shortNodeTypeName = nodeTypeName.replace(groupName + ':', '') + (nodeTypeLabel ? ' (' + nodeTypeLabel + ')' : '');
             return {
-                label: nodeTypeName,
+                label: shortNodeTypeName,
                 value: nodeTypeName,
-                group: nodePathHelper.resolveGroup(nodeTypeName),
+                group: groupName,
             };
         });
 }

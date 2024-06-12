@@ -37,6 +37,7 @@ type Actions = {
 // Data types
 type NodeTypeConfiguration = {
     name: NodeTypeName;
+    label: string;
     abstract: boolean;
     final: boolean;
     allowedChildNodeTypes: NodeTypeName[];

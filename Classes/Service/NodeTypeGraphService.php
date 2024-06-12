@@ -113,6 +113,7 @@ class NodeTypeGraphService
 
                 $carry[$nodeTypeName] = [
                     'name' => $nodeTypeName,
+                    'label' => $nodeType->getLabel(),
                     'abstract' => $nodeType->isAbstract(),
                     'final' => $nodeType->isFinal(),
                     'configuration' => $configuration,

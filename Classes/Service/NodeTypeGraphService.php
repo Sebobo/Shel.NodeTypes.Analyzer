@@ -50,13 +50,15 @@ class NodeTypeGraphService
     /**
      * @return array<string, EnhancedNodeTypeConfiguration>
      */
-    public function generateNodeTypesData(): array
+    public function generateNodeTypesData(bool $useCache = true): array
     {
         $nodeTypesCacheKey = 'NodeTypes_' . $this->configurationCache->get('ConfigurationVersion');
-        //$nodeTypes = $this->nodeTypesCache->get($nodeTypesCacheKey);
-        //if ($nodeTypes) {
-        //    return $nodeTypes;
-        //}
+        if ($useCache) {
+            $nodeTypes = $this->nodeTypesCache->get($nodeTypesCacheKey);
+            if ($nodeTypes) {
+                return $nodeTypes;
+            }
+        }
 
         $nodeTypes = $this->nodeTypeManager->getNodeTypes();
         $nodeTypeUsage = $this->getNodeTypeUsageQuery();
@@ -109,15 +111,15 @@ class NodeTypeGraphService
         );
 
         $this->calculateUsageCountByInheritance($nodeTypes);
+        ksort($nodeTypes);
 
         $this->nodeTypesCache->flush();
         try {
             $this->nodeTypesCache->set($nodeTypesCacheKey, $nodeTypes);
-        } catch (Exception $e) {
+        } catch (Exception) {
             // TODO: Log cache issue
         }
 
-        ksort($nodeTypes);
         return $nodeTypes;
     }
 

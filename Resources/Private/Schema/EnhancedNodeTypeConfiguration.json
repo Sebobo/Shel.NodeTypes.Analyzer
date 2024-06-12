@@ -1,0 +1,165 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "id": "file://schemas/shel/nodetypes/analyzers/enhanced-nodetype-configurations.json",
+  "title": "Schema for enhanced nodetype configurations for the analyzer UI",
+  "type": "object",
+  "additionalProperties": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "name": {
+        "type": "string"
+      },
+      "label": {
+        "type": "string"
+      },
+      "abstract": {
+        "type": "boolean"
+      },
+      "final": {
+        "type": "boolean"
+      },
+      "configuration": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "superTypes": {
+            "type": "object",
+            "$comment": "The names of the nodetypes super types",
+            "additionalProperties": {
+              "type": "boolean"
+            }
+          },
+          "properties": {
+            "type": "object",
+            "$comment": "The nodetypes properties and their type",
+            "additionalProperties": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "type": {
+                  "type": ["string", "null"]
+                }
+              }
+            }
+          },
+          "ui": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "label": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "icon": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            }
+          },
+          "childNodes": {
+            "type": "object",
+            "$comment": "The nodetypes child nodes and their type",
+            "additionalProperties": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "type": {
+                  "type": "string"
+                },
+                "allowedChildNodeTypes": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "constraints": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "nodeTypes": {
+                      "type": ["object", "array"],
+                      "additionalProperties": {
+                        "type": "boolean"
+                      }
+                    }
+                  }
+                }
+              },
+              "required": [
+                "type"
+              ]
+            }
+          },
+          "options": {
+            "type": "object",
+            "$comment": "The nodetypes options",
+            "additionalProperties": true
+          }
+        },
+        "required": [
+          "superTypes",
+          "properties",
+          "ui",
+          "childNodes",
+          "options"
+        ]
+      },
+      "declaredProperties": {
+        "type": "array",
+        "$comment": "The names of the nodetypes properties",
+        "items": {
+          "type": "string"
+        }
+      },
+      "declaredSuperTypes": {
+        "type": "array",
+        "$comment": "The names of the nodetypes super types",
+        "items": {
+          "type": "string"
+        }
+      },
+      "usageCount": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "usageCountByInheritance": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "warnings": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "allowedChildNodeTypes": {
+        "type": "array",
+        "$comment": "The names of the nodetypes allowed as child nodes",
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "required": [
+      "name",
+      "label",
+      "abstract",
+      "final",
+      "configuration",
+      "declaredProperties",
+      "declaredSuperTypes",
+      "usageCount",
+      "usageCountByInheritance",
+      "warnings",
+      "allowedChildNodeTypes"
+    ]
+  }
+}

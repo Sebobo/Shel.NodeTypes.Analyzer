@@ -53,7 +53,6 @@ type NodeTypeConfiguration = {
             icon?: string;
         };
         superTypes: Inheritance[];
-        constraints: Constraint[];
         childNodes: Record<string, ChildNodeConfiguration>;
         options?: {
             'Shel.NodeTypes.Analyzer': {

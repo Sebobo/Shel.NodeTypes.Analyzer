@@ -29,6 +29,7 @@ const NodeTypeTreeFilter: React.FC = () => {
 
     const selectableFilters = [
         { label: 'None', value: FilterType.NONE },
+        { label: 'Usable nodetypes', value: FilterType.USABLE_NODETYPES },
         { label: 'Unused content', value: FilterType.UNUSED_CONTENT },
         { label: 'Unused documents', value: FilterType.UNUSED_DOCUMENTS },
     ];

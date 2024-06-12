@@ -43,7 +43,7 @@ const Graph: React.FC = () => {
     const classes = useStyles();
     const graphSvgWrapper = useRef();
     const { selectedPath, selectedLayout, dependencyData, dispatch } = useGraph();
-    const treeData = useRecoilValue(treeDataState);
+    const { treeData } = useRecoilValue(treeDataState);
     const graphData = useRecoilValue(graphDataState);
 
     const selectNodeTypeInGraph = ({ target }): void => {

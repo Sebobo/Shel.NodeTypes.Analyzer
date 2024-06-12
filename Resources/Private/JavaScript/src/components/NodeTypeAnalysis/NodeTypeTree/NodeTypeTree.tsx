@@ -17,7 +17,7 @@ const useStyles = createUseStyles({
 const NodeTypeTree: React.FC = () => {
     const classes = useStyles();
     const nodeTypes = useRecoilValue(nodeTypesState);
-    const treeData = useRecoilValue(treeDataState);
+    const { treeData } = useRecoilValue(treeDataState);
 
     return (
         <Tree className={classes.tree}>

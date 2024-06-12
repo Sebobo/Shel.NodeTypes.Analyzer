@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Shel\NodeTypes\Analyzer\Service;
@@ -25,41 +26,33 @@ use Neos\Neos\Controller\CreateContentContextTrait;
 use Neos\Neos\Service\LinkingService;
 use Shel\NodeTypes\Analyzer\Domain\Dto\NodeTypeUsage;
 
-/**
- * @Flow\Scope("singleton")
- */
+#[Flow\Scope('singleton')]
 class NodeTypeUsageService
 {
     use CreateContentContextTrait;
 
-    /**
-     * @Flow\Inject
-     * @var NodeTypeManager
-     */
-    protected $nodeTypeManager;
+    #[Flow\Inject]
+    protected NodeTypeManager $nodeTypeManager;
 
     /**
-     * @Flow\Inject
      * @var VariableFrontend
      */
+    #[Flow\Inject]
     protected $nodeTypesCache;
 
     /**
-     * @Flow\Inject
      * @var EntityManagerInterface
      */
+    #[Flow\Inject]
     protected $entityManager;
 
-    /**
-     * @Flow\Inject
-     * @var LinkingService
-     */
-    protected $linkingService;
+    #[Flow\Inject]
+    protected LinkingService $linkingService;
 
     /**
-     * @Flow\Inject
      * @var StringFrontend
      */
+    #[Flow\Inject]
     protected $configurationCache;
 
     /**
@@ -68,7 +61,12 @@ class NodeTypeUsageService
      */
     public function getNodeTypeUsages(ControllerContext $controllerContext, string $nodeTypeName): array
     {
-        $nodeTypesCacheKey = 'NodeTypes_Usage_' . md5($nodeTypeName) . '_' . $this->configurationCache->get('ConfigurationVersion');
+        $nodeTypesCacheKey = sprintf(
+            'NodeTypes_Usage_%s_%s',
+            md5($nodeTypeName),
+            $this->configurationCache->get('ConfigurationVersion')
+        );
+
         /** @var NodeTypeUsage[] $nodeTypeUsages */
         $nodeTypeUsages = $this->nodeTypesCache->get($nodeTypesCacheKey);
         if ($nodeTypeUsages) {
@@ -97,7 +95,7 @@ class NodeTypeUsageService
 
             try {
                 $node = $contentContext->getNodeByIdentifier($nodeData->getIdentifier());
-            } catch (\Exception $e) {
+            } catch (\Exception) {
                 continue;
             }
 
@@ -113,7 +111,7 @@ class NodeTypeUsageService
             $url = '';
             $title = 'Unresolveable';
 
-            if ($documentNode && $documentNode->getNodeType()->isOfType('Neos.Neos:Document')) {
+            if ($documentNode->getNodeType()->isOfType('Neos.Neos:Document')) {
                 $url = $this->getNodeUri($controllerContext, $documentNode);
                 $title = $documentNode->getLabel();
             }
@@ -139,7 +137,7 @@ class NodeTypeUsageService
                 'html',
                 true
             );
-        } catch (\Exception $e) {
+        } catch (\Exception) {
         }
         // TODO: Only create backend links
 //        $request = $controllerContext->getRequest()->getMainRequest();

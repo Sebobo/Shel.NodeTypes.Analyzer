@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Shel\NodeTypes\Analyzer\Service;
@@ -19,131 +20,93 @@ use Neos\ContentRepository\Domain\Model\NodeData;
 use Neos\ContentRepository\Domain\Model\NodeType;
 use Neos\ContentRepository\Domain\Service\NodeTypeManager;
 use Neos\Flow\Annotations as Flow;
+use Shel\NodeTypes\Analyzer\Domain\Dto\EnhancedNodeTypeConfiguration;
 
-/**
- * @Flow\Scope("singleton")
- */
+#[Flow\Scope("singleton")]
 class NodeTypeGraphService
 {
 
-    /**
-     * @Flow\Inject
-     * @var NodeTypeManager
-     */
-    protected $nodeTypeManager;
+    #[Flow\Inject]
+    protected NodeTypeManager $nodeTypeManager;
 
     /**
-     * @Flow\Inject
      * @var VariableFrontend
      */
+    #[Flow\Inject]
     protected $nodeTypesCache;
 
     /**
-     * @Flow\Inject
      * @var EntityManagerInterface
      */
+    #[Flow\Inject]
     protected $entityManager;
 
     /**
-     * @Flow\Inject
      * @var StringFrontend
      */
+    #[Flow\Inject]
     protected $configurationCache;
 
     /**
-     * @return array
+     * @return array<string, EnhancedNodeTypeConfiguration>
      */
     public function generateNodeTypesData(): array
     {
         $nodeTypesCacheKey = 'NodeTypes_' . $this->configurationCache->get('ConfigurationVersion');
-        $nodeTypes = $this->nodeTypesCache->get($nodeTypesCacheKey);
-        if ($nodeTypes) {
-            return $nodeTypes;
-        }
+        //$nodeTypes = $this->nodeTypesCache->get($nodeTypesCacheKey);
+        //if ($nodeTypes) {
+        //    return $nodeTypes;
+        //}
 
         $nodeTypes = $this->nodeTypeManager->getNodeTypes();
         $nodeTypeUsage = $this->getNodeTypeUsageQuery();
 
-        // TODO: Introduce DTO
-        $defaultConfiguration = [
-            'superTypes' => [],
-            'properties' => [],
-            'ui' => [],
-            'abstract' => false,
-            'final' => false,
-            'constraints' => [],
-            'childNodes' => [],
-            'options' => [],
-        ];
-        $defaultConfigurationKeys = array_keys($defaultConfiguration);
-
-        $nodeTypes = array_reduce($nodeTypes,
-            function (array $carry, NodeType $nodeType) use ($defaultConfiguration, $defaultConfigurationKeys, $nodeTypes, $nodeTypeUsage) {
+        $nodeTypes = array_reduce(
+            $nodeTypes,
+            function (array $carry, NodeType $nodeType) use ($nodeTypes, $nodeTypeUsage) {
                 $nodeTypeName = $nodeType->getName();
-
-                $declaredProperties = array_keys($nodeType->getLocalConfiguration()['properties'] ?? []);
-
-                $declaredSuperTypes = array_reduce($nodeType->getDeclaredSuperTypes(),
-                    static function (array $carry, NodeType $superType) {
-                        $carry[] = $superType->getName();
-                        return $carry;
-                    }, []);
-
-                $configuration = array_merge($defaultConfiguration, $nodeType->getFullConfiguration());
-                // Filter all property configs except type
-                $configuration['properties'] = array_map(static function ($definition) {
-                    return [
-                        'type' => $definition['type'] ?? null,
-                    ];
-                }, $configuration['properties']);
-
-                $configuration['ui'] = array_filter($configuration['ui'], static function ($key) {
-                    return $key === 'label' || $key === 'icon';
-                }, ARRAY_FILTER_USE_KEY);
-
-                $configuration = array_filter($configuration, static function ($key) use($defaultConfigurationKeys) {
-                    return in_array($key, $defaultConfigurationKeys, true);
-                }, ARRAY_FILTER_USE_KEY);
-
-                $warnings = [];
-
-                if (!$nodeType->getDeclaredSuperTypes() && !$nodeType->isAbstract()) {
-                    $warnings[]= 'No supertypes and not abstract - please define either!';
-                }
-
-                $carry[$nodeTypeName] = [
-                    'name' => $nodeTypeName,
-                    'label' => $nodeType->getLabel(),
-                    'abstract' => $nodeType->isAbstract(),
-                    'final' => $nodeType->isFinal(),
-                    'configuration' => $configuration,
-                    'declaredProperties' => $declaredProperties,
-                    'declaredSuperTypes' => $declaredSuperTypes,
-                    'usageCount' => array_key_exists($nodeTypeName,
-                        $nodeTypeUsage) ? (int)$nodeTypeUsage[$nodeTypeName] : 0,
-                    'usageCountByInheritance' => [],
-                    'warnings' => $warnings,
-                ];
+                $usageCount = (int)($nodeTypeUsage[$nodeTypeName] ?? 0);
 
                 $instantiableNodeTypes = array_filter($nodeTypes, static function (NodeType $nodeType) {
                     return !$nodeType->isAbstract();
                 });
-                $carry[$nodeTypeName]['allowedChildNodeTypes'] = $this->generateAllowedChildNodeTypes($nodeType,
-                    $instantiableNodeTypes);
+                $allowedChildNodeTypes = $this->generateAllowedChildNodeTypes(
+                    $nodeType,
+                    $instantiableNodeTypes
+                );
 
-                $childNodes = array_keys($carry[$nodeTypeName]['configuration']['childNodes'] ?? []);
-                if (array_key_exists('childNodes', $carry[$nodeTypeName]['configuration'])) {
-                    foreach ($childNodes as $childNodeName) {
-                        if (is_array($carry[$nodeTypeName]['configuration']['childNodes'][$childNodeName]) && array_key_exists('allowedChildNodeTypes', $carry[$nodeTypeName]['configuration']['childNodes'][$childNodeName])) {
-                            $carry[$nodeTypeName]['configuration']['childNodes'][$childNodeName]['allowedChildNodeTypes'] = $this->generateAllowedGrandChildNodeTypes($childNodeName,
-                                $nodeType, $instantiableNodeTypes);
+                $enhancedNodeTypeConfiguration = EnhancedNodeTypeConfiguration::fromNodeType($nodeType)
+                    ->setUsage($usageCount)
+                    ->setAllowedChildNodeTypes($allowedChildNodeTypes);
+
+                $childNodes = $enhancedNodeTypeConfiguration->getConfiguration()->childNodes;
+                $grandChildNodeConstraints = array_reduce(
+                    array_keys($childNodes),
+                    function (array $carry, string $childNodeName) use (
+                        $childNodes,
+                        $nodeType,
+                        $instantiableNodeTypes
+                    ) {
+                        $allowedGrandChildNodeTypes = $childNodes[$childNodeName];
+                        if (is_array($allowedGrandChildNodeTypes)) {
+                            $allowedGrandChildNodeTypes = $this->generateAllowedGrandChildNodeTypes(
+                                $childNodeName,
+                                $nodeType,
+                                $instantiableNodeTypes
+                            );
+                            $carry[$childNodeName] = $allowedGrandChildNodeTypes;
                         }
                         // TODO: Else case should mark child definition as broken for the ui
-                    }
-                }
+                        return $carry;
+                    },
+                    []
+                );
 
+                $carry[$nodeTypeName] = $enhancedNodeTypeConfiguration->updateGrandChildNodeConstraints($grandChildNodeConstraints);
                 return $carry;
-            }, []);
+            },
+            []
+        );
 
         $this->calculateUsageCountByInheritance($nodeTypes);
 
@@ -154,13 +117,14 @@ class NodeTypeGraphService
             // TODO: Log cache issue
         }
 
+        ksort($nodeTypes);
         return $nodeTypes;
     }
 
     /**
      * Return the usage count of each nodetype in the content repository
      *
-     * @return array
+     * @return array<string, int>
      */
     public function getNodeTypeUsageQuery(): array
     {
@@ -179,84 +143,106 @@ class NodeTypeGraphService
     }
 
     /**
-     * Returns the list of all allowed subnodetypes of the given node
+     * Returns the list of all allowed sub-nodetypes of the given node
      *
-     * @param NodeType $baseNodeType
-     * @param array $nodeTypes
-     * @return array
+     * @return string[]
      */
     public function generateAllowedChildNodeTypes(NodeType $baseNodeType, array $nodeTypes): array
     {
-        $childNodeTypes = array_reduce($nodeTypes, static function (array $carry, NodeType $nodeType) use ($baseNodeType) {
-            if ($baseNodeType->allowsChildNodeType($nodeType)) {
-                $carry[] = $nodeType->getName();
-            }
-            return $carry;
-        }, []);
+        $childNodeTypes = array_reduce(
+            $nodeTypes,
+            static function (array $carry, NodeType $nodeType) use ($baseNodeType) {
+                if ($baseNodeType->allowsChildNodeType($nodeType)) {
+                    $carry[] = $nodeType->getName();
+                }
+                return $carry;
+            },
+            []
+        );
         sort($childNodeTypes);
         return $childNodeTypes;
     }
 
     /**
-     * Returns the list of all allowed subnodetypes of the given nodes child
+     * Returns the list of all allowed sub-nodetypes of the given nodes child
      *
-     * @param string $childName
-     * @param NodeType $baseNodeType
-     * @param array $nodeTypes
-     * @return array
+     * @param NodeType[] $nodeTypes
+     * @return array<string, bool>
      */
     public function generateAllowedGrandChildNodeTypes(
         string $childName,
         NodeType $baseNodeType,
         array $nodeTypes
     ): array {
-        return array_reduce($nodeTypes, static function (array $carry, NodeType $nodeType) use ($baseNodeType, $childName) {
-            try {
-                if ($baseNodeType->allowsGrandchildNodeType($childName, $nodeType)) {
-                    $carry[] = $nodeType->getName();
+        return array_reduce(
+            $nodeTypes,
+            static function (array $carry, NodeType $nodeType) use ($baseNodeType, $childName) {
+                try {
+                    if ($baseNodeType->allowsGrandchildNodeType($childName, $nodeType)) {
+                        $carry[$nodeType->getName()] = true;
+                    }
+                } catch (\InvalidArgumentException) {
+                    // Skip non autogenerated child nodes
                 }
-            } catch (\InvalidArgumentException $e) {
-                // Skip non autogenerated child nodes
-            }
-            return $carry;
-        }, []);
+                return $carry;
+            },
+            []
+        );
     }
 
     /**
-     * @param array $nodeTypes
+     * Updates the list of nodetypes and their usage count by inheritance
+     *
+     * @param array<string, EnhancedNodeTypeConfiguration> $nodeTypes
      */
     protected function calculateUsageCountByInheritance(array &$nodeTypes): void
     {
-        foreach($nodeTypes as $nodeType => $nodeTypeConfig) {
-            if ($nodeTypeConfig['usageCount'] === 0) {
+        foreach ($nodeTypes as $nodeTypeName => $nodeTypeConfig) {
+            if (!$nodeTypeConfig->isInUse()) {
                 continue;
             }
 
-            foreach ($nodeTypeConfig['declaredSuperTypes'] as $declaredSuperType) {
-                $this->addUsageCountToSuperType([$nodeType], $nodeTypes, $declaredSuperType, $nodeType, $nodeTypeConfig['usageCount']);
+            foreach ($nodeTypeConfig->declaredSuperTypes as $declaredSuperType) {
+                $this->addUsageCountToSuperType(
+                    [$nodeTypeName],
+                    $nodeTypes,
+                    $declaredSuperType,
+                    $nodeTypeName,
+                    $nodeTypeConfig->getUsageCount()
+                );
             }
         }
     }
 
     /**
-     * @param array $inheritanceList
-     * @param array $nodeTypes
-     * @param string $superType
-     * @param string $nodeType
-     * @param int $count
+     * Recursively add the usage count to the super type
+     *
+     * @param string[] $inheritanceList
+     * @param array<string, EnhancedNodeTypeConfiguration> $nodeTypes
      */
-    protected function addUsageCountToSuperType(array $inheritanceList, array &$nodeTypes, string $superType, string $nodeType, int $count): void
-    {
-        // Prevent endless loops by stoping if a type occurs two times
-        if (in_array($superType, $inheritanceList, true)) {
+    protected function addUsageCountToSuperType(
+        array $inheritanceList,
+        array &$nodeTypes,
+        string $superTypeName,
+        string $nodeTypeName,
+        int $count
+    ): void {
+        // Prevent endless loops by stopping if a type occurs two times
+        if (in_array($superTypeName, $inheritanceList, true)) {
             return;
         }
 
-        $inheritanceList[] = $superType;
-        $nodeTypes[$superType]['usageCountByInheritance'][$nodeType] = $count;
+        $inheritanceList[] = $superTypeName;
+        $nodeTypes[$superTypeName]->setUsageCountByInheritance($nodeTypeName, $count);
 
-        foreach ($nodeTypes[$superType]['declaredSuperTypes'] as $declaredSuperType) {
-            $this->addUsageCountToSuperType($inheritanceList, $nodeTypes, $declaredSuperType, $nodeType, $count);
+        foreach ($nodeTypes[$superTypeName]->declaredSuperTypes as $declaredSuperType) {
+            $this->addUsageCountToSuperType(
+                $inheritanceList,
+                $nodeTypes,
+                $declaredSuperType,
+                $nodeTypeName,
+                $count
+            );
         }
     }
 }

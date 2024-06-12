@@ -14,9 +14,11 @@ const NodeSuperTypes: React.FC = () => {
     const { translate } = useIntl();
     const {
         configuration: { superTypes },
-        declaredSuperTypes,
+        declaredSuperTypes
     } = nodeTypes[selectedNodeTypeName];
     const [collapsed, setCollapsed] = useState(true);
+
+    const enabledSuperTypes = superTypes ? Object.keys(superTypes).filter((superTypeName) => superTypes[superTypeName]).sort() : [];
 
     const nonAbstractInheritanceWarning = translate(
         'inspector.supertypes.warning.nonAbstractInheritance',
@@ -27,27 +29,24 @@ const NodeSuperTypes: React.FC = () => {
         <ToggablePanel onPanelToggle={() => setCollapsed(!collapsed)} isOpen={!collapsed} style="condensed">
             <ToggablePanel.Header>
                 {translate('inspector.supertypes.label', 'Supertypes')} (
-                {superTypes ? Object.keys(superTypes).length : 0})
+                {enabledSuperTypes.length})
             </ToggablePanel.Header>
             <ToggablePanel.Contents>
-                {superTypes ? (
+                {enabledSuperTypes ? (
                     !collapsed && (
                         <PropertyList>
-                            {Object.keys(superTypes)
-                                .filter((superTypeName) => superTypes[superTypeName])
-                                .sort()
-                                .map((superTypeName) => (
-                                    <PropertyListItem
-                                        key={superTypeName}
-                                        highlighted={declaredSuperTypes.includes(superTypeName)}
-                                        label={nodePathHelper.resolveNameWithoutVendor(superTypeName)}
-                                        value={superTypeName}
-                                        icon={!nodeTypes[superTypeName].abstract ? 'warning' : null}
-                                        title={
-                                            !nodeTypes[superTypeName].abstract ? nonAbstractInheritanceWarning : null
-                                        }
-                                    />
-                                ))}
+                            {enabledSuperTypes.map((superTypeName) => (
+                                <PropertyListItem
+                                    key={superTypeName}
+                                    highlighted={declaredSuperTypes.includes(superTypeName)}
+                                    label={nodePathHelper.resolveNameWithoutVendor(superTypeName)}
+                                    value={superTypeName}
+                                    icon={!nodeTypes[superTypeName].abstract ? 'warning' : null}
+                                    title={
+                                        !nodeTypes[superTypeName].abstract ? nonAbstractInheritanceWarning : null
+                                    }
+                                />
+                            ))}
                         </PropertyList>
                     )
                 ) : (

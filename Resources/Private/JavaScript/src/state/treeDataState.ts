@@ -9,16 +9,21 @@ import { nodeTypeFilterState } from './nodeTypeFilterState';
 /**
  * Converts flat node types structure into tree
  */
-export const treeDataState = selector({
+export const treeDataState = selector<{
+    treeData: TreeDataPoint,
+    totalNodeTypeCount: number,
+    filteredNodeTypeCount: number
+}>({
     key: 'TreeDataState',
     get: ({ get }) => {
         const nodeTypes = get(nodeTypesState);
         const selectedFilter = get(nodeTypeFilterState);
 
-        if (Object.keys(nodeTypes).length === 0) return {};
-
-        return Object.values(nodeTypes).reduce((carry: Record<string, { nodeType: string }>, nodeType) => {
+        let totalNodeTypeCount = 0;
+        let filteredNodeTypeCount = 0;
+        const treeData = Object.values(nodeTypes).reduce((carry: Record<string, { nodeType: string }>, nodeType) => {
             // TODO: Extract filter methods
+            totalNodeTypeCount++;
             if (selectedFilter === FilterType.UNUSED_CONTENT || selectedFilter === FilterType.UNUSED_DOCUMENTS) {
                 if (
                     nodeType.usageCount > 0 ||
@@ -31,7 +36,19 @@ export const treeDataState = selector({
                     return carry;
                 }
             }
+            if (selectedFilter === FilterType.USABLE_NODETYPES) {
+                if (nodeType.abstract) {
+                    return carry;
+                }
+            }
+            filteredNodeTypeCount++;
             return $set(nodePathHelper.resolveFromType(nodeType), { nodeType: nodeType.name }, carry);
         }, {});
-    },
+
+        return {
+            treeData,
+            totalNodeTypeCount,
+            filteredNodeTypeCount
+        };
+    }
 });

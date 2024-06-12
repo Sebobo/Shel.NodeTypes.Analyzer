@@ -1,9 +1,9 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { useRecoilValue } from 'recoil';
 import { createUseStyles } from 'react-jss';
 
 import { useIntl } from '../../core';
-import { nodeTypesState } from '../../state';
+import { treeDataState } from '../../state';
 
 const useStyles = createUseStyles({
     nodeTypeCount: {
@@ -19,15 +19,12 @@ const useStyles = createUseStyles({
 const NodeTypeCounter: React.FC = () => {
     const classes = useStyles();
     const { translate } = useIntl();
-    const nodeTypes = useRecoilValue(nodeTypesState);
-
-    const nodeTypeCount = useMemo(() => {
-        return Object.keys(nodeTypes).length;
-    }, [nodeTypes]);
+    const { totalNodeTypeCount, filteredNodeTypeCount } = useRecoilValue(treeDataState);
 
     return (
         <div className={classes.nodeTypeCount}>
-            {translate('nodeTypeCounter.label', '{count} nodetypes', { count: nodeTypeCount })}
+            {translate('nodeTypeCounter.label', '{count} nodetypes', { count: totalNodeTypeCount })}
+            {filteredNodeTypeCount < totalNodeTypeCount ? ' ' + translate('nodeTypeCounter.visibleLabel', '({count} nodetypes shown)', { count: filteredNodeTypeCount }) : ''}
         </div>
     );
 };

@@ -5,12 +5,12 @@ import { createUseStyles } from 'react-jss';
 const useStyles = createUseStyles({
     groupRow: {
         '& td': {
-            backgroundColor: 'var(--grayLight) !important'
-        }
+            backgroundColor: 'var(--grayLight) !important',
+        },
     },
     groupLabel: {
-        fontWeight: 'bold'
-    }
+        fontWeight: 'bold',
+    },
 });
 
 type NodeTypeUsageGroupProps = {

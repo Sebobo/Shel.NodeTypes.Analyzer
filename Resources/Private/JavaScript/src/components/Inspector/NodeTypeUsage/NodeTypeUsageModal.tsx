@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import Modal from 'react-modal';
 import { createUseStyles } from 'react-jss';
-import { ToggablePanel, Button, IconButton } from '@neos-project/react-ui-components';
+import { IconButton } from '@neos-project/react-ui-components';
 
-import { useGraph, useIntl } from '../../core';
+import { useGraph, useIntl } from '../../../core';
+import NodeTypeUsageGroup from './NodeTypeUsageGroup';
 
 const useStyles = createUseStyles({
     modal: {
@@ -39,6 +40,10 @@ const useStyles = createUseStyles({
         '.neos &': {
             '& a': {
                 color: 'var(--blue)'
+            },
+            '&.neos-table th, & td': {
+                lineHeight: '1.2em !important',
+                padding: 'var(--spacing-Full) !important'
             }
         }
     },
@@ -51,11 +56,11 @@ const useStyles = createUseStyles({
     }
 });
 
-type NodeUsageModalProps = {
+type NodeTypeUsageModalProps = {
     onClose: () => void;
 }
 
-const NodeUsageModal: React.FC<NodeUsageModalProps> = ({ onClose }) => {
+const NodeTypeUsageModal: React.FC<NodeTypeUsageModalProps> = ({ onClose }) => {
     const classes = useStyles();
     const { translate } = useIntl();
     const { selectedNodeTypeName, getNodeTypeUsageLinks } = useGraph();
@@ -68,6 +73,15 @@ const NodeUsageModal: React.FC<NodeUsageModalProps> = ({ onClose }) => {
             .then((usageLinks) => usageLinks && setNodeTypeUsageLinks(usageLinks))
             .finally(() => setIsLoading(false));
     };
+
+    const groupedNodeTypeUsageLinks = nodeTypeUsageLinks.reduce((acc, link) => {
+        const key = link.documentIdentifier ?? 'unresolvable';
+        if (!acc[key]) {
+            acc[key] = [];
+        }
+        acc[key].push(link);
+        return acc;
+    }, {});
 
     const showDimensions = nodeTypeUsageLinks.some((link) => Object.keys(link.dimensions).length > 0);
 
@@ -102,7 +116,7 @@ const NodeUsageModal: React.FC<NodeUsageModalProps> = ({ onClose }) => {
                     <thead>
                     <tr>
                         <th>{translate('inspector.usage.modal.table.title', 'Title')}</th>
-                        <th>{translate('inspector.usage.modal.table.page', 'Page')}</th>
+                        <th>{translate('inspector.usage.modal.table.page', 'Breadcrumb')}</th>
                         <th>{translate('inspector.usage.modal.table.workspace', 'Workspace')}</th>
                         {showDimensions && <th>{translate('inspector.usage.modal.table.dimensions', 'Dimensions')}</th>}
                         <th>{translate('inspector.usage.modal.table.identifier', 'Node identifier')}</th>
@@ -111,32 +125,13 @@ const NodeUsageModal: React.FC<NodeUsageModalProps> = ({ onClose }) => {
                     </tr>
                     </thead>
                     <tbody>
-                    {nodeTypeUsageLinks
-                        .sort((a, b) => a.documentTitle.localeCompare(b.documentTitle))
-                        .map((link, index) => (
-                            <tr key={index}>
-                                <td>{link.title}</td>
-                                <td>
-                                    {link.url ? (
-                                        <a href={link.url} target="_blank" rel="noopener noreferrer">
-                                            {link.documentTitle}
-                                        </a>
-                                    ) : (
-                                        link.documentTitle
-                                    )}
-                                </td>
-                                <td>{link.workspace}</td>
-                                {showDimensions && <td>
-                                    {Object.keys(link.dimensions).map(
-                                        (dimensionName) =>
-                                            dimensionName + ': ' + link.dimensions[dimensionName].join(', ')
-                                    )}
-                                </td>}
-                                <td>{link.nodeIdentifier}</td>
-                                <td>{link.hidden ? 'Yes' : 'No'}</td>
-                                <td>{link.onHiddenPage ? 'Yes' : 'No'}</td>
-                            </tr>
-                        ))}
+                    {Object.keys(groupedNodeTypeUsageLinks).map((documentIdentifier, index) => (
+                        <NodeTypeUsageGroup
+                            key={index}
+                            showDimensions={showDimensions}
+                            nodeTypeUsageLinks={groupedNodeTypeUsageLinks[documentIdentifier]}
+                        />
+                    ))}
                     </tbody>
                 </table>
             )}
@@ -144,4 +139,4 @@ const NodeUsageModal: React.FC<NodeUsageModalProps> = ({ onClose }) => {
     );
 };
 
-export default NodeUsageModal;
+export default NodeTypeUsageModal;

@@ -22,6 +22,7 @@ use Neos\ContentRepository\Domain\Service\NodeTypeManager;
 use Neos\ContentRepository\Exception\NodeTypeNotFoundException;
 use Neos\Flow\Annotations as Flow;
 use Neos\Flow\Mvc\Controller\ControllerContext;
+use Neos\Flow\Mvc\Routing\UriBuilder;
 use Neos\Neos\Controller\CreateContentContextTrait;
 use Neos\Neos\Service\LinkingService;
 use Shel\NodeTypes\Analyzer\Domain\Dto\NodeTypeUsage;
@@ -54,6 +55,8 @@ class NodeTypeUsageService
      */
     #[Flow\Inject]
     protected $configurationCache;
+
+    protected ?UriBuilder $uriBuilder = null;
 
     /**
      * @return NodeTypeUsage[]
@@ -103,24 +106,24 @@ class NodeTypeUsageService
                 continue;
             }
 
+            $breadcrumb = [];
             $documentNode = $node;
             while ($documentNode->getParent() && !$documentNode->getNodeType()->isOfType('Neos.Neos:Document')) {
                 $documentNode = $documentNode->getParent();
+                if ($documentNode) {
+                    $breadcrumb[] = $documentNode->getLabel();
+                }
             }
 
             $url = '';
-            $title = 'Unresolveable';
-
             if ($documentNode->getNodeType()->isOfType('Neos.Neos:Document')) {
                 $url = $this->getNodeUri($controllerContext, $documentNode);
-                $title = $documentNode->getLabel();
             }
-
-            $nodeTypeUsages[] = new NodeTypeUsage($node, $title, $url);
+            $nodeTypeUsages[] = new NodeTypeUsage($node, $documentNode, $url, $breadcrumb);
         }
 
         usort($nodeTypeUsages, static function (NodeTypeUsage $a, NodeTypeUsage $b) {
-            return $a->getWorkspaceName() < $b->getWorkspaceName() ? -1 : 1;
+            return $a->getDocumentTitle() <=> $b->getDocumentTitle();
         });
 
         $this->nodeTypesCache->set($nodeTypesCacheKey, $nodeTypeUsages);
@@ -129,32 +132,20 @@ class NodeTypeUsageService
 
     protected function getNodeUri(ControllerContext $controllerContext, NodeInterface $node): string
     {
+        $request = $controllerContext->getRequest()->getMainRequest();
+
+        if (!$this->uriBuilder) {
+            $this->uriBuilder = clone $controllerContext->getUriBuilder();
+            $this->uriBuilder->setRequest($request);
+        }
         try {
-            return $this->linkingService->createNodeUri(
-                $controllerContext,
-                $node,
-                $node,
-                'html',
-                true
-            );
+            return $this->uriBuilder
+                ->reset()
+                ->setCreateAbsoluteUri(true)
+                ->setFormat('html')
+                ->uriFor('preview', ['node' => $node], 'Frontend\Node', 'Neos.Neos');
         } catch (\Exception) {
         }
-        // TODO: Only create backend links
-//        $request = $controllerContext->getRequest()->getMainRequest();
-//
-//        if (!$this->uriBuilder) {
-//            $this->uriBuilder = clone $controllerContext->getUriBuilder();
-//            $this->uriBuilder->setRequest($request);
-//        }
-//        try {
-//            return $this->uriBuilder
-//                ->reset()
-//                ->setCreateAbsoluteUri(true)
-//                ->setFormat('html')
-//                ->uriFor('preview', ['node' => $node], 'Frontend\Node', 'Neos.Neos');
-//        } catch (Exception $e) {
-//        } catch (MissingActionNameException $e) {
-//        }
         return '';
     }
 }

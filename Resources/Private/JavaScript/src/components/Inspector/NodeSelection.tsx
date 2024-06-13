@@ -6,7 +6,7 @@ import { ToggablePanel, Button } from '@neos-project/react-ui-components';
 
 import { useGraph, useIntl } from '../../core';
 import { nodeTypesState } from '../../state';
-import NodeUsageModal from './NodeUsageModal';
+import NodeUsageModal from './NodeTypeUsage/NodeTypeUsageModal';
 
 const useStyles = createUseStyles({
     usageCountByInheritance: {
@@ -50,7 +50,7 @@ const useStyles = createUseStyles({
 
 const NodeSelection: React.FC = () => {
     const classes = useStyles();
-    const { selectedNodeTypeName, getNodeTypeUsageLinks, endpoints } = useGraph();
+    const { selectedNodeTypeName, endpoints } = useGraph();
     const nodeTypes = useRecoilValue(nodeTypesState);
     const { translate } = useIntl();
     const { usageCount, usageCountByInheritance, abstract, final } = nodeTypes[selectedNodeTypeName];

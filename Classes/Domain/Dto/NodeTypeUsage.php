@@ -93,9 +93,7 @@ final class NodeTypeUsage implements \JsonSerializable
         $usageData['dimensions'] = json_encode($usageData['dimensions']);
         $usageData['hidden'] = $usageData['hidden'] ? 'true' : 'false';
         $usageData['onHiddenPage'] = $usageData['onHiddenPage'] ? 'true' : 'false';
-        if (!$usageData['dimensions']) {
-            unset ($usageData['dimensions']);
-        }
+        $usageData['breadcrumb'] = implode(' > ', $usageData['breadcrumb']);
         return $usageData;
     }
 

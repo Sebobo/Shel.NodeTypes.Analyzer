@@ -177,27 +177,31 @@ class NodeTypesController extends AbstractModuleController
         ]);
     }
 
-    public function exportNodeTypesAction(): void
+    public function exportNodeTypesAction(bool $reduced = false): void
     {
-        $nodeTypes = $this->nodeTypeGraphService->generateNodeTypesData();
+        $nodeTypes = $this->nodeTypeGraphService->generateNodeTypesData(true, !$reduced);
 
-        $nodeTypesDataForExport = array_map(function (EnhancedNodeTypeConfiguration $nodeType) {
+        $nodeTypesDataForExport = array_map(function (EnhancedNodeTypeConfiguration $nodeType) use ($reduced) {
             $label = $nodeType->getConfiguration()->ui['label'] ?? null;
             $label = $label ? $this->translateByShortHandString($label) : 'n/a';
             $properties = array_keys($nodeType->getConfiguration()->properties);
             $childNodes = array_keys($nodeType->getConfiguration()->childNodes);
 
             return [
-                'name' => $nodeType->name,
-                'label' => $label,
-                'abstract' => $nodeType->abstract ? 'true' : 'false',
-                'final' => $nodeType->final ? 'true' : 'false',
-                'properties' => implode(', ', $properties),
-                'childNodes' => implode(', ', $childNodes),
-                'usageCount' => $nodeType->getUsageCount(),
-                'usageCountByInheritance' => array_sum($nodeType->getUsageCountByInheritance()),
-                'warnings' => implode(', ', $nodeType->warnings),
-            ];
+                    'name' => $nodeType->name,
+                    'label' => $label,
+                ] + ($reduced ? [] : [
+                    'abstract' => $nodeType->abstract ? 'true' : 'false',
+                    'final' => $nodeType->final ? 'true' : 'false',
+                    'properties' => implode(', ', $properties),
+                    'childNodes' => implode(', ', $childNodes),
+                ]
+                ) + [
+                    'usageCount' => $nodeType->getUsageCount()
+                ] + ($reduced ? [] : [
+                    'usageCountByInheritance' => array_sum($nodeType->getUsageCountByInheritance()),
+                ]
+                ) + ['warnings' => implode(', ', $nodeType->warnings)];
         }, $nodeTypes);
 
         usort($nodeTypesDataForExport, static function ($a, $b) {
@@ -205,17 +209,29 @@ class NodeTypesController extends AbstractModuleController
         });
 
         $csvWriter = Writer::createFromFileObject(new \SplTempFileObject());
-        $csvWriter->insertOne([
-            'Name',
-            'Label',
-            'Abstract',
-            'Final',
-            'Properties',
-            'Child Nodes',
-            'Usage Count',
-            'Usage Count By Inheritance',
-            'Warnings',
-        ]);
+        $headers = array_merge(
+            [
+                'Name',
+                'Label',
+            ],
+            ($reduced ? [] : [
+                'Abstract',
+                'Final',
+                'Properties',
+                'Child Nodes',
+            ]),
+            [
+                'Usage Count'
+            ],
+            ($reduced ? [] : [
+                'Usage Count By Inheritance',
+            ]
+            ),
+            [
+                'Warnings',
+            ]
+        );
+        $csvWriter->insertOne($headers);
 
         foreach ($nodeTypesDataForExport as $nodeTypeData) {
             $csvWriter->insertOne($nodeTypeData);
@@ -243,9 +259,10 @@ class NodeTypesController extends AbstractModuleController
         $headers = [
             'Title',
             'Page',
+            'Page identifier',
+            'Node identifier',
             'Workspace',
             'Url',
-            'Node identifier',
             'Hidden node',
             'Hidden page',
         ];
@@ -254,12 +271,18 @@ class NodeTypesController extends AbstractModuleController
             $headers[] = 'Dimensions';
         }
 
+        $headers[] = 'Breadcrumb';
+
         $csvWriter = Writer::createFromFileObject(new \SplTempFileObject());
         $csvWriter->insertOne($headers);
 
         foreach ($usages as $usageItem) {
             $this->nodeTypeUsageProcessor->processForExport($usageItem, $this->controllerContext);
-            $csvWriter->insertOne($usageItem->toCSVExportableArray());
+            $data = $usageItem->toCSVExportableArray();
+            if (!$hasDimensions) {
+                unset($data['dimensions']);
+            }
+            $csvWriter->insertOne($data);
         }
 
         $filename = sprintf('nodetype-usage-%s-%s.csv', $nodeTypeName, (new \DateTime())->format('Y-m-d-H-i-s'));

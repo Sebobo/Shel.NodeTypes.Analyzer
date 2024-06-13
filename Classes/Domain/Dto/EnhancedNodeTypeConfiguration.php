@@ -42,7 +42,7 @@ final class EnhancedNodeTypeConfiguration implements \JsonSerializable
         $configuration = ReducedNodeTypeConfiguration::fromNodeType($nodeType);
 
         $warnings = [];
-        if (!$nodeType->getDeclaredSuperTypes() && !$nodeType->isAbstract()) {
+        if (!$nodeType->getDeclaredSuperTypes() && !$nodeType->isAbstract() && $nodeType->getName() !== 'unstructured') {
             $warnings[] = 'No supertypes and not abstract - please define either!';
         }
 

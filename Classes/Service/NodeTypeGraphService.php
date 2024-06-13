@@ -50,9 +50,11 @@ class NodeTypeGraphService
     /**
      * @return array<string, EnhancedNodeTypeConfiguration>
      */
-    public function generateNodeTypesData(bool $useCache = true): array
+    public function generateNodeTypesData(bool $useCache = true, bool $includeAbstractNodeTypes = true): array
     {
-        $nodeTypesCacheKey = 'NodeTypes_' . $this->configurationCache->get('ConfigurationVersion');
+        $nodeTypesCacheKey = 'NodeTypes_' . $this->configurationCache->get(
+                'ConfigurationVersion'
+            ) . '_' . ($includeAbstractNodeTypes ? 'abstract' : 'non-abstract');
         if ($useCache) {
             $nodeTypes = $this->nodeTypesCache->get($nodeTypesCacheKey);
             if ($nodeTypes) {
@@ -112,6 +114,12 @@ class NodeTypeGraphService
 
         $this->calculateUsageCountByInheritance($nodeTypes);
         ksort($nodeTypes);
+
+        if (!$includeAbstractNodeTypes) {
+            $nodeTypes = array_filter($nodeTypes, static function (EnhancedNodeTypeConfiguration $nodeType) {
+                return !$nodeType->abstract;
+            });
+        }
 
         $this->nodeTypesCache->flush();
         try {

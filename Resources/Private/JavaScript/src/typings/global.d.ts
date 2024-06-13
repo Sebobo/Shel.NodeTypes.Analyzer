@@ -30,6 +30,7 @@ type Actions = {
     getNodeTypeUsage: string;
     getNodeTypeDefinitions: string;
     exportNodeTypes: string;
+    exportNodeTypesReduced: string;
     exportNodeTypeUsage: string;
     getNodes: string;
 };

@@ -119,7 +119,7 @@ class NodeTypeUsageService
             if ($documentNode->getNodeType()->isOfType('Neos.Neos:Document')) {
                 $url = $this->getNodeUri($controllerContext, $documentNode);
             }
-            $nodeTypeUsages[] = new NodeTypeUsage($node, $documentNode, $url, $breadcrumb);
+            $nodeTypeUsages[] = new NodeTypeUsage($node, $documentNode, $url, array_reverse($breadcrumb));
         }
 
         usort($nodeTypeUsages, static function (NodeTypeUsage $a, NodeTypeUsage $b) {

@@ -71,6 +71,7 @@ type NodeTypeGroup = {
 type NodeTypeUsageLink = {
     title: string;
     documentTitle: string;
+    documentIdentifier: string;
     url: string;
     nodeIdentifier: string;
     workspace: string;
@@ -79,6 +80,7 @@ type NodeTypeUsageLink = {
     };
     hidden: boolean;
     onHiddenPage: boolean;
+    breadcrumb: string[];
 };
 
 type Workspace = {

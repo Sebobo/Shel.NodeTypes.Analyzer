@@ -8,25 +8,27 @@ use Neos\ContentRepository\Domain\Model\NodeInterface;
 use Neos\Flow\Annotations as Flow;
 
 /**
- * @Flow\Proxy(false)
+ * @api
  */
+#[Flow\Proxy(false)]
 final class NodeTypeUsage implements \JsonSerializable
 {
-    private bool $hidden;
-    private bool $onHiddenPage;
+    public bool $hidden;
+    public readonly bool $onHiddenPage;
+    private string $documentTitle;
 
+    /**
+     * @param string[] $breadcrumb
+     */
     public function __construct(
         private NodeInterface $node,
-        private string $documentTitle,
-        private string $url
+        public readonly ?NodeInterface $documentNode,
+        private string $url,
+        public readonly array $breadcrumb = [],
     ) {
         $this->hidden = !$node->isVisible();
-
-        $closestDocumentNode = $node;
-        while ($closestDocumentNode && !$closestDocumentNode->getNodeType()->isOfType('Neos.Neos:Document')) {
-            $closestDocumentNode = $closestDocumentNode->getParent();
-        }
-        $this->onHiddenPage = !$closestDocumentNode->isVisible();
+        $this->onHiddenPage = !$documentNode?->isVisible();
+        $this->documentTitle = $documentNode?->getLabel() ?? 'Unresolvable';
     }
 
     public function getUrl(): string
@@ -69,27 +71,19 @@ final class NodeTypeUsage implements \JsonSerializable
         $this->hidden = $hidden;
     }
 
-    public function isHiddenOnPage(): bool
-    {
-        return $this->onHiddenPage;
-    }
-
-    public function setOnHiddenPage(bool $onHiddenPage): void
-    {
-        $this->onHiddenPage = $onHiddenPage;
-    }
-
     public function toArray(): array
     {
         return [
             'title' => $this->node->getLabel(),
             'documentTitle' => $this->documentTitle,
+            'documentIdentifier' => $this->documentNode?->getIdentifier(),
             'workspace' => $this->node->getWorkspace()->getName(),
             'url' => $this->url,
             'nodeIdentifier' => $this->node->getIdentifier(),
             'hidden' => $this->hidden,
             'onHiddenPage' => $this->onHiddenPage,
             'dimensions' => $this->node->getDimensions(),
+            'breadcrumb' => $this->breadcrumb,
         ];
     }
 

@@ -7,6 +7,9 @@ namespace Shel\NodeTypes\Analyzer\Service;
 use Neos\Flow\Mvc\Controller\ControllerContext;
 use Shel\NodeTypes\Analyzer\Domain\Dto\NodeTypeUsage;
 
+/**
+ * @api
+ */
 interface NodeTypeUsageProcessorInterface
 {
     /**

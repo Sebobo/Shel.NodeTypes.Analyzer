@@ -60,15 +60,10 @@ const Graph: React.FC = () => {
 
     /**
      * Reduces the visual complexity of a deeply nested graph with many subnodes
-     *
-     * @param data
-     * @param maxDepth
-     * @param maxChildren
-     * @param depth
      */
     const reduceHierarchyComplexity = (
         data: DataSegment,
-        maxDepth,
+        maxDepth: number,
         maxChildren = MAX_SUB_SEGMENTS,
         depth = 1
     ): DataSegment => {
@@ -106,11 +101,16 @@ const Graph: React.FC = () => {
                 case 'sunburst':
                     if (selectedPath) {
                         data = selectedPath.split('.').reduce<DataSegment>((data, segment) => {
-                            return data.children.find((child) => child.name === segment);
+                            return data?.children.find((child) => child.name === segment);
                         }, graphData);
                     } else {
                         data = graphData;
                     }
+
+                    if (!data) {
+                        return;
+                    }
+
                     // Use a cloned version before modifying the data
                     data = reduceHierarchyComplexity(cloneDeep(data), selectedPath.split('.').length + 2);
                     chart = renderSunburstChart({ data, width, height });

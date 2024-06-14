@@ -83,7 +83,7 @@ class NodeTypeGraphService
                     ->setUsage($usageCount)
                     ->setAllowedChildNodeTypes($allowedChildNodeTypes);
 
-                $childNodes = $enhancedNodeTypeConfiguration->getConfiguration()->childNodes;
+                $childNodes = $enhancedNodeTypeConfiguration->childNodes;
                 $grandChildNodeConstraints = array_reduce(
                     array_keys($childNodes),
                     function (array $carry, string $childNodeName) use (

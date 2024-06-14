@@ -15,12 +15,12 @@ interface NodeTypeTreeNodeProps {
 }
 
 const NodeTypeTreeNode: React.FC<NodeTypeTreeNodeProps> = ({ nodeType, level = 1 }) => {
-    const { name, configuration, usageCount, usageCountByInheritance, warnings } = nodeType;
+    const { name, label, childNodes, icon, options, usageCount, usageCountByInheritance, warnings } = nodeType;
     const [collapsed, setCollapsed] = useState(true);
     const { selectedNodeTypeName, dispatch } = useGraph();
 
     const hasError = false;
-    const hasChildren = Object.keys(configuration.childNodes).length > 0;
+    const hasChildren = Object.keys(childNodes).length > 0;
     const nodePath = nodePathHelper.resolveFromType(nodeType);
     const usageCountSum = Object.values(usageCountByInheritance).reduce((carry, usage) => carry + usage, 0);
 
@@ -29,16 +29,14 @@ const NodeTypeTreeNode: React.FC<NodeTypeTreeNodeProps> = ({ nodeType, level = 1
         dispatch({ type: Action.SelectNodeType, payload: name });
     }, [name, setCollapsed, dispatch]);
 
-    const icon = (
+    const iconComponent = (
         <Icon
-            icon={configuration.ui.icon || 'question'}
-            color={
-                warnings.length > 0 || configuration.options['Shel.NodeTypes.Analyzer']?.deprecated ? 'warn' : 'default'
-            }
+            icon={icon || 'question'}
+            color={warnings.length > 0 || options['Shel.NodeTypes.Analyzer']?.deprecated ? 'warn' : 'default'}
         />
     );
 
-    const tooltip = configuration.ui.label || name + (warnings.length > 0 ? ` (${warnings.length} warnings)` : '');
+    const tooltip = label || name + (warnings.length > 0 ? ` (${warnings.length} warnings)` : '');
 
     return (
         <Tree.Node>
@@ -50,7 +48,7 @@ const NodeTypeTreeNode: React.FC<NodeTypeTreeNodeProps> = ({ nodeType, level = 1
                 hasError={hasError}
                 label={`${nodePath.split('.').pop()} (${usageCount + usageCountSum})`}
                 title={tooltip}
-                customIconComponent={icon}
+                customIconComponent={iconComponent}
                 nodeDndType={dndTypes.NODE_TYPE}
                 level={level}
                 onToggle={() => setCollapsed(!collapsed)}
@@ -59,13 +57,13 @@ const NodeTypeTreeNode: React.FC<NodeTypeTreeNodeProps> = ({ nodeType, level = 1
             />
             {!collapsed &&
                 hasChildren &&
-                Object.keys(configuration.childNodes).map((childNodeName) => (
+                Object.keys(childNodes).map((childNodeName) => (
                     <NodeTypeChildTreeNode
                         key={childNodeName}
                         nodeTypeName={name}
                         name={childNodeName}
                         level={level + 1}
-                        type={configuration.childNodes[childNodeName].type}
+                        type={childNodes[childNodeName].type}
                         onClick={() => handleSelectNode()}
                     />
                 ))}

@@ -182,10 +182,10 @@ class NodeTypesController extends AbstractModuleController
         $nodeTypes = $this->nodeTypeGraphService->generateNodeTypesData(true, !$reduced);
 
         $nodeTypesDataForExport = array_map(function (EnhancedNodeTypeConfiguration $nodeType) use ($reduced) {
-            $label = $nodeType->getConfiguration()->ui['label'] ?? null;
+            $label = $nodeType->label;
             $label = $label ? $this->translateByShortHandString($label) : 'n/a';
-            $properties = array_keys($nodeType->getConfiguration()->properties);
-            $childNodes = array_keys($nodeType->getConfiguration()->childNodes);
+            $properties = array_keys($nodeType->properties);
+            $childNodes = array_keys($nodeType->childNodes);
 
             return [
                     'name' => $nodeType->name,

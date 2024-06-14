@@ -10,10 +10,10 @@ const NodeAnnotations: React.FC = () => {
     const { selectedNodeTypeName } = useGraph();
     const nodeTypes = useRecoilValue(nodeTypesState);
     const { translate } = useIntl();
-    const { configuration, warnings } = nodeTypes[selectedNodeTypeName];
+    const { warnings, options } = nodeTypes[selectedNodeTypeName];
     const [open, setOpen] = useState(true);
 
-    const annotations = configuration.options ? configuration.options['Shel.NodeTypes.Analyzer'] || {} : {};
+    const annotations = options ? options['Shel.NodeTypes.Analyzer'] || {} : {};
 
     if (!Object.keys(annotations).length && !warnings.length) {
         return null;

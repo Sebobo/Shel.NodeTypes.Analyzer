@@ -11,9 +11,7 @@ const NodeGrandChildNodes: React.FC = () => {
     const { selectedNodeTypeName } = useGraph();
     const nodeTypes = useRecoilValue(nodeTypesState);
     const { translate } = useIntl();
-    const {
-        configuration: { childNodes },
-    } = nodeTypes[selectedNodeTypeName];
+    const { childNodes } = nodeTypes[selectedNodeTypeName];
     const [collapsed, setCollapsed] = useState(true);
 
     return (

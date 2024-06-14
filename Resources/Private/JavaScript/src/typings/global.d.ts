@@ -39,27 +39,22 @@ type Actions = {
 type NodeTypeConfiguration = {
     name: NodeTypeName;
     label: string;
+    icon?: string;
     abstract: boolean;
     final: boolean;
     allowedChildNodeTypes: NodeTypeName[];
     usageCount: number;
     usageCountByInheritance: Record<NodeTypeName, number>;
     declaredProperties: string[];
+    properties: PropertyList;
     declaredSuperTypes: NodeTypeName[];
+    superTypes: Inheritance[];
+    childNodes: Record<string, ChildNodeConfiguration>;
     warnings: string[];
-    configuration: {
-        properties: PropertyList;
-        ui: {
-            label?: string;
-            icon?: string;
-        };
-        superTypes: Inheritance[];
-        childNodes: Record<string, ChildNodeConfiguration>;
-        options?: {
-            'Shel.NodeTypes.Analyzer': {
-                deprecated?: boolean;
-                note?: string;
-            };
+    options?: {
+        'Shel.NodeTypes.Analyzer': {
+            deprecated?: boolean;
+            note?: string;
         };
     };
 };

@@ -13,101 +13,82 @@
       "label": {
         "type": "string"
       },
+      "icon": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
       "abstract": {
         "type": "boolean"
       },
       "final": {
         "type": "boolean"
       },
-      "configuration": {
+      "superTypes": {
         "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "superTypes": {
-            "type": "object",
-            "$comment": "The names of the nodetypes super types",
-            "additionalProperties": {
-              "type": "boolean"
-            }
-          },
+        "$comment": "The names of the nodetypes super types",
+        "additionalProperties": {
+          "type": "boolean"
+        }
+      },
+      "properties": {
+        "type": "object",
+        "$comment": "The nodetypes properties and their type",
+        "additionalProperties": {
+          "type": "object",
+          "additionalProperties": false,
           "properties": {
-            "type": "object",
-            "$comment": "The nodetypes properties and their type",
-            "additionalProperties": {
-              "type": "object",
-              "additionalProperties": false,
-              "properties": {
-                "type": {
-                  "type": ["string", "null"]
-                }
-              }
-            }
-          },
-          "ui": {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "label": {
-                "type": [
-                  "string",
-                  "null"
-                ]
-              },
-              "icon": {
-                "type": [
-                  "string",
-                  "null"
-                ]
-              }
-            }
-          },
-          "childNodes": {
-            "type": "object",
-            "$comment": "The nodetypes child nodes and their type",
-            "additionalProperties": {
-              "type": "object",
-              "additionalProperties": false,
-              "properties": {
-                "type": {
-                  "type": "string"
-                },
-                "allowedChildNodeTypes": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                },
-                "constraints": {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "properties": {
-                    "nodeTypes": {
-                      "type": ["object", "array"],
-                      "additionalProperties": {
-                        "type": "boolean"
-                      }
-                    }
-                  }
-                }
-              },
-              "required": [
-                "type"
+            "type": {
+              "type": [
+                "string",
+                "null"
               ]
             }
-          },
-          "options": {
-            "type": "object",
-            "$comment": "The nodetypes options",
-            "additionalProperties": true
           }
-        },
-        "required": [
-          "superTypes",
-          "properties",
-          "ui",
-          "childNodes",
-          "options"
-        ]
+        }
+      },
+      "childNodes": {
+        "type": "object",
+        "$comment": "The nodetypes child nodes and their type",
+        "additionalProperties": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "type": "string"
+            },
+            "allowedChildNodeTypes": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "constraints": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "nodeTypes": {
+                  "type": [
+                    "object",
+                    "array"
+                  ],
+                  "additionalProperties": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          },
+          "required": [
+            "type"
+          ]
+        }
+      },
+      "options": {
+        "type": "object",
+        "$comment": "The nodetypes options",
+        "additionalProperties": true
       },
       "declaredProperties": {
         "type": "array",
@@ -151,15 +132,19 @@
     "required": [
       "name",
       "label",
+      "icon",
       "abstract",
       "final",
-      "configuration",
       "declaredProperties",
+      "properties",
       "declaredSuperTypes",
+      "superTypes",
       "usageCount",
       "usageCountByInheritance",
       "warnings",
-      "allowedChildNodeTypes"
+      "allowedChildNodeTypes",
+      "childNodes",
+      "options"
     ]
   }
 }

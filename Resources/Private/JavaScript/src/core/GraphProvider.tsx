@@ -55,16 +55,27 @@ const GraphProvider = ({ children, endpoints }: GraphProviderProps): ReactElemen
     /**
      * Retrieves a link list of the usages of one nodetype
      */
-    const getNodeTypeUsageLinks = memoize((nodeTypeName: string): Promise<void | NodeTypeUsageLink[]> => {
-        return fetchData(endpoints.getNodeTypeUsage, { nodeTypeName }, 'GET')
-            .then(({ usageLinks }: { usageLinks: NodeTypeUsageLink[] }) => usageLinks)
-            .catch((error) => Notify.error(error))
-            .finally(() => setIsLoading(false));
+    const getNodeTypeUsageLinks = memoize(async (nodeTypeName: string): Promise<void | NodeTypeUsageLink[]> => {
+        try {
+            try {
+                const { usageLinks } = await fetchData(endpoints.getNodeTypeUsage, { nodeTypeName }, 'GET');
+                return usageLinks;
+            } catch (error) {
+                return Notify.error(error);
+            }
+        } finally {
+            setIsLoading(false);
+        }
     });
 
-    const fetchGraphData = useCallback((): Promise<void> => {
-        return fetchData<NodeTypeConfigurations>(endpoints.getNodeTypeDefinitions, null, 'GET')
-            .then(({ nodeTypes }) => {
+    const fetchGraphData = useCallback(async (): Promise<void> => {
+        try {
+            try {
+                const { nodeTypes } = await fetchData<NodeTypeConfigurations>(
+                    endpoints.getNodeTypeDefinitions,
+                    null,
+                    'GET'
+                );
                 // Separate nodetypes that have invalid names and cannot be rendered properly
                 const { validNodeTypes, invalidNodeTypes } = Object.keys(nodeTypes).reduce(
                     (carry, nodeTypeName) => {
@@ -83,33 +94,37 @@ const GraphProvider = ({ children, endpoints }: GraphProviderProps): ReactElemen
 
                 setNodeTypes(validNodeTypes);
                 setInvalidNodeTypes(invalidNodeTypes);
-            })
-            .catch((error) => Notify.error(error))
-            .finally(() => setIsLoading(false));
+            } catch (error) {
+                return Notify.error(error);
+            }
+        } finally {
+            setIsLoading(false);
+        }
     }, []);
 
-    const fetchNodes = useCallback((path: string, workspace: string): Promise<CRNodeList> => {
-        return fetchData(
-            endpoints.getNodes,
-            {
-                path,
-                workspace,
-            },
-            'GET'
-        )
-            .then(({ nodes: newNodes, workspaces }) => {
-                setNodes((storedNodes) => {
-                    return {
-                        ...storedNodes,
-                        ...newNodes,
-                    };
-                });
-                if (Array.isArray(workspaces) && workspaces.length > 0) {
-                    setWorkspaces(workspaces);
-                }
-                return newNodes;
-            })
-            .catch((error) => Notify.error(error));
+    const fetchNodes = useCallback(async (path: string, workspace: string): Promise<CRNodeList> => {
+        try {
+            const { nodes: newNodes, workspaces } = await fetchData(
+                endpoints.getNodes,
+                {
+                    path,
+                    workspace,
+                },
+                'GET'
+            );
+            setNodes((storedNodes) => {
+                return {
+                    ...storedNodes,
+                    ...newNodes,
+                };
+            });
+            if (Array.isArray(workspaces) && workspaces.length > 0) {
+                setWorkspaces(workspaces);
+            }
+            return newNodes;
+        } catch (error) {
+            Notify.error(error);
+        }
     }, []);
 
     /**
@@ -128,7 +143,7 @@ const GraphProvider = ({ children, endpoints }: GraphProviderProps): ReactElemen
         let types = {};
 
         if (selectedNodeTypeName) {
-            const selectedNodeType = nodeTypes[selectedNodeTypeName];
+            const { superTypes } = nodeTypes[selectedNodeTypeName];
             const typesToAdd = [selectedNodeTypeName];
 
             while (typesToAdd.length > 0) {
@@ -144,9 +159,9 @@ const GraphProvider = ({ children, endpoints }: GraphProviderProps): ReactElemen
                 types[typeToAdd.name] = typeToAdd;
             }
 
-            if (selectedNodeType.configuration.superTypes) {
-                Object.keys(selectedNodeType.configuration.superTypes).forEach((superType) => {
-                    if (selectedNodeType.configuration.superTypes[superType]) {
+            if (superTypes) {
+                Object.keys(superTypes).forEach((superType) => {
+                    if (superTypes[superType]) {
                         types[superType] = nodeTypes[superType];
                     }
                 });

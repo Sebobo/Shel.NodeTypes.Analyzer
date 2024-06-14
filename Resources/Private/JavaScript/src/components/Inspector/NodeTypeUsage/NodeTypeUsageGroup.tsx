@@ -51,11 +51,8 @@ const NodeTypeUsageGroup: React.FC<NodeTypeUsageGroupProps> = ({ nodeTypeUsageLi
                             ) : (
                                 link.title
                             )}
-
                         </td>
-                        <td>
-                            {link.breadcrumb.join(' / ') || '-'}
-                        </td>
+                        <td>{link.breadcrumb.join(' / ') || '-'}</td>
                         <td>{link.workspace}</td>
                         {showDimensions && (
                             <td>

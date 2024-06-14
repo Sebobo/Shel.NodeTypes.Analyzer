@@ -28,7 +28,7 @@ const NodeTypeChildTreeNode: React.FC<NodeTypeChildTreeNodeProps> = ({
     showConstraints = false,
 }) => {
     const nodeTypes = useRecoilValue(nodeTypesState);
-    const constraints = nodeTypes[nodeTypeName].configuration.childNodes[name].allowedChildNodeTypes ?? [];
+    const constraints = nodeTypes[nodeTypeName].childNodes[name].allowedChildNodeTypes ?? [];
 
     return (
         <Tree.Node>

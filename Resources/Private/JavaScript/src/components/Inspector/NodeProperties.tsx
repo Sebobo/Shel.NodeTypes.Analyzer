@@ -11,10 +11,7 @@ const NodeProperties: React.FC = () => {
     const { selectedNodeTypeName } = useGraph();
     const nodeTypes = useRecoilValue(nodeTypesState);
     const { translate } = useIntl();
-    const {
-        configuration: { properties },
-        declaredProperties,
-    } = nodeTypes[selectedNodeTypeName];
+    const { properties, declaredProperties } = nodeTypes[selectedNodeTypeName];
     const [showProperties, setShowProperties] = useState(false);
 
     return (

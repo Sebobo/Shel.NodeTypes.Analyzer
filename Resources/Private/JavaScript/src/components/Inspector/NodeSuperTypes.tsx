@@ -12,10 +12,7 @@ const NodeSuperTypes: React.FC = () => {
     const { selectedNodeTypeName } = useGraph();
     const nodeTypes = useRecoilValue(nodeTypesState);
     const { translate } = useIntl();
-    const {
-        configuration: { superTypes },
-        declaredSuperTypes,
-    } = nodeTypes[selectedNodeTypeName];
+    const { superTypes, declaredSuperTypes } = nodeTypes[selectedNodeTypeName];
     const [collapsed, setCollapsed] = useState(true);
 
     const enabledSuperTypes = superTypes

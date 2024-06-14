@@ -23,14 +23,14 @@ const ChildNodeTree: React.FC = () => {
 
     return (
         <Tree className={classes.tree}>
-            {Object.keys(currentNodeType.configuration.childNodes)
+            {Object.keys(currentNodeType.childNodes)
                 .sort()
                 .map((childNodeName) => (
                     <NodeTypeChildTreeNode
                         key={childNodeName}
                         nodeTypeName={selectedNodeTypeName}
                         name={childNodeName}
-                        type={currentNodeType.configuration.childNodes[childNodeName].type}
+                        type={currentNodeType.childNodes[childNodeName].type}
                         showConstraints={true}
                         onClick={null}
                     />

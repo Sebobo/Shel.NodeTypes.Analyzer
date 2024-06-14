@@ -28,8 +28,8 @@ export const treeDataState = selector<{
                 if (
                     nodeType.usageCount > 0 ||
                     nodeType.abstract ||
-                    (nodeType.configuration.superTypes &&
-                        Object.keys(nodeType.configuration.superTypes).indexOf(
+                    (nodeType.superTypes &&
+                        Object.keys(nodeType.superTypes).indexOf(
                             `Neos.Neos:${selectedFilter === FilterType.UNUSED_CONTENT ? 'Content' : 'Document'}`
                         ) == -1)
                 ) {

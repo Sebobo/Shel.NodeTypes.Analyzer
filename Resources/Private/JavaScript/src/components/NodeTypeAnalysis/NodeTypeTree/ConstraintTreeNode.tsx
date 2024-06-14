@@ -26,7 +26,7 @@ const ConstraintTreeNode: React.FC<ConstraintTreeNodeProps> = ({ name, value = t
                 hasError={!value}
                 label={name}
                 title={name}
-                icon={nodeTypes[name]?.configuration.ui.icon || icon}
+                icon={nodeTypes[name]?.icon || icon}
                 nodeDndType={dndTypes.NODE_TYPE}
                 level={level}
                 hasChildren={false}

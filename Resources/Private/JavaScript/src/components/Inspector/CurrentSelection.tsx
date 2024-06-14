@@ -49,7 +49,7 @@ const CurrentSelection: React.FC = () => {
         options.push({
             value: selectedNodeTypeName,
             label: nodePathHelper.resolveNameWithoutVendor(selectedNodeTypeName),
-            icon: nodeTypes[selectedNodeTypeName].configuration.ui.icon || 'question',
+            icon: nodeTypes[selectedNodeTypeName].icon || 'question',
         });
     }
 

@@ -23,11 +23,11 @@ const NodeTreeNode = ({ node, level = 1 }: NodeTreeNodeProps) => {
     const [childNodesLoaded, setChildNodesLoaded] = useState(!node.hasChildNodes);
     const workspaceFilter = useRecoilValue(workspaceFilterState);
 
-    const nodeTypeConfiguration = nodeTypes[node.nodeType]?.configuration;
+    const nodeTypeConfiguration = nodeTypes[node.nodeType];
 
     const icon = (
         <Icon
-            icon={nodeTypeConfiguration?.ui.icon || 'question'}
+            icon={nodeTypeConfiguration?.icon || 'question'}
             color={node.nodeType === 'Neos.Neos:FallbackNode' ? 'warn' : 'default'}
         />
     );

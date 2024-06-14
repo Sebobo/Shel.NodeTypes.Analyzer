@@ -28,7 +28,7 @@ const NodeTypeBreadcrumb: React.FC = () => {
     return (
         <Breadcrumb
             parts={currentPath.split('.').filter((segment) => segment)}
-            currentIcon={selectedNodeType?.configuration.ui.icon}
+            currentIcon={selectedNodeType?.icon}
             handleHomeClick={handleHomeClick}
             handleSegmentClick={handleSegmentClick}
         />

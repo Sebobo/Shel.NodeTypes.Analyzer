@@ -10,7 +10,7 @@ const useStyles = createUseStyles({
             marginTop: 'var(--spacing-Full)',
             display: 'flex',
             gap: 'var(--spacing-Full)',
-        }
+        },
     },
     exportSwitchButton: {
         cursor: 'pointer',
@@ -37,9 +37,12 @@ const NodeTypeExportButton: React.FC = () => {
                     {translate('action.exportNodeTypes', 'Export nodetypes')}
                 </button>
             </a>
-            <button type="button" className={classes.exportSwitchButton} onClick={() => setExportReduced((prev) => !prev)}>
-                <Icon icon={exportReduced ? 'check-square' : 'square'} />{' '}
-                Reduced version
+            <button
+                type="button"
+                className={classes.exportSwitchButton}
+                onClick={() => setExportReduced((prev) => !prev)}
+            >
+                <Icon icon={exportReduced ? 'check-square' : 'square'} /> Reduced version
             </button>
         </div>
     );

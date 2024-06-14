@@ -24,7 +24,12 @@ const NodeTypeCounter: React.FC = () => {
     return (
         <div className={classes.nodeTypeCount}>
             {translate('nodeTypeCounter.label', '{count} nodetypes', { count: totalNodeTypeCount })}
-            {filteredNodeTypeCount < totalNodeTypeCount ? ' ' + translate('nodeTypeCounter.visibleLabel', '({count} nodetypes shown)', { count: filteredNodeTypeCount }) : ''}
+            {filteredNodeTypeCount < totalNodeTypeCount
+                ? ' ' +
+                  translate('nodeTypeCounter.visibleLabel', '({count} nodetypes shown)', {
+                      count: filteredNodeTypeCount,
+                  })
+                : ''}
         </div>
     );
 };

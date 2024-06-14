@@ -33,7 +33,8 @@ function getOptionsForTerm(nodeTypes: NodeTypeConfigurations, searchTerm: string
         .map((nodeTypeName) => {
             const groupName = nodePathHelper.resolveGroup(nodeTypeName);
             const nodeTypeLabel = nodeTypes[nodeTypeName].label;
-            const shortNodeTypeName = nodeTypeName.replace(groupName + ':', '') + (nodeTypeLabel ? ' (' + nodeTypeLabel + ')' : '');
+            const shortNodeTypeName =
+                nodeTypeName.replace(groupName + ':', '') + (nodeTypeLabel ? ' (' + nodeTypeLabel + ')' : '');
             return {
                 label: shortNodeTypeName,
                 value: nodeTypeName,

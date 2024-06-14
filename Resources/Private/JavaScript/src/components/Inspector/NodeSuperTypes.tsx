@@ -14,11 +14,15 @@ const NodeSuperTypes: React.FC = () => {
     const { translate } = useIntl();
     const {
         configuration: { superTypes },
-        declaredSuperTypes
+        declaredSuperTypes,
     } = nodeTypes[selectedNodeTypeName];
     const [collapsed, setCollapsed] = useState(true);
 
-    const enabledSuperTypes = superTypes ? Object.keys(superTypes).filter((superTypeName) => superTypes[superTypeName]).sort() : [];
+    const enabledSuperTypes = superTypes
+        ? Object.keys(superTypes)
+              .filter((superTypeName) => superTypes[superTypeName])
+              .sort()
+        : [];
 
     const nonAbstractInheritanceWarning = translate(
         'inspector.supertypes.warning.nonAbstractInheritance',
@@ -28,8 +32,7 @@ const NodeSuperTypes: React.FC = () => {
     return (
         <ToggablePanel onPanelToggle={() => setCollapsed(!collapsed)} isOpen={!collapsed} style="condensed">
             <ToggablePanel.Header>
-                {translate('inspector.supertypes.label', 'Supertypes')} (
-                {enabledSuperTypes.length})
+                {translate('inspector.supertypes.label', 'Supertypes')} ({enabledSuperTypes.length})
             </ToggablePanel.Header>
             <ToggablePanel.Contents>
                 {enabledSuperTypes ? (
@@ -42,9 +45,7 @@ const NodeSuperTypes: React.FC = () => {
                                     label={nodePathHelper.resolveNameWithoutVendor(superTypeName)}
                                     value={superTypeName}
                                     icon={!nodeTypes[superTypeName].abstract ? 'warning' : null}
-                                    title={
-                                        !nodeTypes[superTypeName].abstract ? nonAbstractInheritanceWarning : null
-                                    }
+                                    title={!nodeTypes[superTypeName].abstract ? nonAbstractInheritanceWarning : null}
                                 />
                             ))}
                         </PropertyList>

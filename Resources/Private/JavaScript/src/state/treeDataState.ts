@@ -10,9 +10,9 @@ import { nodeTypeFilterState } from './nodeTypeFilterState';
  * Converts flat node types structure into tree
  */
 export const treeDataState = selector<{
-    treeData: TreeDataPoint,
-    totalNodeTypeCount: number,
-    filteredNodeTypeCount: number
+    treeData: TreeDataPoint;
+    totalNodeTypeCount: number;
+    filteredNodeTypeCount: number;
 }>({
     key: 'TreeDataState',
     get: ({ get }) => {
@@ -48,7 +48,7 @@ export const treeDataState = selector<{
         return {
             treeData,
             totalNodeTypeCount,
-            filteredNodeTypeCount
+            filteredNodeTypeCount,
         };
-    }
+    },
 });

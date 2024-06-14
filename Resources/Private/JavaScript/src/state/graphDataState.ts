@@ -26,7 +26,7 @@ const processTreeData = (data: Record<string, TreeDataPoint>, path = '') => {
 export const graphDataState = selector<DataSegment>({
     key: 'GraphDataState',
     get: ({ get }) => {
-        const treeData = get(treeDataState);
+        const { treeData } = get(treeDataState);
         if (Object.keys(treeData).length === 0) return {} as DataSegment;
         return { name: 'nodetypes', path: '', children: processTreeData(treeData) };
     },

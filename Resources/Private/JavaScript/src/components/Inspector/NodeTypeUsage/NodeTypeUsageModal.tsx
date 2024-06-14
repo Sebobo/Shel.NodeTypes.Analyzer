@@ -41,6 +41,9 @@ const useStyles = createUseStyles({
             '& a': {
                 color: 'var(--blue)',
             },
+            '&.neos-table th': {
+                whiteSpace: 'nowrap',
+            },
             '&.neos-table th, & td': {
                 lineHeight: '1.2em !important',
                 padding: 'var(--spacing-Full) !important',

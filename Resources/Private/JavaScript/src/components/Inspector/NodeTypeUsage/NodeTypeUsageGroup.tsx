@@ -5,12 +5,12 @@ import { createUseStyles } from 'react-jss';
 const useStyles = createUseStyles({
     groupRow: {
         '& td': {
-            backgroundColor: 'var(--grayLight) !important',
-        },
+            backgroundColor: 'var(--grayLight) !important'
+        }
     },
     groupLabel: {
-        fontWeight: 'bold',
-    },
+        fontWeight: 'bold'
+    }
 });
 
 type NodeTypeUsageGroupProps = {
@@ -20,9 +20,10 @@ type NodeTypeUsageGroupProps = {
 
 const NodeTypeUsageGroup: React.FC<NodeTypeUsageGroupProps> = ({ nodeTypeUsageLinks, showDimensions }) => {
     const classes = useStyles();
-    const [uncollapsed, setUncollapsed] = useState(false);
+    const [collapsed, setCollapsed] = useState(true);
     const groupLabel = nodeTypeUsageLinks[0].documentTitle;
     const groupIdentifier = nodeTypeUsageLinks[0].documentIdentifier;
+    const groupDocumentIsHidden = nodeTypeUsageLinks.every((link) => link.onHiddenPage);
 
     return (
         <>
@@ -30,17 +31,18 @@ const NodeTypeUsageGroup: React.FC<NodeTypeUsageGroupProps> = ({ nodeTypeUsageLi
                 <td
                     colSpan={showDimensions ? 4 : 3}
                     style={{ cursor: 'pointer' }}
-                    onClick={() => setUncollapsed((prev) => !prev)}
+                    onClick={() => setCollapsed((prev) => !prev)}
                 >
-                    <Icon icon={uncollapsed ? 'caret-up' : 'caret-down'} />{' '}
+                    <Icon icon={collapsed ? 'caret-right' : 'caret-down'} />{' '}
                     <span>
                         {nodeTypeUsageLinks.length} usages on page{' '}
                         <strong className={classes.groupLabel}>{groupLabel}</strong>
                     </span>
                 </td>
-                <td colSpan={3}>{groupIdentifier}</td>
+                <td colSpan={2}>{groupIdentifier}</td>
+                <td>{groupDocumentIsHidden ? 'Yes' : 'No'}</td>
             </tr>
-            {uncollapsed &&
+            {!collapsed &&
                 nodeTypeUsageLinks.map((link, index) => (
                     <tr key={index}>
                         <td>

@@ -6,8 +6,11 @@ const useStyles = createUseStyles({
     groupRow: {
         '& td': {
             backgroundColor: 'var(--grayLight) !important',
-        }
-    }
+        },
+    },
+    groupLabel: {
+        fontWeight: 'bold',
+    },
 });
 
 type NodeTypeUsageGroupProps = {
@@ -24,36 +27,48 @@ const NodeTypeUsageGroup: React.FC<NodeTypeUsageGroupProps> = ({ nodeTypeUsageLi
     return (
         <>
             <tr className={classes.groupRow}>
-                <td colSpan={showDimensions ? 4 : 3} style={{ cursor: 'pointer' }} onClick={() => setUncollapsed((prev) => !prev)}>
+                <td
+                    colSpan={showDimensions ? 4 : 3}
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => setUncollapsed((prev) => !prev)}
+                >
                     <Icon icon={uncollapsed ? 'caret-up' : 'caret-down'} />{' '}
-                    <span>{nodeTypeUsageLinks.length} usages on page <strong>"{groupLabel}"</strong></span>
+                    <span>
+                        {nodeTypeUsageLinks.length} usages on page{' '}
+                        <strong className={classes.groupLabel}>{groupLabel}</strong>
+                    </span>
                 </td>
                 <td colSpan={3}>{groupIdentifier}</td>
             </tr>
-            {uncollapsed && nodeTypeUsageLinks.map((link, index) => (
-                <tr key={index}>
-                    <td>{link.title}</td>
-                    <td>
-                        {link.url ? (
-                            <a href={link.url} target="_blank" rel="noopener noreferrer">
-                                {link.breadcrumb.join(' / ')}
-                            </a>
-                        ) : (
-                            link.breadcrumb.join(' / ')
+            {uncollapsed &&
+                nodeTypeUsageLinks.map((link, index) => (
+                    <tr key={index}>
+                        <td>
+                            {link.url ? (
+                                <a href={link.url} target="_blank" rel="noopener noreferrer">
+                                    {link.title}
+                                </a>
+                            ) : (
+                                link.title
+                            )}
+
+                        </td>
+                        <td>
+                            {link.breadcrumb.join(' / ') || '-'}
+                        </td>
+                        <td>{link.workspace}</td>
+                        {showDimensions && (
+                            <td>
+                                {Object.keys(link.dimensions).map(
+                                    (dimensionName) => dimensionName + ': ' + link.dimensions[dimensionName].join(', ')
+                                )}
+                            </td>
                         )}
-                    </td>
-                    <td>{link.workspace}</td>
-                    {showDimensions && <td>
-                        {Object.keys(link.dimensions).map(
-                            (dimensionName) =>
-                                dimensionName + ': ' + link.dimensions[dimensionName].join(', ')
-                        )}
-                    </td>}
-                    <td>{link.nodeIdentifier}</td>
-                    <td>{link.hidden ? 'Yes' : 'No'}</td>
-                    <td>{link.onHiddenPage ? 'Yes' : 'No'}</td>
-                </tr>
-            ))}
+                        <td>{link.nodeIdentifier}</td>
+                        <td>{link.hidden ? 'Yes' : 'No'}</td>
+                        <td>{link.onHiddenPage ? 'Yes' : 'No'}</td>
+                    </tr>
+                ))}
         </>
     );
 };

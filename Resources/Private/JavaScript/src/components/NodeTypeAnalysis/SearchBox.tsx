@@ -6,7 +6,9 @@ import { SelectBox } from '@neos-project/react-ui-components';
 
 import { Action, useGraph, useIntl } from '../../core';
 import nodePathHelper from '../../helpers/nodePathHelper';
-import { nodeTypesState, searchTermState } from '../../state';
+import { nodeTypeFilterState, nodeTypesState, searchTermState } from '../../state';
+import nodeTypeMatchesFilter from '../../helpers/nodeTypeFilter';
+import { FilterType } from '../../constants';
 
 const useStyles = createUseStyles({
     searchBox: {
@@ -27,9 +29,14 @@ const useStyles = createUseStyles({
     },
 });
 
-function getOptionsForTerm(nodeTypes: NodeTypeConfigurations, searchTerm: string) {
+function getOptionsForTerm(nodeTypes: NodeTypeConfigurations, searchTerm: string, nodeTypeFilter: FilterType) {
     return Object.keys(nodeTypes)
-        .filter((nodeTypeName) => nodeTypeName.toLowerCase().indexOf(searchTerm.toLowerCase()) >= 0)
+        .filter((nodeTypeName) => {
+            return (
+                (!searchTerm || nodeTypeName.toLowerCase().indexOf(searchTerm.toLowerCase()) >= 0) &&
+                nodeTypeMatchesFilter(nodeTypes[nodeTypeName], nodeTypeFilter)
+            );
+        })
         .map((nodeTypeName) => {
             const groupName = nodePathHelper.resolveGroup(nodeTypeName);
             const nodeTypeLabel = nodeTypes[nodeTypeName].label;
@@ -49,7 +56,8 @@ const SearchBox: React.FC = () => {
     const { dispatch } = useGraph();
     const nodeTypes = useRecoilValue(nodeTypesState);
     const [searchTerm, setSearchTerm] = useRecoilState(searchTermState);
-    const options = searchTerm ? getOptionsForTerm(nodeTypes, searchTerm) : [];
+    const selectedFilter = useRecoilValue(nodeTypeFilterState);
+    const options = getOptionsForTerm(nodeTypes, searchTerm, selectedFilter);
 
     const onValueChange = (nodeTypeName: NodeTypeName) => {
         setSearchTerm(nodeTypeName);

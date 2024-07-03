@@ -14,7 +14,6 @@ namespace Shel\NodeTypes\Analyzer\Controller;
 
 use League\Csv\Writer;
 use Neos\Cache\Exception as CacheException;
-use Neos\ContentRepository\Domain\Model\NodeInterface;
 use Neos\ContentRepository\Domain\Model\Workspace;
 use Neos\ContentRepository\Domain\Repository\WorkspaceRepository;
 use Neos\Flow\Annotations as Flow;
@@ -22,19 +21,15 @@ use Neos\Flow\I18n\EelHelper\TranslationParameterToken;
 use Neos\Flow\I18n\Translator;
 use Neos\Flow\Mvc\View\JsonView;
 use Neos\Fusion\View\FusionView;
-use Neos\Media\Domain\Model\AssetInterface;
 use Neos\Neos\Controller\CreateContentContextTrait;
 use Neos\Neos\Controller\Module\AbstractModuleController;
 use Shel\NodeTypes\Analyzer\Domain\Dto\EnhancedNodeTypeConfiguration;
 use Shel\NodeTypes\Analyzer\Domain\Dto\NodeTreeLeaf;
-use Shel\NodeTypes\Analyzer\Domain\Dto\NodeTypeUsage;
 use Shel\NodeTypes\Analyzer\Service\NodeTypeGraphService;
 use Shel\NodeTypes\Analyzer\Service\NodeTypeUsageProcessorInterface;
 use Shel\NodeTypes\Analyzer\Service\NodeTypeUsageService;
 
-/**
- * @Flow\Scope("singleton")
- */
+#[Flow\Scope('singleton')]
 class NodeTypesController extends AbstractModuleController
 {
     use CreateContentContextTrait;
@@ -57,41 +52,26 @@ class NodeTypesController extends AbstractModuleController
         'json' => JsonView::class,
     ];
 
-    /**
-     * @Flow\Inject
-     * @var NodeTypeGraphService
-     */
-    protected $nodeTypeGraphService;
+    #[Flow\Inject]
+    protected NodeTypeGraphService $nodeTypeGraphService;
+
+    #[Flow\Inject]
+    protected NodeTypeUsageService $nodeTypeUsageService;
+
+    #[Flow\Inject]
+    protected Translator $translator;
+
+    #[Flow\Inject]
+    protected WorkspaceRepository $workspaceRepository;
 
     /**
-     * @Flow\Inject
-     * @var NodeTypeUsageService
-     */
-    protected $nodeTypeUsageService;
-
-    /**
-     * @Flow\Inject
-     * @var Translator
-     */
-    protected $translator;
-
-    /**
-     * @Flow\Inject
-     * @var WorkspaceRepository
-     */
-    protected $workspaceRepository;
-
-    /**
-     * @Flow\Inject
      * @var NodeTypeUsageProcessorInterface
      */
+    #[Flow\Inject]
     protected $nodeTypeUsageProcessor;
 
-    /**
-     * @Flow\InjectConfiguration(path="contentDimensions", package="Neos.ContentRepository")
-     * @var array
-     */
-    protected $dimensionConfiguration;
+    #[Flow\InjectConfiguration('contentDimensions', 'Neos.ContentRepository')]
+    protected array $dimensionConfiguration;
 
     /**
      * Renders the app to interact with the nodetype graph

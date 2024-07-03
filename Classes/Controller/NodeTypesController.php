@@ -260,9 +260,9 @@ class NodeTypesController extends AbstractModuleController
             'Title',
             'Page',
             'Page identifier',
-            'Node identifier',
             'Workspace',
             'Url',
+            'Node identifier',
             'Hidden node',
             'Hidden page',
         ];

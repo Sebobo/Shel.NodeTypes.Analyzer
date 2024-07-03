@@ -13,13 +13,8 @@
     "lint": "tsc --noEmit && eslint 'Resources/Private/JavaScript/**/*.{ts,tsx}'",
     "test": "exit 0",
     "build": "node esbuild.mjs",
-    "watch": "node esbuild.mjs --watch"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "yarn lint",
-      "pre-push": "yarn lint"
-    }
+    "watch": "node esbuild.mjs --watch",
+    "postinstall": "husky install"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.36",
@@ -64,7 +59,7 @@
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-react": "^7.32.2",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "husky": "^8.0.3",
+    "husky": "^8.0.0",
     "prettier": "^2.8.8",
     "process": "^0.11.10",
     "typescript": "^5.0.4"

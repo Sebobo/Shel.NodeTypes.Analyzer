@@ -58,9 +58,14 @@ const NodeTypeUsageGroup: React.FC<NodeTypeUsageGroupProps> = ({ nodeTypeUsageLi
                         <td>{link.workspace}</td>
                         {showDimensions && (
                             <td>
-                                {Object.keys(link.dimensions).map(
-                                    (dimensionName) => dimensionName + ': ' + link.dimensions[dimensionName].join(', ')
-                                )}
+                                {Object.keys(link.dimensions).map((dimensionName, index) => {
+                                    let dimensionItem =
+                                        dimensionName + ': ' + link.dimensions[dimensionName].join(', ');
+                                    if (index < Object.keys(link.dimensions).length - 1) {
+                                        dimensionItem += ' | ';
+                                    }
+                                    return dimensionItem;
+                                })}
                             </td>
                         )}
                         <td>{link.nodeIdentifier}</td>

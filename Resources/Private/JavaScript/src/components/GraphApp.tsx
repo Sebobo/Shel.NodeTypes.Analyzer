@@ -14,6 +14,20 @@ const useStyles = createUseStyles({
             height: '14px',
             alignSelf: 'center',
         },
+        /* Scrollbar styles for appContainer, its siblings (needed for React portals) and also for contentcanvas' body */
+        '& ::-webkit-scrollbar': {
+            width: '4px',
+            height: '4px',
+        },
+        '& ::-webkit-scrollbar-track': {
+            backgroundColor: 'transparent',
+        },
+        '& ::-webkit-scrollbar-thumb': {
+            backgroundColor: 'var(--colors-ContrastBright)',
+        },
+        '& ::-webkit-scrollbar-corner': {
+            backgroundColor: 'var(--colors-ContrastDark)',
+        },
     },
     tabPanel: {
         height: '100%',

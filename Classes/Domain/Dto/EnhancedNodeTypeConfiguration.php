@@ -64,6 +64,9 @@ final class EnhancedNodeTypeConfiguration implements \JsonSerializable
         if (!$nodeType->getDeclaredSuperTypes() && !$nodeType->isAbstract() && $nodeType->getName() !== 'unstructured') {
             $warnings[] = 'No supertypes and not abstract - please define either!';
         }
+        if (!$nodeType->isAbstract() && str_contains($nodeType->getName(), 'Mixin')) {
+            $warnings[] = 'Non-abstract node type name contains "Mixin" - please rename or define as abstract!';
+        }
 
         $childNodesConfiguration = [];
         $fullChildNodesConfiguration = $fullConfiguration['childNodes'] ?? [];

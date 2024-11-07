@@ -6,6 +6,7 @@ import { Tree } from '@neos-project/react-ui-components';
 
 import NodeTypeTreeNode from './NodeTypeTreeNode';
 import VendorSegmentTreeNode from './VendorSegmentTreeNode';
+import { nodeTypesState, treeDataState, hiddenNodeTypesState } from '../../../state';
 import { nodeTypesState, treeDataState } from '../../../state';
 
 const useStyles = createUseStyles({
@@ -17,6 +18,9 @@ const useStyles = createUseStyles({
 const NodeTypeTree: React.FC = () => {
     const classes = useStyles();
     const nodeTypes = useRecoilValue(nodeTypesState);
+    const hiddenNodeTypes = useRecoilValue(hiddenNodeTypesState);
+    const { treeData } = useRecoilValue(treeDataState);
+    const nodeTypes = useRecoilValue(nodeTypesState);
     const { treeData } = useRecoilValue(treeDataState);
 
     return (
@@ -24,6 +28,7 @@ const NodeTypeTree: React.FC = () => {
             {Object.keys(treeData)
                 .sort()
                 .map((segment, index) =>
+                    treeData[segment].nodeType && !hiddenNodeTypes.includes(treeData[segment].nodeType) ? (
                     treeData[segment].nodeType ? (
                         <NodeTypeTreeNode key={index} nodeType={nodeTypes[treeData[segment].nodeType]} />
                     ) : (

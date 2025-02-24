@@ -24,4 +24,5 @@ indent_size = 2
 [*.tsx]
 ij_typescript_spaces_within_object_literal_braces = true
 ij_typescript_spaces_within_imports = true
+ij_typescript_enforce_trailing_comma = keep
 ij_html_space_inside_empty_tag = true

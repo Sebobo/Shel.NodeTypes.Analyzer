@@ -37,17 +37,18 @@ const NodeAnalysisTab: React.FC = () => {
 
     return (
         <div className={classes.tabContentInner}>
-            <LoadingIndicator />
-            <div className={classes.left}>
-                <NodeTreeFilter />
-                <NodeTree />
-            </div>
-            <div className={classes.main}>
-                <NodeRenderer />
-            </div>
-            <div className={classes.right}>
-                <Inspector />
-            </div>
+            <LoadingIndicator>
+                <div className={classes.left}>
+                    <NodeTreeFilter />
+                    <NodeTree />
+                </div>
+                <div className={classes.main}>
+                    <NodeRenderer />
+                </div>
+                <div className={classes.right}>
+                    <Inspector />
+                </div>
+            </LoadingIndicator>
         </div>
     );
 };

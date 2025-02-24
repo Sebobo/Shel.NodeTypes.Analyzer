@@ -37,18 +37,20 @@ const useStyles = createUseStyles({
     },
 });
 
-const LoadingIndicator = () => {
+const LoadingIndicator: React.FC<{ children?: null | React.ReactElement | React.ReactElement[] }> = ({ children }) => {
     const classes = useStyles();
     const isLoading = useRecoilValue(loadingState);
 
     return (
         <>
-            {isLoading && (
+            {isLoading ? (
                 <div className={classes.loadingIndicator}>
                     <div className={classes.indicator}>
                         <div className={classes.bar} />
                     </div>
                 </div>
+            ) : (
+                children || null
             )}
         </>
     );

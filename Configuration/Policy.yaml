@@ -1,27 +1,29 @@
 privilegeTargets:
-  'Neos\Flow\Security\Authorization\Privilege\Method\MethodPrivilege':
+  Neos\Flow\Security\Authorization\Privilege\Method\MethodPrivilege:
     'Shel.NodeTypes.Analyzer:Backend.Module.Administration.NodeTypes.AnalyzeNodeTypes':
       matcher: 'method(Shel\NodeTypes\Analyzer\Controller\NodeTypesController->(?!initialize).*Action())'
-
-  'Neos\Neos\Security\Authorization\Privilege\ModulePrivilege':
+  Neos\Neos\Security\Authorization\Privilege\ModulePrivilege:
     'Shel.NodeTypes.Analyzer:Backend.Module.Administration.NodeTypes':
-      matcher: 'administration/nodetypes'
-
+      matcher: administration/nodetypes
 roles:
   'Shel.NodeTypes.Analyzer:NodeTypesAnalyzer':
     label: 'Nodetypes analyzer'
     description: 'Grants access to the nodetypes analyzer backend module'
     privileges:
-      # Grant access to the administration tab (not all its modules) so the module can be accessed
-      - privilegeTarget: 'Neos.Neos:Backend.Module.Administration'
+      -
+        privilegeTarget: 'Neos.Neos:Backend.Module.Administration'
         permission: GRANT
-      - privilegeTarget: 'Shel.NodeTypes.Analyzer:Backend.Module.Administration.NodeTypes.AnalyzeNodeTypes'
+      -
+        privilegeTarget: 'Shel.NodeTypes.Analyzer:Backend.Module.Administration.NodeTypes.AnalyzeNodeTypes'
         permission: GRANT
-      - privilegeTarget: 'Shel.NodeTypes.Analyzer:Backend.Module.Administration.NodeTypes'
+      -
+        privilegeTarget: 'Shel.NodeTypes.Analyzer:Backend.Module.Administration.NodeTypes'
         permission: GRANT
   'Neos.Neos:Administrator':
     privileges:
-      - privilegeTarget: 'Shel.NodeTypes.Analyzer:Backend.Module.Administration.NodeTypes.AnalyzeNodeTypes'
+      -
+        privilegeTarget: 'Shel.NodeTypes.Analyzer:Backend.Module.Administration.NodeTypes.AnalyzeNodeTypes'
         permission: GRANT
-      - privilegeTarget: 'Shel.NodeTypes.Analyzer:Backend.Module.Administration.NodeTypes'
+      -
+        privilegeTarget: 'Shel.NodeTypes.Analyzer:Backend.Module.Administration.NodeTypes'
         permission: GRANT

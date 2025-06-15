@@ -5,19 +5,18 @@ Neos:
         submodules:
           nodetypes:
             label: 'Shel.NodeTypes.Analyzer:Main:module.label'
-            controller: 'Shel\NodeTypes\Analyzer\Controller\NodeTypesController'
+            controller: Shel\NodeTypes\Analyzer\Controller\NodeTypesController
             description: 'Shel.NodeTypes.Analyzer:Main:module.description'
             icon: 'fas fa-sitemap'
             privilegeTarget: 'Shel.NodeTypes.Analyzer:Backend.Module.Administration.NodeTypes'
-            mainStylesheet: 'Lite'
+            mainStylesheet: Lite
             additionalResources:
               javaScripts:
                 - 'resource://Shel.NodeTypes.Analyzer/Public/Assets/main.bundle.js'
               styleSheets:
                 - 'resource://Shel.NodeTypes.Analyzer/Public/Assets/main.bundle.css'
-
     userInterface:
       translation:
         autoInclude:
           Shel.NodeTypes.Analyzer:
-            - 'Main'
+            - Main

@@ -16,13 +16,15 @@ final class NodeTypeUsage implements \JsonSerializable
     public bool $hidden;
     public readonly bool $onHiddenPage;
     private string $documentTitle;
+    #[\Neos\Flow\Annotations\Inject]
+    protected \Neos\Neos\Domain\NodeLabel\NodeLabelGeneratorInterface $nodeLabelGenerator;
 
     /**
      * @param string[] $breadcrumb
      */
     public function __construct(
-        private NodeInterface $node,
-        public readonly ?NodeInterface $documentNode,
+        private \Neos\ContentRepository\Core\Projection\ContentGraph\Node $node,
+        public readonly ?\Neos\ContentRepository\Core\Projection\ContentGraph\Node $documentNode,
         private string $url,
         public readonly array $breadcrumb = [],
     ) {
@@ -46,13 +48,15 @@ final class NodeTypeUsage implements \JsonSerializable
         $this->documentTitle = $documentTitle;
     }
 
-    public function getNode(): NodeInterface
+    public function getNode(): \Neos\ContentRepository\Core\Projection\ContentGraph\Node
     {
         return $this->node;
     }
 
     public function getWorkspaceName(): string
     {
+        // TODO 9.0 migration: !! Node::getWorkspace() does not make sense anymore concept-wise. In Neos < 9, it pointed to the workspace where the node was *at home at*. Now, the closest we have here is the node identity.
+
         return $this->node->getWorkspace()->getName();
     }
 
@@ -73,16 +77,22 @@ final class NodeTypeUsage implements \JsonSerializable
 
     public function toArray(): array
     {
+        // TODO 9.0 migration: !! Node::getWorkspace() does not make sense anymore concept-wise. In Neos < 9, it pointed to the workspace where the node was *at home at*. Now, the closest we have here is the node identity.
+
+        // TODO 9.0 migration: !! Node::getWorkspace() does not make sense anymore concept-wise. In Neos < 9, it pointed to the workspace where the node was *at home at*. Now, the closest we have here is the node identity.
+
+        // TODO 9.0 migration: !! Node::getWorkspace() does not make sense anymore concept-wise. In Neos < 9, it pointed to the workspace where the node was *at home at*. Now, the closest we have here is the node identity.
+
         return [
-            'title' => $this->node->getLabel(),
+            'title' => $this->nodeLabelGenerator->getLabel($this->node),
             'documentTitle' => $this->documentTitle,
             'documentIdentifier' => $this->documentNode?->getIdentifier(),
             'workspace' => $this->node->getWorkspace()->getName(),
             'url' => $this->url,
-            'nodeIdentifier' => $this->node->getIdentifier(),
+            'nodeIdentifier' => $this->node->aggregateId->value,
             'hidden' => $this->hidden,
             'onHiddenPage' => $this->onHiddenPage,
-            'dimensions' => $this->node->getDimensions(),
+            'dimensions' => $this->node->originDimensionSpacePoint->toLegacyDimensionArray(),
             'breadcrumb' => $this->breadcrumb,
         ];
     }

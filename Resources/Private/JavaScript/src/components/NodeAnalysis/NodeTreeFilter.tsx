@@ -8,7 +8,7 @@ import { useGraph, useIntl } from '../../core';
 import {
     appInitializationState,
     nodesState,
-    selectedNodeTreePath,
+    selectedNodeIdentifierState,
     workspaceFilterState,
     workspacesState,
 } from '../../state';
@@ -32,14 +32,14 @@ const NodeTreeFilter: React.FC = () => {
     const { translate } = useIntl();
     const { fetchNodes } = useGraph();
     const resetNodes = useResetRecoilState(nodesState);
-    const resetNodeTreePath = useResetRecoilState(selectedNodeTreePath);
+    const resetSelectedNodeIdentifier = useResetRecoilState(selectedNodeIdentifierState);
     const [selectedWorkspace, setSelectedWorkspace] = useRecoilState(workspaceFilterState);
     const workspaces = useRecoilValue(workspacesState);
     const setInitialized = useSetRecoilState(appInitializationState);
 
     const onChangeWorkspace = useCallback(async (workspaceName: string) => {
         setInitialized(false);
-        resetNodeTreePath();
+        resetSelectedNodeIdentifier();
         resetNodes();
         setSelectedWorkspace(workspaceName);
         await fetchNodes('/', workspaceName).then(() => setInitialized(true));

@@ -21,14 +21,15 @@
     }
   ],
   "require": {
-    "php": ">= 8.1",
-    "neos/neos": "^8.3 || ^9.0"
+    "php": ">= 8.2",
+    "neos/neos": "^9.0"
   },
   "replace": {
     "shel/contentrepository-debugger": "*"
   },
   "suggest": {
-    "justinrainbow/json-schema": "Allows validating of the generated nodetypes schema"
+    "justinrainbow/json-schema": "Allows validating of the generated nodetypes schema",
+    "league/csv": "Allows exporting the nodetypes schema to CSV files"
   },
   "autoload": {
     "psr-4": {

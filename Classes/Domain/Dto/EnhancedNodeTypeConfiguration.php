@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Shel\NodeTypes\Analyzer\Domain\Dto;
 
-use Neos\ContentRepository\Domain\Model\NodeType;
+use Neos\ContentRepository\Core\NodeType\NodeType;
 use Neos\Flow\Annotations as Flow;
 
 #[Flow\Proxy(false)]
@@ -45,7 +45,7 @@ final class EnhancedNodeTypeConfiguration implements \JsonSerializable
 
         $declaredSuperTypes = array_values(
             array_map(
-                static fn(NodeType $superType) => $superType->getName(),
+                static fn(NodeType $superType) => $superType->name,
                 $nodeType->getDeclaredSuperTypes()
             )
         );
@@ -61,10 +61,10 @@ final class EnhancedNodeTypeConfiguration implements \JsonSerializable
         }, $fullConfiguration['properties'] ?? []);
 
         $warnings = [];
-        if (!$nodeType->getDeclaredSuperTypes() && !$nodeType->isAbstract() && $nodeType->getName() !== 'unstructured') {
+        if ($nodeType->name->value !== 'unstructured' && !$nodeType->getDeclaredSuperTypes() && !$nodeType->isAbstract()) {
             $warnings[] = 'No supertypes and not abstract - please define either!';
         }
-        if (!$nodeType->isAbstract() && str_contains($nodeType->getName(), 'Mixin')) {
+        if (!$nodeType->isAbstract() && str_contains($nodeType->name->value, 'Mixin')) {
             $warnings[] = 'Non-abstract node type name contains "Mixin" - please rename or define as abstract!';
         }
 
@@ -84,7 +84,7 @@ final class EnhancedNodeTypeConfiguration implements \JsonSerializable
         $options = $fullConfiguration['options'] ?? [];
 
         return new self(
-            $nodeType->getName(),
+            $nodeType->name->value,
             $nodeType->getLabel(),
             $nodeType->getConfiguration('ui.icon'),
             $nodeType->isAbstract(),

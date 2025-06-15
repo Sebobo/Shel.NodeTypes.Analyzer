@@ -5,7 +5,7 @@ import { Tree, Icon } from '@neos-project/react-ui-components';
 
 import { dndTypes } from '../../../constants';
 import { useGraph } from '../../../core';
-import { nodesState, nodeTypesState, selectedNodeTreePath, workspaceFilterState } from '../../../state';
+import { nodesState, nodeTypesState, selectedNodeIdentifierState, workspaceFilterState } from '../../../state';
 
 interface NodeTreeNodeProps {
     node: CRNode;
@@ -14,14 +14,21 @@ interface NodeTreeNodeProps {
 }
 
 const NodeTreeNode = ({ node, level = 1 }: NodeTreeNodeProps) => {
-    const [collapsed, setCollapsed] = useState(node.path !== '/');
     const { fetchNodes } = useGraph();
+
     const nodes = useRecoilValue(nodesState);
     const nodeTypes = useRecoilValue(nodeTypesState);
-    const [selectedPath, setSelectedPath] = useRecoilState(selectedNodeTreePath);
-    const [isLoading, setIsLoading] = useState(false);
-    const [childNodesLoaded, setChildNodesLoaded] = useState(!node.hasChildNodes);
+    const [selectedNodeIdentifier, setSelectedNodeIdentifier] = useRecoilState(selectedNodeIdentifierState);
     const workspaceFilter = useRecoilValue(workspaceFilterState);
+
+    const [collapsed, setCollapsed] = useState(node.classification !== 'root');
+    const [isLoading, setIsLoading] = useState(false);
+    const [childNodes, setChildNodes] = useState(
+        Object.values(nodes)
+            .filter((n) => n.parentNodeIdentifier === node.identifier)
+            .map((n) => n.identifier)
+    );
+    const [childNodesLoaded, setChildNodesLoaded] = useState(node.childNodeCount === 0 || childNodes.length > 0);
 
     const nodeTypeConfiguration = nodeTypes[node.nodeType];
 
@@ -33,42 +40,37 @@ const NodeTreeNode = ({ node, level = 1 }: NodeTreeNodeProps) => {
     );
 
     useEffect(() => {
-        if (collapsed || childNodesLoaded) return;
-        const childNodesMissing = node.childNodePaths.some((path) => !nodes[path]);
-        if (childNodesMissing) {
-            setIsLoading(true);
-            fetchNodes(node.path, workspaceFilter).then((nodes) => {
-                console.debug(`Fetched ${Object.keys(nodes).length} child nodes for`, node.path, nodes);
-                setChildNodesLoaded(true);
-                setIsLoading(false);
-            });
-        } else {
+        if (isLoading || collapsed || childNodesLoaded) return;
+        setIsLoading(true);
+        fetchNodes(node.identifier, workspaceFilter).then((nodes) => {
+            console.debug(`Fetched ${Object.keys(nodes).length} child nodes for`, node.identifier, nodes);
+            setChildNodes(Object.keys(nodes));
             setChildNodesLoaded(true);
-        }
-    }, [collapsed, childNodesLoaded, nodes]);
+            setIsLoading(false);
+        });
+    }, [collapsed, childNodesLoaded, isLoading]);
 
     return (
         <Tree.Node>
             <Tree.Node.Header
-                isActive={selectedPath === node.path}
+                isActive={selectedNodeIdentifier === node.identifier}
                 isCollapsed={collapsed}
-                isFocused={selectedPath === node.path}
+                isFocused={selectedNodeIdentifier === node.identifier}
                 isLoading={isLoading}
-                label={`${node.label} (${node.childNodePaths.length})`}
+                label={`${node.label} (${node.childNodeCount})`}
                 title={node.label}
                 customIconComponent={icon}
                 nodeDndType={dndTypes.NODE_TYPE}
                 level={level}
                 onToggle={() => setCollapsed(!collapsed)}
-                onClick={() => setSelectedPath(node.path)}
-                hasChildren={node.hasChildNodes}
+                onClick={() => setSelectedNodeIdentifier(node.identifier)}
+                hasChildren={node.childNodeCount > 0}
                 hasError={false}
             />
             {!collapsed &&
-                node.hasChildNodes &&
-                childNodesLoaded &&
-                node.childNodePaths.map((childNodePath) => (
-                    <NodeTreeNode key={childNodePath} node={nodes[childNodePath]} level={level + 1} />
+                childNodes.length > 0 &&
+                childNodes.map((childNodeIdentifier) => (
+                    <NodeTreeNode key={childNodeIdentifier} node={nodes[childNodeIdentifier]} level={level + 1} />
                 ))}
         </Tree.Node>
     );

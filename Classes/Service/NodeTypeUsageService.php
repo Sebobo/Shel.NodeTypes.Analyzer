@@ -30,11 +30,6 @@ use Shel\NodeTypes\Analyzer\Domain\Dto\NodeTypeUsage;
 #[Flow\Scope('singleton')]
 class NodeTypeUsageService
 {
-    use CreateContentContextTrait;
-
-    #[Flow\Inject]
-    protected NodeTypeManager $nodeTypeManager;
-
     /**
      * @var VariableFrontend
      */
@@ -57,6 +52,8 @@ class NodeTypeUsageService
     protected $configurationCache;
 
     protected ?UriBuilder $uriBuilder = null;
+    #[\Neos\Flow\Annotations\Inject]
+    protected \Neos\ContentRepositoryRegistry\ContentRepositoryRegistry $contentRepositoryRegistry;
 
     /**
      * @return NodeTypeUsage[]
@@ -77,7 +74,9 @@ class NodeTypeUsageService
         }
 
         try {
-            $nodeType = $this->nodeTypeManager->getNodeType($nodeTypeName);
+            // TODO 9.0 migration: Make this code aware of multiple Content Repositories.
+            $contentRepository = $this->contentRepositoryRegistry->get(\Neos\ContentRepository\Core\SharedModel\ContentRepository\ContentRepositoryId::fromString('default'));
+            $nodeType = $contentRepository->getNodeTypeManager()->getNodeType($nodeTypeName);
         } catch (NodeTypeNotFoundException $e) {
             return [];
         }
@@ -94,6 +93,8 @@ class NodeTypeUsageService
 
         $nodeTypeUsages = [];
         foreach ($nodesByType as $nodeData) {
+            // TODO 9.0 migration: !! CreateContentContextTrait::createContextMatchingNodeData() is removed in Neos 9.0.
+
             $contentContext = $this->createContextMatchingNodeData($nodeData);
 
             try {
@@ -130,7 +131,7 @@ class NodeTypeUsageService
         return $nodeTypeUsages;
     }
 
-    protected function getNodeUri(ControllerContext $controllerContext, NodeInterface $node): string
+    protected function getNodeUri(ControllerContext $controllerContext, \Neos\ContentRepository\Core\Projection\ContentGraph\Node $node): string
     {
         $request = $controllerContext->getRequest()->getMainRequest();
 

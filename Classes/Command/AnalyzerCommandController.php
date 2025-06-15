@@ -19,6 +19,7 @@ class AnalyzerCommandController extends CommandController
     /** @noinspection PhpFullyQualifiedNameUsageInspection */
     public function validateNodeTypesCommand(): void
     {
+        /** @noinspection ClassConstantCanBeUsedInspection */
         if (!class_exists("\\JsonSchema\\Validator")) {
             $this->outputLine('Please require "justinrainbow/json-schema" in your composer.json to use this command.');
             exit(1);
@@ -30,9 +31,14 @@ class AnalyzerCommandController extends CommandController
 
         $schemaStorage = new \JsonSchema\SchemaStorage();
         $validator = new \JsonSchema\Validator(new \JsonSchema\Constraints\Factory($schemaStorage));
+        $schema = file_get_contents(self::SCHEMA_PATH);
+        if ($schema === false) {
+            $this->outputLine(sprintf('Could not read schema from "%s"', self::SCHEMA_PATH));
+            exit(1);
+        }
         $schemaStorage->addSchema(
             self::SCHEMA_NAME,
-            json_decode(file_get_contents(self::SCHEMA_PATH), false, 512, JSON_THROW_ON_ERROR)
+            json_decode($schema, false, 512, JSON_THROW_ON_ERROR)
         );
 
         $this->outputLine('Validating nodetypes schema...');

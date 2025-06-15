@@ -15,6 +15,8 @@ namespace Shel\NodeTypes\Analyzer\Controller;
 use Neos\Cache\Exception as CacheException;
 use Neos\ContentRepository\Core\ContentRepository;
 use Neos\ContentRepository\Core\DimensionSpace\DimensionSpacePoint;
+use Neos\ContentRepository\Core\Feature\Security\Exception\AccessDenied;
+use Neos\ContentRepository\Core\NodeType\NodeTypeName;
 use Neos\ContentRepository\Core\Projection\ContentGraph\Filter\CountChildNodesFilter;
 use Neos\ContentRepository\Core\Projection\ContentGraph\Filter\FindChildNodesFilter;
 use Neos\ContentRepository\Core\SharedModel\ContentRepository\ContentRepositoryId;
@@ -47,12 +49,12 @@ class NodeTypesController extends AbstractModuleController
     protected $defaultViewObjectName = FusionView::class;
 
     /**
-     * @var array
+     * @var string[]
      */
     protected $supportedMediaTypes = ['application/json', 'text/html'];
 
     /**
-     * @var array
+     * @var array<string, string>
      */
     protected $viewFormatToObjectNameMap = [
         'html' => FusionView::class,
@@ -107,7 +109,6 @@ class NodeTypesController extends AbstractModuleController
      */
     public function getNodesAction(
         string $parentNodeAggregateId,
-        array $dimensions = [],
         string $workspace = 'live'
     ): void {
         $contentRepository = $this->contentRepositoryRegistry->get(ContentRepositoryId::fromString('default'));
@@ -116,12 +117,12 @@ class NodeTypesController extends AbstractModuleController
         /** @var DimensionSpacePoint $firstDimensionSpacePoint */
         $firstDimensionSpacePoint = array_values($dimensionSpacePoints->points)[0] ?? null;
 
-        $subGraph = $contentRepository->getContentGraph(WorkspaceName::fromString($workspace))->getSubgraph(
+        $subgraph = $contentRepository->getContentGraph(WorkspaceName::fromString($workspace))->getSubgraph(
             $firstDimensionSpacePoint,
             NeosVisibilityConstraints::excludeRemoved()
         );
         // TODO: Support any type of CR, not just sites
-        $rootNode = $subGraph->findRootNodeByType(NodeTypeNameFactory::forSites());
+        $rootNode = $subgraph->findRootNodeByType(NodeTypeNameFactory::forSites());
 
         if (!$rootNode) {
             $this->view->assign('value', [
@@ -132,7 +133,7 @@ class NodeTypesController extends AbstractModuleController
         }
 
         $nodeAtPath = $parentNodeAggregateId ?
-            $subGraph->findNodeById(NodeAggregateId::fromString($parentNodeAggregateId)) :
+            $subgraph->findNodeById(NodeAggregateId::fromString($parentNodeAggregateId)) :
             $rootNode;
 
         // Only include workspaces in the root request
@@ -140,7 +141,7 @@ class NodeTypesController extends AbstractModuleController
 
         $nodes = [];
         if ($nodeAtPath) {
-            $childNodes = $subGraph->findChildNodes(
+            $childNodes = $subgraph->findChildNodes(
                 $nodeAtPath->aggregateId,
                 FindChildNodesFilter::create('Neos.Neos:Node')
             );
@@ -162,7 +163,7 @@ class NodeTypesController extends AbstractModuleController
                     $childNode,
                     $nodeAtPath,
                     $this->nodeLabelGenerator->getLabel($childNode),
-                    $subGraph->countChildNodes(
+                    $subgraph->countChildNodes(
                         $childNode->aggregateId,
                         CountChildNodesFilter::create('Neos.Neos:Node')
                     ),
@@ -194,7 +195,7 @@ class NodeTypesController extends AbstractModuleController
                     );
                     return [
                         'label' => $workspaceMetadata->title->value,
-                        'value' => $workspace->workspaceName,
+                        'value' => $workspace->workspaceName->value,
                     ];
                 })
             );
@@ -209,11 +210,34 @@ class NodeTypesController extends AbstractModuleController
 
     /**
      * Returns a usage list for a specified nodetype
-     * @throws CacheException
+     * @throws CacheException|AccessDenied
+     * TODO: Allow choosing a specific dimension space point
      */
-    public function getNodeTypeUsageAction(?string $nodeTypeName): void
+    public function getNodeTypeUsageAction(
+        string $nodeTypeName,
+        string $workspaceName = 'live',
+        string $contentRepositoryId = 'default'
+    ): void
     {
-        $usages = $this->nodeTypeUsageService->getNodeTypeUsages($this->controllerContext, $nodeTypeName);
+        $contentRepository = $this->contentRepositoryRegistry->get(
+            ContentRepositoryId::fromString($contentRepositoryId)
+        );
+        $variationGraph = $contentRepository->getVariationGraph();
+        $dimensionSpacePoints = $variationGraph->getDimensionSpacePoints();
+        /** @var DimensionSpacePoint $firstDimensionSpacePoint */
+        $firstDimensionSpacePoint = array_values($dimensionSpacePoints->points)[0] ?? null;
+
+        $subgraph = $contentRepository->getContentGraph(WorkspaceName::fromString($workspaceName))->getSubgraph(
+            $firstDimensionSpacePoint,
+            NeosVisibilityConstraints::excludeRemoved()
+        );
+
+        $usages = $this->nodeTypeUsageService->getNodeTypeUsages(
+            $this->controllerContext,
+            $contentRepository,
+            $subgraph,
+            NodeTypeName::fromString($nodeTypeName),
+        );
 
         foreach ($usages as $usage) {
             $this->nodeTypeUsageProcessor->processForAnalysis($usage, $this->controllerContext);
@@ -228,7 +252,7 @@ class NodeTypesController extends AbstractModuleController
     public function exportNodeTypesAction(bool $reduced = false): void
     {
         /** @noinspection ClassConstantCanBeUsedInspection */
-        if (!class_exists('\League\Csv\Writer')) {
+        if (!class_exists("\\League\\Csv\\Writer")) {
             throw new \RuntimeException(
                 'The League CSV library is not installed. Please install it via composer: composer require league/csv',
                 1749979967
@@ -306,17 +330,46 @@ class NodeTypesController extends AbstractModuleController
         exit;
     }
 
-    public function exportNodeTypeUsageAction(?string $nodeTypeName): void
+    /**
+     * @throws AccessDenied
+     * @throws CacheException
+     * @throws \League\Csv\CannotInsertRecord
+     * @throws \League\Csv\Exception
+     * TODO: Allow choosing a specific dimension space point
+     */
+    public function exportNodeTypeUsageAction(
+        string $nodeTypeName,
+        string $workspaceName = 'live',
+        string $contentRepositoryId = 'default'
+    ): void
     {
         /** @noinspection ClassConstantCanBeUsedInspection */
-        if (!class_exists('\League\Csv\Writer')) {
+        if (!class_exists("\\League\\Csv\\Writer")) {
             throw new \RuntimeException(
                 'The League CSV library is not installed. Please install it via composer: composer require league/csv',
                 1749979936
             );
         }
-        $usages = $this->nodeTypeUsageService->getNodeTypeUsages($this->controllerContext, $nodeTypeName);
-        $hasDimensions = false; // FIXME: Check CR for dimensions support
+        $contentRepository = $this->contentRepositoryRegistry->get(
+            ContentRepositoryId::fromString($contentRepositoryId)
+        );
+        $variationGraph = $contentRepository->getVariationGraph();
+        $dimensionSpacePoints = $variationGraph->getDimensionSpacePoints();
+        /** @var DimensionSpacePoint $firstDimensionSpacePoint */
+        $firstDimensionSpacePoint = array_values($dimensionSpacePoints->points)[0] ?? null;
+
+        $subgraph = $contentRepository->getContentGraph(WorkspaceName::fromString($workspaceName))->getSubgraph(
+            $firstDimensionSpacePoint,
+            NeosVisibilityConstraints::excludeRemoved()
+        );
+
+        $usages = $this->nodeTypeUsageService->getNodeTypeUsages(
+            $this->controllerContext,
+            $contentRepository,
+            $subgraph,
+            NodeTypeName::fromString($nodeTypeName),
+        );
+        $hasDimensions = $dimensionSpacePoints->count() > 1; // TODO: Verify if this is the right way to check for dimensions
 
         $headers = [
             'Title',
@@ -369,7 +422,7 @@ class NodeTypesController extends AbstractModuleController
             return (new TranslationParameterToken($id))
                 ->package($package)
                 ->source(str_replace('.', '/', $source))
-                ->translate();
+                ->translate() ?? $shortHandString;
         }
 
         return $shortHandString;

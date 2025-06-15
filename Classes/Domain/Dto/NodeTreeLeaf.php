@@ -25,12 +25,12 @@ final readonly class NodeTreeLeaf implements \JsonSerializable
 
     /**
      * @return array{
-     *     label: string,
-     *     name: string,
+     *     label: string|null,
+     *     name: string|null,
      *     classification: string,
      *     index: int,
      *     identifier: string,
-     *     parentNodeIdentifier: string,
+     *     parentNodeIdentifier: string|null,
      *     nodeType: string,
      *     properties: array<string, string>,
      *     hidden: bool,
@@ -41,12 +41,12 @@ final readonly class NodeTreeLeaf implements \JsonSerializable
     public function jsonSerialize(): array
     {
         return [
-            'label' => $this->label ?? $this->node->name->value,
-            'name' => $this->node->name,
-            'classification' => $this->node->classification,
+            'label' => $this->label ?? $this->node->name?->value,
+            'name' => $this->node->name?->value,
+            'classification' => $this->node->classification->value,
             'index' => $this->index,
-            'identifier' => $this->node->aggregateId,
-            'nodeType' => $this->node->nodeTypeName,
+            'identifier' => $this->node->aggregateId->value,
+            'nodeType' => $this->node->nodeTypeName->value,
             'parentNodeIdentifier' => $this->parentNode?->aggregateId->value,
             'properties' => $this->serializeProperties(),
             'hidden' => $this->node->tags->contain(NeosSubtreeTag::disabled()),
@@ -55,6 +55,9 @@ final readonly class NodeTreeLeaf implements \JsonSerializable
         ];
     }
 
+    /**
+     * @return array<string, string>
+     */
     private function serializeProperties(): array
     {
         $properties = [];

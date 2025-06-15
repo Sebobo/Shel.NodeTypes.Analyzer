@@ -15,10 +15,11 @@ final class EnhancedNodeTypeConfiguration implements \JsonSerializable
      * @param array<string, array{type: string}> $properties
      * @param string[] $declaredSuperTypes
      * @param array<string, int> $superTypes
-     * @param array<string, array{type: string, constraints: array{nodeTypes: array<string, bool>}} $childNodes
+     * @param array<string, array{type: string|null, constraints: array{nodeTypes: array<string, bool>}, allowedChildNodeTypes: string[]}> $childNodes
      * @param string[] $warnings
      * @param string[] $allowedChildNodeTypes
      * @param array<string, int> $usageCountByInheritance
+     * @param array<string, mixed> $options
      */
     public function __construct(
         public readonly string $name,
@@ -45,13 +46,15 @@ final class EnhancedNodeTypeConfiguration implements \JsonSerializable
 
         $declaredSuperTypes = array_values(
             array_map(
-                static fn(NodeType $superType) => $superType->name,
+                static fn(NodeType $superType) => $superType->name->value,
                 $nodeType->getDeclaredSuperTypes()
             )
         );
         $superTypes = $fullConfiguration['superTypes'] ?? [];
 
-        $declaredProperties = array_keys($nodeType->getLocalConfiguration()['properties'] ?? []);
+        /** @var array<string, mixed> $localProperties */
+        $localProperties = $nodeType->getLocalConfiguration()['properties'] ?? [];
+        $declaredProperties = array_keys($localProperties);
 
         // Filter all property configs except type
         $properties = array_map(static function ($definition) {
@@ -112,7 +115,7 @@ final class EnhancedNodeTypeConfiguration implements \JsonSerializable
     }
 
     /**
-     * @return string[]
+     * @return array<string, int>
      */
     public function getUsageCountByInheritance(): array
     {
@@ -138,6 +141,9 @@ final class EnhancedNodeTypeConfiguration implements \JsonSerializable
         return $this;
     }
 
+    /**
+     * @param array<string, array<string, bool>> $childNodesConstraints
+     */
     public function updateGrandChildNodeConstraints(array $childNodesConstraints): self
     {
         foreach ($childNodesConstraints as $childNodeName => $childNodeConstraints) {
@@ -146,6 +152,25 @@ final class EnhancedNodeTypeConfiguration implements \JsonSerializable
         return $this;
     }
 
+    /**
+     * @return array{
+     *     name: string,
+     *     label: string,
+     *     icon: string|null,
+     *     abstract: bool,
+     *     final: bool,
+     *     allowedChildNodeTypes: string[],
+     *     usageCount: int,
+     *     usageCountByInheritance: array<string, int>|\stdClass,
+     *     declaredProperties: string[],
+     *     properties: array<string, array{type: string}>|\stdClass,
+     *     declaredSuperTypes: string[],
+     *     superTypes: array<string, int>|\stdClass,
+     *     warnings: string[],
+     *     childNodes: array<string, array{type: string|null, constraints: array{nodeTypes: array<string, bool>}}>|\stdClass,
+     *     options: array<string, mixed>|\stdClass,
+     * }
+     */
     public function jsonSerialize(): array
     {
         return [

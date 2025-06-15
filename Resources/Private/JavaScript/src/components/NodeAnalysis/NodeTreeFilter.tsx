@@ -42,7 +42,7 @@ const NodeTreeFilter: React.FC = () => {
         resetSelectedNodeIdentifier();
         resetNodes();
         setSelectedWorkspace(workspaceName);
-        await fetchNodes('/', workspaceName).then(() => setInitialized(true));
+        await fetchNodes('', workspaceName).then(() => setInitialized(true));
     }, []);
 
     return (

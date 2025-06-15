@@ -40,5 +40,9 @@
     "neos": {
       "package-key": "Shel.NodeTypes.Analyzer"
     }
+  },
+  "scripts": {
+    "codestyle": "phpstan analyse --autoload-file ../../Libraries/autoload.php",
+    "codestyle:ci": "phpstan analyse"
   }
 }

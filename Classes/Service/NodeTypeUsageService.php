@@ -16,39 +16,33 @@ use Doctrine\ORM\EntityManagerInterface;
 use Neos\Cache\Exception as CacheException;
 use Neos\Cache\Frontend\StringFrontend;
 use Neos\Cache\Frontend\VariableFrontend;
-use Neos\ContentRepository\Domain\Model\NodeData;
-use Neos\ContentRepository\Domain\Model\NodeInterface;
-use Neos\ContentRepository\Domain\Service\NodeTypeManager;
-use Neos\ContentRepository\Exception\NodeTypeNotFoundException;
+use Neos\ContentRepository\Core\ContentRepository;
+use Neos\ContentRepository\Core\NodeType\NodeTypeName;
+use Neos\ContentRepository\Core\NodeType\NodeTypeNames;
+use Neos\ContentRepository\Core\Projection\ContentGraph\ContentSubgraphInterface;
+use Neos\ContentRepository\Core\Projection\ContentGraph\Filter\CountDescendantNodesFilter;
+use Neos\ContentRepository\Core\Projection\ContentGraph\Filter\FindAncestorNodesFilter;
+use Neos\ContentRepository\Core\Projection\ContentGraph\Filter\FindClosestNodeFilter;
+use Neos\ContentRepository\Core\Projection\ContentGraph\Filter\FindDescendantNodesFilter;
+use Neos\ContentRepository\Core\Projection\ContentGraph\Filter\NodeType\NodeTypeCriteria;
+use Neos\ContentRepository\Core\Projection\ContentGraph\Node;
+use Neos\ContentRepositoryRegistry\ContentRepositoryRegistry;
 use Neos\Flow\Annotations as Flow;
 use Neos\Flow\Mvc\Controller\ControllerContext;
 use Neos\Flow\Mvc\Routing\UriBuilder;
-use Neos\Neos\Controller\CreateContentContextTrait;
+use Neos\Neos\Domain\NodeLabel\NodeLabelGeneratorInterface;
+use Neos\Neos\Domain\Service\NodeTypeNameFactory;
 use Neos\Neos\Service\LinkingService;
 use Shel\NodeTypes\Analyzer\Domain\Dto\NodeTypeUsage;
 
 #[Flow\Scope('singleton')]
 class NodeTypeUsageService
 {
-    use CreateContentContextTrait;
-
-    #[Flow\Inject]
-    protected NodeTypeManager $nodeTypeManager;
-
     /**
      * @var VariableFrontend
      */
     #[Flow\Inject]
     protected $nodeTypesCache;
-
-    /**
-     * @var EntityManagerInterface
-     */
-    #[Flow\Inject]
-    protected $entityManager;
-
-    #[Flow\Inject]
-    protected LinkingService $linkingService;
 
     /**
      * @var StringFrontend
@@ -58,15 +52,27 @@ class NodeTypeUsageService
 
     protected ?UriBuilder $uriBuilder = null;
 
+    public function __construct(
+        protected ContentRepositoryRegistry $contentRepositoryRegistry,
+        protected NodeLabelGeneratorInterface $nodeLabelGenerator,
+        protected EntityManagerInterface $entityManager,
+        protected LinkingService $linkingService,
+    ) {
+    }
+
     /**
      * @return NodeTypeUsage[]
      * @throws CacheException
      */
-    public function getNodeTypeUsages(ControllerContext $controllerContext, string $nodeTypeName): array
-    {
+    public function getNodeTypeUsages(
+        ControllerContext $controllerContext,
+        ContentRepository $contentRepository,
+        ContentSubgraphInterface $subgraph,
+        NodeTypeName $nodeTypeName
+    ): array {
         $nodeTypesCacheKey = sprintf(
             'NodeTypes_Usage_%s_%s',
-            md5($nodeTypeName),
+            md5($nodeTypeName->value),
             $this->configurationCache->get('ConfigurationVersion')
         );
 
@@ -76,62 +82,111 @@ class NodeTypeUsageService
             return $nodeTypeUsages;
         }
 
-        try {
-            $nodeType = $this->nodeTypeManager->getNodeType($nodeTypeName);
-        } catch (NodeTypeNotFoundException $e) {
+        $nodeType = $contentRepository->getNodeTypeManager()->getNodeType($nodeTypeName);
+        if (!$nodeType) {
             return [];
         }
 
-        $qb = $this->entityManager->createQueryBuilder();
-        /** @var NodeData[] $nodeTypeUsages */
-        $nodesByType = $qb->select('n')
-            ->from(NodeData::class, 'n')
-            ->andWhere('n.nodeType = :nodeType')
-            ->andWhere('n.removed = false')
-            ->setParameter('nodeType', $nodeType)
-            ->getQuery()
-            ->execute();
-
-        $nodeTypeUsages = [];
-        foreach ($nodesByType as $nodeData) {
-            $contentContext = $this->createContextMatchingNodeData($nodeData);
-
-            try {
-                $node = $contentContext->getNodeByIdentifier($nodeData->getIdentifier());
-            } catch (\Exception) {
-                continue;
-            }
-
-            if (!$node) {
-                continue;
-            }
-
-            $breadcrumb = [];
-            $documentNode = $node;
-            while ($documentNode->getParent() && !$documentNode->getNodeType()->isOfType('Neos.Neos:Document')) {
-                $documentNode = $documentNode->getParent();
-                if ($documentNode) {
-                    $breadcrumb[] = $documentNode->getLabel();
-                }
-            }
-
-            $url = '';
-            if ($documentNode->getNodeType()->isOfType('Neos.Neos:Document')) {
-                $url = $this->getNodeUri($controllerContext, $documentNode);
-            }
-            $nodeTypeUsages[] = new NodeTypeUsage($node, $documentNode, $url, array_reverse($breadcrumb));
+        $rootNode = $subgraph->findRootNodeByType(NodeTypeNameFactory::forSites());
+        if (!$rootNode) {
+            return [];
         }
 
-        usort($nodeTypeUsages, static function (NodeTypeUsage $a, NodeTypeUsage $b) {
-            return $a->getDocumentTitle() <=> $b->getDocumentTitle();
-        });
+        $nodes = $subgraph->findDescendantNodes(
+    $rootNode->aggregateId,
+            FindDescendantNodesFilter::create(
+                NodeTypeCriteria::createWithAllowedNodeTypeNames(
+                    NodeTypeNames::fromArray([$nodeTypeName])
+                )
+            )
+        );
 
+        $nodeTypeUsages = [];
+        foreach ($nodes as $node) {
+            $breadcrumb = [];
+            $closestDocumentNode = $subgraph->findClosestNode(
+                $node->aggregateId,
+                FindClosestNodeFilter::create(
+                    'Neos.Neos:Document',
+                )
+            );
+            if (!$closestDocumentNode) {
+                continue;
+            }
+            $ancestors = $subgraph->findAncestorNodes(
+                $closestDocumentNode->aggregateId,
+                FindAncestorNodesFilter::create(
+                    'Neos.Neos:Document',
+                )
+            );
+            foreach ($ancestors as $ancestorNode) {
+                $breadcrumb[] = $this->nodeLabelGenerator->getLabel($ancestorNode);
+            }
+
+            $url = $this->getNodeUri($controllerContext, $closestDocumentNode);
+            $nodeTypeUsages[] = NodeTypeUsage::fromNode(
+                $node,
+                $this->nodeLabelGenerator->getLabel($node),
+                $closestDocumentNode,
+                $this->nodeLabelGenerator->getLabel($closestDocumentNode),
+                $url,
+                $subgraph->getWorkspaceName(),
+                array_reverse($breadcrumb)
+            );
+        }
+        usort($nodeTypeUsages, static function (NodeTypeUsage $a, NodeTypeUsage $b) {
+            return $a->documentLabel <=> $b->documentLabel;
+        });
         $this->nodeTypesCache->set($nodeTypesCacheKey, $nodeTypeUsages);
         return $nodeTypeUsages;
     }
 
-    protected function getNodeUri(ControllerContext $controllerContext, NodeInterface $node): string
-    {
+    /**
+     * @throws CacheException
+     */
+    public function getNodeTypeUsageCount(
+        ContentRepository $contentRepository,
+        ContentSubgraphInterface $subgraph,
+        NodeTypeName $nodeTypeName
+    ): int {
+        $nodeTypesCacheKey = sprintf(
+            'NodeTypes_Usage_Count_%s_%s',
+            md5($nodeTypeName->value),
+            $this->configurationCache->get('ConfigurationVersion')
+        );
+
+        /** @var int $nodeTypeUsages */
+        $nodeTypeUsages = $this->nodeTypesCache->get($nodeTypesCacheKey);
+        if ($nodeTypeUsages) {
+            return $nodeTypeUsages;
+        }
+
+        $nodeType = $contentRepository->getNodeTypeManager()->getNodeType($nodeTypeName);
+        if (!$nodeType) {
+            return 0;
+        }
+
+        $rootNode = $subgraph->findRootNodeByType(NodeTypeNameFactory::forSites());
+        if (!$rootNode) {
+            return 0;
+        }
+
+        $nodeTypeUsages = $subgraph->countDescendantNodes(
+    $rootNode->aggregateId,
+            CountDescendantNodesFilter::create(
+                NodeTypeCriteria::createWithAllowedNodeTypeNames(
+                    NodeTypeNames::fromArray([$nodeTypeName])
+                )
+            )
+        );
+        $this->nodeTypesCache->set($nodeTypesCacheKey, $nodeTypeUsages);
+        return $nodeTypeUsages;
+    }
+
+    protected function getNodeUri(
+        ControllerContext $controllerContext,
+        Node $node
+    ): string {
         $request = $controllerContext->getRequest()->getMainRequest();
 
         if (!$this->uriBuilder) {

@@ -1,6 +1,6 @@
 export { searchTermState } from './searchTermState';
 export { nodeTypeFilterState } from './nodeTypeFilterState';
-export { selectedNodeTreePath } from './selectedNodeTreePath';
+export { selectedNodeIdentifierState } from './selectedNodeIdentifierState';
 export { appInitializationState } from './appInitializationState';
 export { loadingState } from './loadingState';
 export { nodeTypesState } from './nodeTypesState';

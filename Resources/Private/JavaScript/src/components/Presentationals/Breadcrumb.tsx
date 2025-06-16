@@ -28,8 +28,8 @@ const useStyles = createUseStyles({
 
 type BreadcrumbProps = {
     handleHomeClick: () => void;
-    handleSegmentClick: (index: number) => void;
-    parts: string[];
+    handleSegmentClick: (identifier: string) => void;
+    parts: { label: string; identifier: string }[];
     currentIcon?: string;
 };
 
@@ -47,7 +47,7 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ handleHomeClick, handleSegmentC
                     onClick={() => handleHomeClick()}
                 />
             </li>
-            {parts.slice(1, -1).map((part, index) => (
+            {parts.slice(1, -1).map(({ label, identifier }, index) => (
                 <React.Fragment key={index}>
                     <li>
                         <Icon icon="chevron-right" />
@@ -57,9 +57,9 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ handleHomeClick, handleSegmentC
                             size="small"
                             style="transparent"
                             hoverStyle="brand"
-                            onClick={() => handleSegmentClick(index + 1)}
+                            onClick={() => handleSegmentClick(identifier)}
                         >
-                            {part}
+                            {label}
                         </Button>
                     </li>
                 </React.Fragment>
@@ -71,7 +71,7 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ handleHomeClick, handleSegmentC
                     </li>
                     <li className={classes.text}>
                         {currentIcon && <Icon icon={currentIcon} />}
-                        {parts[parts.length - 1]}
+                        {parts[parts.length - 1].label}
                     </li>
                 </React.Fragment>
             )}

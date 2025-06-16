@@ -16,18 +16,19 @@ use Doctrine\ORM\EntityManagerInterface;
 use Neos\Cache\Exception;
 use Neos\Cache\Frontend\StringFrontend;
 use Neos\Cache\Frontend\VariableFrontend;
-use Neos\ContentRepository\Domain\Model\NodeData;
-use Neos\ContentRepository\Domain\Model\NodeType;
-use Neos\ContentRepository\Domain\Service\NodeTypeManager;
+use Neos\ContentRepository\Core\ContentRepository;
+use Neos\ContentRepository\Core\DimensionSpace\DimensionSpacePoint;
+use Neos\ContentRepository\Core\NodeType\NodeType;
+use Neos\ContentRepository\Core\SharedModel\ContentRepository\ContentRepositoryId;
+use Neos\ContentRepository\Core\SharedModel\Node\NodeName;
+use Neos\ContentRepository\Core\SharedModel\Workspace\WorkspaceName;
+use Neos\ContentRepositoryRegistry\ContentRepositoryRegistry;
 use Neos\Flow\Annotations as Flow;
 use Shel\NodeTypes\Analyzer\Domain\Dto\EnhancedNodeTypeConfiguration;
 
 #[Flow\Scope("singleton")]
 class NodeTypeGraphService
 {
-
-    #[Flow\Inject]
-    protected NodeTypeManager $nodeTypeManager;
 
     /**
      * @var VariableFrontend
@@ -36,16 +37,18 @@ class NodeTypeGraphService
     protected $nodeTypesCache;
 
     /**
-     * @var EntityManagerInterface
-     */
-    #[Flow\Inject]
-    protected $entityManager;
-
-    /**
      * @var StringFrontend
      */
     #[Flow\Inject]
     protected $configurationCache;
+
+    public function __construct(
+        protected ContentRepositoryRegistry $contentRepositoryRegistry,
+        protected NodeTypeUsageService $nodeTypeUsageService,
+        protected EntityManagerInterface $entityManager,
+    ) {
+    }
+
 
     /**
      * @return array<string, EnhancedNodeTypeConfiguration>
@@ -61,15 +64,27 @@ class NodeTypeGraphService
                 return $nodeTypes;
             }
         }
+        // TODO 9.0 migration: Make this code aware of multiple Content Repositories.
+        $contentRepository = $this->contentRepositoryRegistry->get(ContentRepositoryId::fromString('default'));
+        $variationGraph = $contentRepository->getVariationGraph();
+        $dimensionSpacePoints = $variationGraph->getDimensionSpacePoints();
+        /** @var DimensionSpacePoint $firstDimensionSpacePoint */
+        $firstDimensionSpacePoint = array_values($dimensionSpacePoints->points)[0] ?? null;
+        $subgraph = $contentRepository->getContentSubgraph(
+            WorkspaceName::fromString('live'),
+            $firstDimensionSpacePoint,
+        );
 
-        $nodeTypes = $this->nodeTypeManager->getNodeTypes();
-        $nodeTypeUsage = $this->getNodeTypeUsageQuery();
+        $nodeTypes = $contentRepository->getNodeTypeManager()->getNodeTypes();
 
         $nodeTypes = array_reduce(
             $nodeTypes,
-            function (array $carry, NodeType $nodeType) use ($nodeTypes, $nodeTypeUsage) {
-                $nodeTypeName = $nodeType->getName();
-                $usageCount = (int)($nodeTypeUsage[$nodeTypeName] ?? 0);
+            function (array $carry, NodeType $nodeType) use ($nodeTypes, $subgraph, $contentRepository) {
+                $usageCount = $this->nodeTypeUsageService->getNodeTypeUsageCount(
+                    $contentRepository,
+                    $subgraph,
+                    $nodeType->name,
+                );
 
                 $instantiableNodeTypes = array_filter($nodeTypes, static function (NodeType $nodeType) {
                     return !$nodeType->isAbstract();
@@ -89,16 +104,18 @@ class NodeTypeGraphService
                     function (array $carry, string $childNodeName) use (
                         $childNodes,
                         $nodeType,
-                        $instantiableNodeTypes
+                        $instantiableNodeTypes,
+                        $contentRepository
                     ) {
-                        $allowedGrandChildNodeTypes = $childNodes[$childNodeName];
-                        if (is_array($allowedGrandChildNodeTypes)) {
-                            $allowedGrandChildNodeTypes = $this->generateAllowedGrandChildNodeTypes(
+                        $allowedGrandChildNodeTypes = $childNodes[$childNodeName]['allowedChildNodeTypes'] ?? [];
+                        if ($allowedGrandChildNodeTypes) {
+                            $allowedGrandChildNodeTypeMap = $this->generateAllowedGrandChildNodeTypes(
                                 $childNodeName,
                                 $nodeType,
-                                $instantiableNodeTypes
+                                $instantiableNodeTypes,
+                                $contentRepository,
                             );
-                            $carry[$childNodeName] = $allowedGrandChildNodeTypes;
+                            $carry[$childNodeName] = $allowedGrandChildNodeTypeMap;
                         }
                         // TODO: Else case should mark child definition as broken for the ui
                         return $carry;
@@ -106,7 +123,9 @@ class NodeTypeGraphService
                     []
                 );
 
-                $carry[$nodeTypeName] = $enhancedNodeTypeConfiguration->updateGrandChildNodeConstraints($grandChildNodeConstraints);
+                $carry[$nodeType->name->value] = $enhancedNodeTypeConfiguration->updateGrandChildNodeConstraints(
+                    $grandChildNodeConstraints
+                );
                 return $carry;
             },
             []
@@ -132,29 +151,9 @@ class NodeTypeGraphService
     }
 
     /**
-     * Return the usage count of each nodetype in the content repository
-     *
-     * @return array<string, int>
-     */
-    public function getNodeTypeUsageQuery(): array
-    {
-        $qb = $this->entityManager->createQueryBuilder();
-        $nodeTypeUsage = $qb->select('n.nodeType, COUNT(n.identifier) as count')
-            ->from(NodeData::class, 'n')
-            ->groupBy('n.nodeType')
-            ->andWhere('n.removed = false')
-            ->getQuery()
-            ->getScalarResult();
-
-        $nodeTypes = array_column($nodeTypeUsage, 'nodeType');
-        $usageCount = array_column($nodeTypeUsage, 'count');
-
-        return array_combine($nodeTypes, $usageCount);
-    }
-
-    /**
      * Returns the list of all allowed sub-nodetypes of the given node
      *
+     * @param NodeType[] $nodeTypes
      * @return string[]
      */
     public function generateAllowedChildNodeTypes(NodeType $baseNodeType, array $nodeTypes): array
@@ -163,7 +162,7 @@ class NodeTypeGraphService
             $nodeTypes,
             static function (array $carry, NodeType $nodeType) use ($baseNodeType) {
                 if ($baseNodeType->allowsChildNodeType($nodeType)) {
-                    $carry[] = $nodeType->getName();
+                    $carry[] = $nodeType->name->value;
                 }
                 return $carry;
             },
@@ -182,14 +181,19 @@ class NodeTypeGraphService
     public function generateAllowedGrandChildNodeTypes(
         string $childName,
         NodeType $baseNodeType,
-        array $nodeTypes
+        array $nodeTypes,
+        ContentRepository $contentRepository,
     ): array {
         return array_reduce(
             $nodeTypes,
-            static function (array $carry, NodeType $nodeType) use ($baseNodeType, $childName) {
+            static function (array $carry, NodeType $nodeType) use ($baseNodeType, $childName, $contentRepository) {
                 try {
-                    if ($baseNodeType->allowsGrandchildNodeType($childName, $nodeType)) {
-                        $carry[$nodeType->getName()] = true;
+                    if ($contentRepository->getNodeTypeManager()->isNodeTypeAllowedAsChildToTetheredNode(
+                        $baseNodeType->name,
+                        NodeName::fromString($childName),
+                        $nodeType->name
+                    )) {
+                        $carry[$nodeType->name->value] = true;
                     }
                 } catch (\InvalidArgumentException) {
                     // Skip non autogenerated child nodes

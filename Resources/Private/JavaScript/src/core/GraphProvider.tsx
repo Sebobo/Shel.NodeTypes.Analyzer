@@ -26,7 +26,7 @@ interface GraphProviderValues extends AppState {
     endpoints: Actions;
     dependencyData: Dependencies;
     fetchGraphData: () => Promise<void>;
-    fetchNodes: (path: string, workspace: string) => Promise<CRNodeList>;
+    fetchNodes: (parentNodeAggregateId: NodeAggregateIdentifier, workspace: string) => Promise<CRNodeList>;
     dispatch: Dispatch<AppAction>;
     getNodeTypeUsageLinks: (nodeTypeName: NodeTypeName) => Promise<void | NodeTypeUsageLink[]>;
 }
@@ -102,12 +102,12 @@ const GraphProvider = ({ children, endpoints }: GraphProviderProps): ReactElemen
         }
     }, []);
 
-    const fetchNodes = useCallback(async (path: string, workspace: string): Promise<CRNodeList> => {
+    const fetchNodes = useCallback(async (parentNodeAggregateId: string, workspace: string): Promise<CRNodeList> => {
         try {
             const { nodes: newNodes, workspaces } = await fetchData(
                 endpoints.getNodes,
                 {
-                    path,
+                    parentNodeAggregateId,
                     workspace,
                 },
                 'GET'
@@ -131,7 +131,7 @@ const GraphProvider = ({ children, endpoints }: GraphProviderProps): ReactElemen
      * Runs initial request to fetch all nodetype definitions
      */
     useEffect(() => {
-        Promise.all([fetchGraphData(), fetchNodes('/', workspaceFilter)]).then(() => setAppInitializationState(true));
+        Promise.all([fetchGraphData(), fetchNodes('', workspaceFilter)]).then(() => setAppInitializationState(true));
     }, []);
 
     /**

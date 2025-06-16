@@ -2,7 +2,7 @@ import React from 'react';
 import { useRecoilValue } from 'recoil';
 import { createUseStyles } from 'react-jss';
 
-import { nodesState, selectedNodeTreePath } from '../../../state';
+import { nodesState, selectedNodeIdentifierState } from '../../../state';
 import { PropertyList, PropertyListItem } from '../../Presentationals';
 import SelectedNodeBreadcrumb from './SelectedNodeBreadcrumb';
 
@@ -16,10 +16,10 @@ const useStyles = createUseStyles({
 
 const NodeRenderer: React.FC = () => {
     const classes = useStyles();
-    const selectedNodePath = useRecoilValue(selectedNodeTreePath);
+    const selectedNodeIdentifier = useRecoilValue(selectedNodeIdentifierState);
     const nodes = useRecoilValue(nodesState);
 
-    const selectedNode = nodes[selectedNodePath];
+    const selectedNode = nodes[selectedNodeIdentifier];
 
     return selectedNode ? (
         <div>
@@ -29,7 +29,6 @@ const NodeRenderer: React.FC = () => {
                 <br />
                 <PropertyList>
                     <PropertyListItem label="Label" value={selectedNode.label} />
-                    <PropertyListItem label="Path" value={selectedNode.path} />
                     <PropertyListItem label="Identifier" value={selectedNode.identifier} />
                     {selectedNode.removed && <PropertyListItem label="Removed" />}
                     {selectedNode.hidden && <PropertyListItem label="Hidden" />}

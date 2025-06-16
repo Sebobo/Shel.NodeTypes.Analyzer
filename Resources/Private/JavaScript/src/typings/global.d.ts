@@ -59,7 +59,6 @@ type NodeTypeConfiguration = {
     };
 };
 type NodeTypeConfigurations = Record<string, NodeTypeConfiguration>;
-type NodeTypeName = string;
 type NodeTypeGroup = {
     name: string;
     color: string;
@@ -125,20 +124,20 @@ type Dependencies = {
 };
 
 // Node tree related types
-type NodePath = string;
+type NodeTypeName = string;
+type NodeAggregateIdentifier = string;
 type CRNode = {
     label: string;
     name: string;
+    classification: 'root' | 'regular' | 'tethered';
     index: integer;
     nodeType: NodeTypeName;
-    identifier: string;
+    identifier: NodeAggregateIdentifier;
+    parentNodeIdentifier: NodeAggregateIdentifier | null;
     hidden: boolean;
     removed: boolean;
     properties: Record<string, any>;
-    path: NodePath;
-    parentPath: NodePath;
-    hasChildNodes: boolean;
-    childNodePaths: NodePath[];
+    childNodeCount: number;
 };
 
-type CRNodeList = Record<NodePath, CRNode>;
+type CRNodeList = Record<NodeAggregateIdentifier, CRNode>;

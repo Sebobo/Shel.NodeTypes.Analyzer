@@ -1,36 +1,32 @@
 import React, { useCallback, useMemo } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 
-import { nodesState, selectedNodeTreePath } from '../../../state';
+import { nodesState, selectedNodeIdentifierState } from '../../../state';
 import Breadcrumb from '../../Presentationals/Breadcrumb';
 
 const SelectedNodeBreadcrumb: React.FC = () => {
-    const [selectedNodePath, setSelectedNodePath] = useRecoilState(selectedNodeTreePath);
+    const [selectedNodeIdentifier, setSelectedNodeIdentifier] = useRecoilState(selectedNodeIdentifierState);
     const nodes = useRecoilValue(nodesState);
 
-    const selectedNode = nodes[selectedNodePath];
+    const selectedNode = nodes[selectedNodeIdentifier];
 
     const parts = useMemo(() => {
         let currentNode = selectedNode;
         const parts = [];
         do {
-            parts.push(currentNode.name);
-            currentNode = nodes[currentNode.parentPath];
+            parts.push({ label: currentNode.label, identifier: currentNode.identifier });
+            currentNode = nodes[currentNode.parentNodeIdentifier];
         } while (currentNode);
         return parts.reverse();
-    }, [selectedNodePath]);
+    }, [selectedNodeIdentifier]);
 
     const handleHomeClick = useCallback(() => {
-        setSelectedNodePath('/');
+        setSelectedNodeIdentifier('');
     }, []);
-    const handleSegmentClick = useCallback(
-        (index: number) => {
-            setSelectedNodePath(parts.slice(0, index + 1).join('/'));
-        },
-        [parts]
-    );
 
-    return <Breadcrumb parts={parts} handleHomeClick={handleHomeClick} handleSegmentClick={handleSegmentClick} />;
+    return (
+        <Breadcrumb parts={parts} handleHomeClick={handleHomeClick} handleSegmentClick={setSelectedNodeIdentifier} />
+    );
 };
 
 export default React.memo(SelectedNodeBreadcrumb);

@@ -4,68 +4,79 @@ declare(strict_types=1);
 
 namespace Shel\NodeTypes\Analyzer\Domain\Dto;
 
-use Neos\ContentRepository\Domain\Model\NodeInterface;
+use Neos\ContentRepository\Core\Projection\ContentGraph\Node;
 use Neos\Flow\Annotations as Flow;
 use Neos\Media\Domain\Model\AssetInterface;
+use Neos\Neos\Domain\SubtreeTagging\NeosSubtreeTag;
 
-/**
- * @Flow\Proxy(false)
- */
-final class NodeTreeLeaf implements \JsonSerializable
+#[Flow\Proxy(false)]
+final readonly class NodeTreeLeaf implements \JsonSerializable
 {
 
-    private NodeInterface $node;
-
-    private function __construct(NodeInterface $node)
+    public function __construct(
+        private Node $node,
+        private ?Node $parentNode = null,
+        private ?string $label = null,
+        private int $childNodeCount = 0,
+        private int $index = 0,
+    )
     {
-        $this->node = $node;
     }
 
-    public static function fromNode(NodeInterface $node): self
-    {
-        return new self($node);
-    }
-
+    /**
+     * @return array{
+     *     label: string|null,
+     *     name: string|null,
+     *     classification: string,
+     *     index: int,
+     *     identifier: string,
+     *     parentNodeIdentifier: string|null,
+     *     nodeType: string,
+     *     properties: array<string, string>,
+     *     hidden: bool,
+     *     removed: bool,
+     *     childNodeCount: int,
+     * }
+     */
     public function jsonSerialize(): array
     {
-        $nodeTypeName = $this->getNodeTypeName();
-        $isUnstructured = $this->node->getNodeType()->isOfType('unstructured');
-        $label = $isUnstructured ? $this->node->getName() : $this->node->getLabel();
-
         return [
-            'label' => $label,
-            'name' => $this->node->getName(),
-            'index' => $this->node->getIndex(),
-            'identifier' => $this->node->getIdentifier(),
-            'nodeType' => $nodeTypeName,
-            'path' => $this->node->getPath(),
-            'parentPath' => $this->node->getParentPath(),
-            'properties' => $this->serializeProperties($this->node),
-            'hidden' => $this->node->isHidden(),
-            'removed' => $this->node->isRemoved(),
-            'hasChildNodes' => $this->node->hasChildNodes(),
-            'childNodePaths' => array_map(static fn ($node) => $node->getPath(), $this->node->getChildNodes()),
+            'label' => $this->label ?? $this->node->name?->value,
+            'name' => $this->node->name?->value,
+            'classification' => $this->node->classification->value,
+            'index' => $this->index,
+            'identifier' => $this->node->aggregateId->value,
+            'nodeType' => $this->node->nodeTypeName->value,
+            'parentNodeIdentifier' => $this->parentNode?->aggregateId->value,
+            'properties' => $this->serializeProperties(),
+            'hidden' => $this->node->tags->contain(NeosSubtreeTag::disabled()),
+            'removed' => $this->node->tags->contain(NeosSubtreeTag::removed()),
+            'childNodeCount' => $this->childNodeCount,
         ];
     }
 
-    private function serializeProperties(NodeInterface $node): array
+    /**
+     * @return array<string, string>
+     */
+    private function serializeProperties(): array
     {
         $properties = [];
-        foreach ($node->getProperties() as $propertyName => $propertyValue) {
+        foreach ($this->node->properties as $propertyName => $propertyValue) {
             if ($propertyValue instanceof AssetInterface) {
                 $propertyValue = $propertyValue->getTitle();
-            } elseif ($propertyValue instanceof \DateTime) {
+            } elseif ($propertyValue instanceof \DateTimeInterface) {
                 $propertyValue = $propertyValue->format('Y-m-d H:i:s');
             } elseif (is_array($propertyValue)) {
-                $propertyValue = json_encode($propertyValue);
+                try {
+                    // Ensure that the array is JSON serializable
+                    $propertyValue = json_encode($propertyValue, JSON_THROW_ON_ERROR);
+                } catch (\JsonException) {
+                    // If encoding fails, we can log or handle the error as needed
+                    $propertyValue = [];
+                }
             }
             $properties[$propertyName] = (string)$propertyValue;
         }
         return $properties;
-    }
-
-    protected function getNodeTypeName(): string
-    {
-        return $this->node->getNodeType()->getName();
     }
 }

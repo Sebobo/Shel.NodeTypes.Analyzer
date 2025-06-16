@@ -17,17 +17,25 @@ const NodeTypeBreadcrumb: React.FC = () => {
 
     const handleHomeClick = () => dispatch({ type: Action.Reset });
 
-    const handleSegmentClick = (index: number) => {
+    const handleSegmentClick = (identifier: string) => {
         const newPath = currentPath
             .split('.')
-            .slice(0, index + 1)
+            .slice(0, parseInt(identifier, 10) + 1)
             .join('.');
         dispatch({ type: Action.SelectPath, payload: newPath });
     };
 
+    const parts = currentPath
+        .split('.')
+        .filter((segment) => segment)
+        .map((segment, index) => ({
+            label: segment,
+            identifier: `${index}`,
+        }));
+
     return (
         <Breadcrumb
-            parts={currentPath.split('.').filter((segment) => segment)}
+            parts={parts}
             currentIcon={selectedNodeType?.icon}
             handleHomeClick={handleHomeClick}
             handleSegmentClick={handleSegmentClick}

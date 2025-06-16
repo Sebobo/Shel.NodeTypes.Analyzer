@@ -44,5 +44,10 @@
   "scripts": {
     "codestyle": "phpstan analyse --autoload-file ../../Libraries/autoload.php",
     "codestyle:ci": "phpstan analyse"
+  },
+  "config": {
+    "allow-plugins": {
+      "neos/composer-plugin": true
+    }
   }
 }

@@ -6,6 +6,7 @@ namespace Shel\NodeTypes\Analyzer\Domain\Dto;
 
 use Neos\ContentRepository\Domain\Model\NodeInterface;
 use Neos\Flow\Annotations as Flow;
+use Neos\Media\Domain\Model\Asset;
 use Neos\Media\Domain\Model\AssetInterface;
 
 /**
@@ -52,12 +53,20 @@ final class NodeTreeLeaf implements \JsonSerializable
     {
         $properties = [];
         foreach ($node->getProperties() as $propertyName => $propertyValue) {
+            if ($propertyValue instanceof Asset) {
+                $propertyValue = '[' . $propertyValue::class . '] ' . $propertyValue->getLabel();
+            } else
             if ($propertyValue instanceof AssetInterface) {
-                $propertyValue = $propertyValue->getTitle();
+                $propertyValue = '[' . $propertyValue::class . '] ' . ($propertyValue->getResource()?->getFilename() ?? $propertyValue->getTitle() ?? 'n/a');
             } elseif ($propertyValue instanceof \DateTime) {
                 $propertyValue = $propertyValue->format('Y-m-d H:i:s');
             } elseif (is_array($propertyValue)) {
-                $propertyValue = json_encode($propertyValue);
+                try {
+                    $propertyValue = json_encode($propertyValue, JSON_THROW_ON_ERROR);
+                } catch (\JsonException $e) {
+                    // If encoding fails, we can just skip it or handle it as needed
+                    $propertyValue = '[Serialization error]';
+                }
             }
             $properties[$propertyName] = (string)$propertyValue;
         }

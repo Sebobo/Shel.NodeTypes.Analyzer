@@ -1,18 +1,20 @@
-import React, { createContext, ReactElement, useCallback, useContext, useEffect, useState, Dispatch } from 'react';
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+import React, { createContext, Dispatch, ReactElement, useCallback, useContext, useEffect, useState } from 'react';
+import { useRecoilCallback, useRecoilState, useSetRecoilState } from 'recoil';
 import memoize from 'lodash.memoize';
 
 import fetchData from '../helpers/fetchData';
 import nodePathHelper from '../helpers/nodePathHelper';
 import { useNotify } from './Notify';
 import { chartType } from '../constants';
-import { useAppState, AppAction, AppState } from './index';
+import { AppAction, AppState, useAppState } from './index';
 import {
     appInitializationState,
+    contentDimensionsConfigurationState,
+    contentDimensionsFilterState,
+    invalidNodeTypesState,
     loadingState,
     nodesState,
     nodeTypesState,
-    invalidNodeTypesState,
     workspaceFilterState,
     workspacesState,
 } from '../state';
@@ -26,7 +28,7 @@ interface GraphProviderValues extends AppState {
     endpoints: Actions;
     dependencyData: Dependencies;
     fetchGraphData: () => Promise<void>;
-    fetchNodes: (path: string, workspace: string) => Promise<CRNodeList>;
+    fetchNodes: (path?: string) => Promise<CRNodeList>;
     dispatch: Dispatch<AppAction>;
     getNodeTypeUsageLinks: (nodeTypeName: NodeTypeName) => Promise<void | NodeTypeUsageLink[]>;
 }
@@ -43,8 +45,8 @@ const GraphProvider = ({ children, endpoints }: GraphProviderProps): ReactElemen
     const setNodes = useSetRecoilState(nodesState);
     const setInvalidNodeTypes = useSetRecoilState(invalidNodeTypesState);
     const setAppInitializationState = useSetRecoilState(appInitializationState);
-    const workspaceFilter = useRecoilValue(workspaceFilterState);
     const setWorkspaces = useSetRecoilState(workspacesState);
+    const setContentDimensionsConfiguration = useSetRecoilState(contentDimensionsConfigurationState);
 
     const { selectedNodeTypeName, selectedPath, selectedLayout } = appState;
 
@@ -102,36 +104,57 @@ const GraphProvider = ({ children, endpoints }: GraphProviderProps): ReactElemen
         }
     }, []);
 
-    const fetchNodes = useCallback(async (path: string, workspace: string): Promise<CRNodeList> => {
-        try {
-            const { nodes: newNodes, workspaces } = await fetchData(
-                endpoints.getNodes,
-                {
-                    path,
-                    workspace,
-                },
-                'GET'
-            );
-            setNodes((storedNodes) => {
-                return {
-                    ...storedNodes,
-                    ...newNodes,
-                };
-            });
-            if (Array.isArray(workspaces) && workspaces.length > 0) {
-                setWorkspaces(workspaces);
-            }
-            return newNodes;
-        } catch (error) {
-            Notify.error(error);
-        }
-    }, []);
+    const fetchNodes = useRecoilCallback(
+        ({ snapshot }) =>
+            async (path?: string): Promise<CRNodeList> => {
+                const workspaceFilter = await snapshot.getPromise(workspaceFilterState);
+                const contentDimensionsFilter = await snapshot.getPromise(contentDimensionsFilterState);
+                try {
+                    const {
+                        nodes: newNodes,
+                        workspaces,
+                        contentDimensionsConfiguration,
+                    } = await fetchData<{
+                        nodes: CRNodeList;
+                        workspaces: Workspace[];
+                        contentDimensionsConfiguration: ContentDimensionsConfiguration;
+                    }>(
+                        endpoints.getNodes,
+                        {
+                            path: path ?? '',
+                            workspace: workspaceFilter,
+                            dimensionValues: JSON.stringify(contentDimensionsFilter),
+                        },
+                        'GET'
+                    );
+                    setNodes((storedNodes) => {
+                        return {
+                            ...storedNodes,
+                            ...newNodes,
+                        };
+                    });
+                    if (Array.isArray(workspaces) && workspaces.length > 0) {
+                        setWorkspaces(workspaces);
+                    }
+                    if (
+                        typeof contentDimensionsConfiguration === 'object' &&
+                        Object.keys(contentDimensionsConfiguration).length > 0
+                    ) {
+                        setContentDimensionsConfiguration(contentDimensionsConfiguration);
+                    }
+                    return newNodes;
+                } catch (error) {
+                    Notify.error(error);
+                }
+            },
+        []
+    );
 
     /**
      * Runs initial request to fetch all nodetype definitions
      */
     useEffect(() => {
-        Promise.all([fetchGraphData(), fetchNodes('/', workspaceFilter)]).then(() => setAppInitializationState(true));
+        Promise.all([fetchGraphData(), fetchNodes()]).then(() => setAppInitializationState(true));
     }, []);
 
     /**

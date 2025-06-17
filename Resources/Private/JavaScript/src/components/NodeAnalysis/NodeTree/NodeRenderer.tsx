@@ -4,7 +4,7 @@ import { createUseStyles } from 'react-jss';
 
 import { IconButton } from '@neos-project/react-ui-components';
 
-import { nodesState, selectedNodeTreePath, workspaceFilterState } from '../../../state';
+import { nodesState, selectedNodeTreePath } from '../../../state';
 import { PropertyList, PropertyListItem } from '../../Presentationals';
 import SelectedNodeBreadcrumb from './SelectedNodeBreadcrumb';
 import { useGraph, useIntl } from '../../../core';
@@ -18,7 +18,7 @@ const useStyles = createUseStyles({
     toolbar: {
         width: '100%',
         display: 'flex',
-        justifyContent: 'space-between',
+        justifyContent: 'flex-start',
         '.neos &': {
             marginBottom: 'var(--spacing-Half)',
         },
@@ -36,36 +36,34 @@ const NodeRenderer: React.FC = () => {
     const classes = useStyles();
     const selectedNodePath = useRecoilValue(selectedNodeTreePath);
     const nodes = useRecoilValue(nodesState);
-    const workspaceFilter = useRecoilValue(workspaceFilterState);
     const [isLoading, setIsLoading] = useState(false);
     const { fetchNodes } = useGraph();
     const { translate } = useIntl();
     const selectedNode = nodes[selectedNodePath];
 
     const handleReloadClick = useCallback(() => {
-        fetchNodes(selectedNodePath, workspaceFilter).then((nodes) => {
+        fetchNodes(selectedNodePath).then((nodes) => {
             console.info(`Reloaded ${Object.keys(nodes).length} child nodes for`, selectedNodePath, nodes);
             setIsLoading(false);
         });
-    }, [selectedNodePath, workspaceFilter]);
+    }, [selectedNodePath]);
 
     return selectedNode ? (
         <div>
             <div className={classes.toolbar}>
-                <div className={classes.group}>
-                    <SelectedNodeBreadcrumb />
-                </div>
-
                 <div className={classes.group}>
                     <IconButton
                         icon="sync"
                         size="small"
                         style="transparent"
                         hoverStyle="brand"
-                        title={translate('action.reloadGraphData.title', 'Reload data')}
+                        title={translate('action.reloadGraphData.title', 'Reload node')}
                         onClick={handleReloadClick}
                         disabled={isLoading}
                     />
+                </div>
+                <div className={classes.group}>
+                    <SelectedNodeBreadcrumb />
                 </div>
             </div>
 

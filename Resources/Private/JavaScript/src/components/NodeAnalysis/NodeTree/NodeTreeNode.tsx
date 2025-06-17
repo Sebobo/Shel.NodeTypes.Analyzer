@@ -38,7 +38,7 @@ const NodeTreeNode = ({ node, level = 1 }: NodeTreeNodeProps) => {
         if (childNodesMissing) {
             setIsLoading(true);
             fetchNodes(node.path, workspaceFilter).then((nodes) => {
-                console.debug(`Fetched ${Object.keys(nodes).length} child nodes for`, node.path, nodes);
+                console.info(`Fetched ${Object.keys(nodes).length} child nodes for`, node.path, nodes);
                 setChildNodesLoaded(true);
                 setIsLoading(false);
             });

@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import { createUseStyles } from 'react-jss';
 
-import { nodesState, selectedNodeTreePath } from '../../../state';
+import { IconButton } from '@neos-project/react-ui-components';
+
+import { nodesState, selectedNodeTreePath, workspaceFilterState } from '../../../state';
 import { PropertyList, PropertyListItem } from '../../Presentationals';
 import SelectedNodeBreadcrumb from './SelectedNodeBreadcrumb';
+import { useGraph, useIntl } from '../../../core';
 
 const useStyles = createUseStyles({
     Section: {
@@ -12,18 +15,60 @@ const useStyles = createUseStyles({
             marginTop: '1rem',
         },
     },
+    toolbar: {
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'space-between',
+        '.neos &': {
+            marginBottom: 'var(--spacing-Half)',
+        },
+    },
+    group: {
+        flex: '0 1 auto',
+        display: 'flex',
+        alignItems: 'center',
+        alignSelf: 'center',
+        border: '1px solid var(--grayLight)',
+    },
 });
 
 const NodeRenderer: React.FC = () => {
     const classes = useStyles();
     const selectedNodePath = useRecoilValue(selectedNodeTreePath);
     const nodes = useRecoilValue(nodesState);
-
+    const workspaceFilter = useRecoilValue(workspaceFilterState);
+    const [isLoading, setIsLoading] = useState(false);
+    const { fetchNodes } = useGraph();
+    const { translate } = useIntl();
     const selectedNode = nodes[selectedNodePath];
+
+    const handleReloadClick = useCallback(() => {
+        fetchNodes(selectedNodePath, workspaceFilter).then((nodes) => {
+            console.info(`Reloaded ${Object.keys(nodes).length} child nodes for`, selectedNodePath, nodes);
+            setIsLoading(false);
+        });
+    }, [selectedNodePath, workspaceFilter]);
 
     return selectedNode ? (
         <div>
-            <SelectedNodeBreadcrumb />
+            <div className={classes.toolbar}>
+                <div className={classes.group}>
+                    <SelectedNodeBreadcrumb />
+                </div>
+
+                <div className={classes.group}>
+                    <IconButton
+                        icon="sync"
+                        size="small"
+                        style="transparent"
+                        hoverStyle="brand"
+                        title={translate('action.reloadGraphData.title', 'Reload data')}
+                        onClick={handleReloadClick}
+                        disabled={isLoading}
+                    />
+                </div>
+            </div>
+
             <div className={classes.Section}>
                 <h3>Details</h3>
                 <br />

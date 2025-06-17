@@ -23,6 +23,7 @@ use Neos\Flow\Mvc\View\JsonView;
 use Neos\Fusion\View\FusionView;
 use Neos\Neos\Controller\CreateContentContextTrait;
 use Neos\Neos\Controller\Module\AbstractModuleController;
+use Neos\Neos\Domain\Service\ContentDimensionPresetSourceInterface;
 use Shel\NodeTypes\Analyzer\Domain\Dto\EnhancedNodeTypeConfiguration;
 use Shel\NodeTypes\Analyzer\Domain\Dto\NodeTreeLeaf;
 use Shel\NodeTypes\Analyzer\Service\NodeTypeGraphService;
@@ -74,6 +75,12 @@ class NodeTypesController extends AbstractModuleController
     protected array $dimensionConfiguration;
 
     /**
+     * @var ContentDimensionPresetSourceInterface
+     */
+    #[Flow\Inject]
+    protected $contentDimensionPresetSource;
+
+    /**
      * Renders the app to interact with the nodetype graph
      */
     public function indexAction(): void
@@ -93,13 +100,36 @@ class NodeTypesController extends AbstractModuleController
         ]);
     }
 
-    public function getNodesAction(string $path, array $dimensions = [], string $workspace = 'live'): void
+    public function getNodesAction(string $path = '', string $dimensionValues = '{}', string $workspace = 'live'): void
     {
-        $contentContext = $this->createContentContext($workspace, $dimensions);
-        $nodeAtPath = $contentContext->getNode($path);
+        $isRoot = $path === '/' || $path === '';
 
-        // Only include workspaces in the root request
-        $workspaces = $path === '/' ? array_map(static function (Workspace $workspace) {
+        try {
+            $dimensionValuesSelection = json_decode($dimensionValues, true, 512, JSON_THROW_ON_ERROR);
+            foreach ($dimensionValuesSelection as $dimensionName => $value) {
+                $dimensionValuesSelection[$dimensionName] = is_array($value) ? $value : [$value];
+            }
+        } catch (\JsonException) {
+            $dimensionValuesSelection = [];
+        }
+
+        $contentContext = $this->createContentContext($workspace, $dimensionValuesSelection);
+        $nodeAtPath = $contentContext->getNode($isRoot ? '/' : $path);
+
+        $nodes = [$nodeAtPath->getPath() => NodeTreeLeaf::fromNode($nodeAtPath)];
+        foreach ($nodeAtPath->getChildNodes() as $childNode) {
+            $nodes[$childNode->getPath()] = NodeTreeLeaf::fromNode($childNode);
+
+            if ($isRoot) {
+                // If we are at the root, we also want to include the site nodes
+                foreach ($childNode->getChildNodes() as $grandChildNode) {
+                    $nodes[$grandChildNode->getPath()] = NodeTreeLeaf::fromNode($grandChildNode);
+                }
+            }
+        }
+
+        // Only include workspaces and dimensions in the root request
+        $workspaces = $isRoot ? array_map(static function (Workspace $workspace) {
             return [
                 'label' => $workspace->getTitle(),
                 'value' => $workspace->getName(),
@@ -110,17 +140,13 @@ class NodeTypesController extends AbstractModuleController
                 return strtolower($a['label']) <=> strtolower($b['label']);
             });
         }
-
-        $nodes = [$nodeAtPath->getPath() => NodeTreeLeaf::fromNode($nodeAtPath)];
-
-        foreach ($nodeAtPath->getChildNodes() as $childNode) {
-            $nodes[$childNode->getPath()] = NodeTreeLeaf::fromNode($childNode);
-        }
+        $contentDimensionsConfiguration = $isRoot ? $this->contentDimensionPresetSource->getAllPresets() : [];
 
         $this->view->assign('value', [
             'success' => true,
             'nodes' => $nodes,
             'workspaces' => $workspaces,
+            'contentDimensionsConfiguration' => $contentDimensionsConfiguration,
         ]);
     }
 

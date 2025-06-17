@@ -45,7 +45,7 @@ const NodeRenderer: React.FC = () => {
 
     const handleReloadClick = useCallback(() => {
         fetchNodes(selectedNodeIdentifier, workspaceFilter).then((nodes) => {
-            console.info(`Reloaded ${Object.keys(nodes).length} child nodes for`, selectedNodeIdentifier, nodes);
+            console.info(`Reloaded ${Object.keys(nodes).length} nodes for`, selectedNodeIdentifier, nodes);
             setIsLoading(false);
         });
     }, [selectedNodeIdentifier, workspaceFilter]);

@@ -146,15 +146,15 @@ class NodeTypesController extends AbstractModuleController
                 FindChildNodesFilter::create('Neos.Neos:Node')
             );
 
-            if (!$parentNodeAggregateId) {
-                $nodes[$nodeAtPath->aggregateId->value] = new NodeTreeLeaf(
-                    $nodeAtPath,
-                    null,
-                    $this->nodeLabelGenerator->getLabel($nodeAtPath),
-                    $childNodes->count(),
-                    0
-                );
-            }
+            $parentNode = $subgraph->findParentNode($nodeAtPath->aggregateId);
+
+            $nodes[$nodeAtPath->aggregateId->value] = new NodeTreeLeaf(
+                $nodeAtPath,
+                $parentNode,
+                $this->nodeLabelGenerator->getLabel($nodeAtPath),
+                $childNodes->count(),
+                0
+            );
 
             $index = 0;
             foreach ($childNodes as $childNode) {

@@ -43,8 +43,8 @@ const NodeTreeNode = ({ node, level = 1 }: NodeTreeNodeProps) => {
         if (isLoading || collapsed || childNodesLoaded) return;
         setIsLoading(true);
         fetchNodes(node.identifier, workspaceFilter).then((nodes) => {
-            console.info(`Fetched ${Object.keys(nodes).length} child nodes for`, node.identifier, nodes);
-            setChildNodes(Object.keys(nodes));
+            console.info(`Fetched ${Object.keys(nodes).length} nodes for`, node.identifier, nodes);
+            setChildNodes(Object.keys(nodes).filter((n) => nodes[n].parentNodeIdentifier === node.identifier));
             setChildNodesLoaded(true);
             setIsLoading(false);
         });

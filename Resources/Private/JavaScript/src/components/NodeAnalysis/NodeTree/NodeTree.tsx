@@ -19,10 +19,10 @@ const NodeTree = () => {
     const { dispatch } = useGraph();
     const nodes = useRecoilValue(nodesState);
     const initialized = useRecoilValue(appInitializationState);
-    const selectedNodePath = useRecoilValue(selectedNodeIdentifierState);
+    const selectedNodeIdentifier = useRecoilValue(selectedNodeIdentifierState);
 
     const rootNode = Object.values(nodes).find((node) => node.classification === 'root');
-    const selectedNode = nodes[selectedNodePath];
+    const selectedNode = nodes[selectedNodeIdentifier] || rootNode;
 
     useEffect(() => {
         dispatch({ type: Action.SelectNodeType, payload: selectedNode?.nodeType });

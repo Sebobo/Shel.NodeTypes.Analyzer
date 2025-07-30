@@ -89,6 +89,7 @@ class NodeTypesController extends AbstractModuleController
      */
     public function indexAction(): void
     {
+        $this->view->assign('exportPossible', $this->exportPossible());
     }
 
     /**
@@ -251,11 +252,10 @@ class NodeTypesController extends AbstractModuleController
 
     public function exportNodeTypesAction(bool $reduced = false): void
     {
-        /** @noinspection ClassConstantCanBeUsedInspection */
-        if (!class_exists("\\League\\Csv\\Writer")) {
+        if (!$this->exportPossible()) {
             throw new \RuntimeException(
-                'The League CSV library is not installed. Please install it via composer: composer require league/csv',
-                1749979967
+                'The League CSV library is not available. Please install it via composer: "composer require league/csv"',
+                1753859308
             );
         }
         $nodeTypes = $this->nodeTypeGraphService->generateNodeTypesData(true, !$reduced);
@@ -287,6 +287,7 @@ class NodeTypesController extends AbstractModuleController
             return strtolower($a['name']) <=> strtolower($b['name']);
         });
 
+        /** @noinspection PhpFullyQualifiedNameUsageInspection */
         $csvWriter = \League\Csv\Writer::createFromFileObject(new \SplTempFileObject());
         $headers = array_merge(
             [
@@ -344,10 +345,10 @@ class NodeTypesController extends AbstractModuleController
     ): void
     {
         /** @noinspection ClassConstantCanBeUsedInspection */
-        if (!class_exists("\\League\\Csv\\Writer")) {
+        if (!$this->exportPossible()) {
             throw new \RuntimeException(
-                'The League CSV library is not installed. Please install it via composer: composer require league/csv',
-                1749979936
+                'The League CSV library is not available. Please install it via composer: "composer require league/csv"',
+                1753859324
             );
         }
         $contentRepository = $this->contentRepositoryRegistry->get(
@@ -388,6 +389,7 @@ class NodeTypesController extends AbstractModuleController
 
         $headers[] = 'Breadcrumb';
 
+        /** @noinspection PhpFullyQualifiedNameUsageInspection */
         $csvWriter = \League\Csv\Writer::createFromFileObject(new \SplTempFileObject());
         $csvWriter->insertOne($headers);
 
@@ -412,6 +414,12 @@ class NodeTypesController extends AbstractModuleController
         echo $content;
 
         exit;
+    }
+
+    protected function exportPossible(): bool
+    {
+        /** @noinspection ClassConstantCanBeUsedInspection */
+        return class_exists('League\Csv\Writer');
     }
 
     protected function translateByShortHandString(string $shortHandString): string

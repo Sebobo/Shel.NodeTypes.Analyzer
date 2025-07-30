@@ -25,7 +25,12 @@ const NodeTypeTree: React.FC = () => {
                 .sort()
                 .map((segment, index) =>
                     treeData[segment].nodeType ? (
-                        <NodeTypeTreeNode key={index} nodeType={nodeTypes[treeData[segment].nodeType]} />
+                        <NodeTypeTreeNode
+                            key={index}
+                            nodeType={nodeTypes[treeData[segment].nodeType]}
+                            path={segment}
+                            subNodes={treeData[segment]}
+                        />
                     ) : (
                         <VendorSegmentTreeNode
                             key={index}

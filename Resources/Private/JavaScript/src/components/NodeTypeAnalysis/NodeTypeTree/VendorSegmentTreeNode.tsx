@@ -76,8 +76,10 @@ const VendorSegmentTreeNode: React.FC<VendorSegmentTreeNodeProps> = ({
                         subNodes[segment]['nodeType'] ? (
                             <NodeTypeTreeNode
                                 key={index}
-                                level={level + 1}
                                 nodeType={nodeTypes[subNodes[segment]['nodeType']]}
+                                level={level + 1}
+                                path={path + '.' + segment}
+                                subNodes={subNodes[segment]}
                             />
                         ) : (
                             <VendorSegmentTreeNode

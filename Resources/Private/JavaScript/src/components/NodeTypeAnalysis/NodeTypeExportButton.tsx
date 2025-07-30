@@ -27,8 +27,12 @@ const useStyles = createUseStyles({
 const NodeTypeExportButton: React.FC = () => {
     const classes = useStyles();
     const { translate } = useIntl();
-    const { endpoints } = useGraph();
+    const { endpoints, exportPossible } = useGraph();
     const [exportReduced, setExportReduced] = React.useState(false);
+
+    if (!exportPossible) {
+        return null; // If export is not possible, do not render the button
+    }
 
     return (
         <div className={classes.nodeTypeExportButton}>

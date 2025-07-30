@@ -38,6 +38,9 @@ You can also explore your complete Content Repository for debugging purposes:
 
 ![Content Repository explorer](Documentation/Images/CRExplorer.png "Content Repository explorer")
 
+Note: exporting the nodetypes as CSV with usage and other information is also possible
+if you also have the `league/csv` package installed.
+
 ## Additional nodetype annotations
 
 You can set the following options on each nodetype for additional output in the module:

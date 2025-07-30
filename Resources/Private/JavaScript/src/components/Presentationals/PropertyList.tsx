@@ -68,7 +68,7 @@ export const PropertyListItem: React.FC<PropertyListItemProps> = ({
 }) => {
     const classes = useStyles();
     // Strip HTML tags for title
-    const valueTitle = value.replace(/<[^>]+>/g, '');
+    const valueTitle = value === undefined || value === null ? 'undefined' : value.replace(/<[^>]+>/g, '');
 
     return (
         <>
@@ -76,7 +76,7 @@ export const PropertyListItem: React.FC<PropertyListItemProps> = ({
                 {label} {icon && <Icon icon={icon} />}
             </dt>
             <dd className={[classes.description, highlighted ? classes.highlighted : ''].join(' ')} title={valueTitle}>
-                {value}
+                {value === undefined || value === null ? 'undefined' : value}
             </dd>
         </>
     );

@@ -29,7 +29,7 @@ function initializeApp() {
 
     Modal.setAppElement(graphAppContainer);
 
-    const { endpoints } = JSON.parse(graphAppContainer.dataset.app);
+    const { endpoints, exportPossible } = JSON.parse(graphAppContainer.dataset.app);
     const { I18n, Notification } = window.NeosCMS;
 
     const translate = (
@@ -49,7 +49,7 @@ function initializeApp() {
         <IntlProvider translate={translate}>
             <NotifyProvider notificationApi={Notification}>
                 <RecoilRoot>
-                    <GraphProvider endpoints={endpoints}>
+                    <GraphProvider endpoints={endpoints} exportPossible={!!exportPossible}>
                         <ModifiedDndProvider backend={HTML5Backend}>
                             <GraphApp />
                         </ModifiedDndProvider>

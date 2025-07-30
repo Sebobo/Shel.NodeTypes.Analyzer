@@ -12,7 +12,6 @@ namespace Shel\NodeTypes\Analyzer\Controller;
  * source code.
  */
 
-use League\Csv\Writer;
 use Neos\Cache\Exception as CacheException;
 use Neos\ContentRepository\Domain\Model\Workspace;
 use Neos\ContentRepository\Domain\Repository\WorkspaceRepository;
@@ -78,6 +77,7 @@ class NodeTypesController extends AbstractModuleController
      */
     public function indexAction(): void
     {
+        $this->view->assign('exportPossible', $this->exportPossible());
     }
 
     /**
@@ -159,6 +159,12 @@ class NodeTypesController extends AbstractModuleController
 
     public function exportNodeTypesAction(bool $reduced = false): void
     {
+        if (!$this->exportPossible()) {
+            throw new \RuntimeException(
+                'The League CSV library is not available. Please install it via composer: "composer require league/csv"',
+                1753859308
+            );
+        }
         $nodeTypes = $this->nodeTypeGraphService->generateNodeTypesData(true, !$reduced);
 
         $nodeTypesDataForExport = array_map(function (EnhancedNodeTypeConfiguration $nodeType) use ($reduced) {
@@ -188,7 +194,8 @@ class NodeTypesController extends AbstractModuleController
             return strtolower($a['name']) <=> strtolower($b['name']);
         });
 
-        $csvWriter = Writer::createFromFileObject(new \SplTempFileObject());
+        /** @noinspection PhpFullyQualifiedNameUsageInspection */
+        $csvWriter = \League\Csv\Writer::createFromFileObject(new \SplTempFileObject());
         $headers = array_merge(
             [
                 'Name',
@@ -233,6 +240,12 @@ class NodeTypesController extends AbstractModuleController
 
     public function exportNodeTypeUsageAction(?string $nodeTypeName): void
     {
+        if (!$this->exportPossible()) {
+            throw new \RuntimeException(
+                'The League CSV library is not available. Please install it via composer: "composer require league/csv"',
+                1753859324
+            );
+        }
         $usages = $this->nodeTypeUsageService->getNodeTypeUsages($this->controllerContext, $nodeTypeName);
         $hasDimensions = !empty($this->dimensionConfiguration);
 
@@ -253,7 +266,8 @@ class NodeTypesController extends AbstractModuleController
 
         $headers[] = 'Breadcrumb';
 
-        $csvWriter = Writer::createFromFileObject(new \SplTempFileObject());
+        /** @noinspection PhpFullyQualifiedNameUsageInspection */
+        $csvWriter = \League\Csv\Writer::createFromFileObject(new \SplTempFileObject());
         $csvWriter->insertOne($headers);
 
         foreach ($usages as $usageItem) {
@@ -277,6 +291,12 @@ class NodeTypesController extends AbstractModuleController
         echo $content;
 
         exit;
+    }
+
+    protected function exportPossible(): bool
+    {
+        /** @noinspection ClassConstantCanBeUsedInspection */
+        return class_exists('League\Csv\Writer');
     }
 
     protected function translateByShortHandString(string $shortHandString): string

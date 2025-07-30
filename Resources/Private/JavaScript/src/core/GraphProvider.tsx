@@ -20,6 +20,7 @@ import {
 export interface GraphProviderProps {
     children: React.ReactElement;
     endpoints: Actions;
+    exportPossible?: boolean;
 }
 
 interface GraphProviderValues extends AppState {
@@ -29,12 +30,13 @@ interface GraphProviderValues extends AppState {
     fetchNodes: (path: string, workspace: string) => Promise<CRNodeList>;
     dispatch: Dispatch<AppAction>;
     getNodeTypeUsageLinks: (nodeTypeName: NodeTypeName) => Promise<void | NodeTypeUsageLink[]>;
+    exportPossible: boolean;
 }
 
 export const GraphContext = createContext({} as GraphProviderValues);
 export const useGraph = (): GraphProviderValues => useContext(GraphContext);
 
-const GraphProvider = ({ children, endpoints }: GraphProviderProps): ReactElement => {
+const GraphProvider = ({ children, endpoints, exportPossible = false }: GraphProviderProps): ReactElement => {
     const Notify = useNotify();
     const [appState, dispatch] = useAppState();
 
@@ -234,6 +236,7 @@ const GraphProvider = ({ children, endpoints }: GraphProviderProps): ReactElemen
         <GraphContext.Provider
             value={{
                 endpoints,
+                exportPossible,
                 dependencyData,
                 getNodeTypeUsageLinks,
                 fetchGraphData,

@@ -28,7 +28,8 @@
     "shel/contentrepository-debugger": "*"
   },
   "suggest": {
-    "justinrainbow/json-schema": "Allows validating of the generated nodetypes schema"
+    "justinrainbow/json-schema": "Allows validating of the generated nodetypes schema",
+    "league/csv": "Allows exporting the nodetypes overview with usages and warnings to CSV"
   },
   "autoload": {
     "psr-4": {

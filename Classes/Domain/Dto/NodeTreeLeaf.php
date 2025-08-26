@@ -64,19 +64,29 @@ final readonly class NodeTreeLeaf implements \JsonSerializable
         $properties = [];
         foreach ($this->node->properties as $propertyName => $propertyValue) {
             if ($propertyValue instanceof Asset) {
-                $propertyValue = '[' . $propertyValue::class . '] ' . $propertyValue->getLabel();
+                try {
+                    $propertyValue = '[' . $propertyValue::class . '] ' . $propertyValue->getLabel();
+                } catch (\Exception) {
+                    $propertyValue = '[' . $propertyValue::class . '] n/a';
+                }
             } elseif ($propertyValue instanceof AssetInterface) {
-                $propertyValue = '[' . $propertyValue::class . '] ' . $propertyValue->getResource()->getFilename();
+                try {
+                    $propertyValue = '[' . $propertyValue::class . '] ' . ($propertyValue->getResource()?->getFilename() ?? $propertyValue->getTitle() ?? 'n/a');
+                } catch (\Exception) {
+                    $propertyValue = '[' . $propertyValue::class . '] n/a';
+                }
             } elseif ($propertyValue instanceof \DateTimeInterface) {
                 $propertyValue = $propertyValue->format('Y-m-d H:i:s');
             } elseif (is_array($propertyValue)) {
                 try {
                     // Ensure that the array is JSON serializable
                     $propertyValue = json_encode($propertyValue, JSON_THROW_ON_ERROR);
-                } catch (\JsonException $e) {
+                } catch (\JsonException) {
                     // If encoding fails, we can just skip it or handle it as needed
                     $propertyValue = '[Serialization error] ' . $e->getMessage();
                 }
+            } elseif (is_null($propertyValue)) {
+                $propertyValue = 'null';
             }
             $properties[$propertyName] = (string)$propertyValue;
         }

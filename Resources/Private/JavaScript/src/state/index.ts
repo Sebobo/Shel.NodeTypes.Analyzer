@@ -12,3 +12,5 @@ export { treeDataState } from './treeDataState';
 export { graphDataState } from './graphDataState';
 export { workspaceFilterState } from './workspaceFilterState';
 export { workspacesState } from './workspacesState';
+export { contentDimensionsConfigurationState } from './contentDimensionsConfigurationState';
+export { contentDimensionsFilterState } from './contentDimensionsFilterState';

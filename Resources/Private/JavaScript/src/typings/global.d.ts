@@ -84,6 +84,24 @@ type Workspace = {
     label: string;
 };
 
+type ContentDimensionPreset = {
+    label: string;
+    values: string[];
+    uriSegment: string;
+};
+
+type ContentDimension = {
+    label: string;
+    icon?: string;
+    default: string;
+    defaultPreset: string;
+    presets: Record<string, ContentDimensionPreset>;
+};
+
+type DimensionValues = Record<string, string>;
+
+type ContentDimensionsConfiguration = Record<string, ContentDimension>;
+
 type Inheritance = Record<string, boolean>;
 type Constraint = Record<string, boolean>;
 type PropertyConfiguration = {
